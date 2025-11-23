@@ -1,0 +1,721 @@
+import React, { useRef, useMemo, useState, useEffect, Suspense } from 'react';
+import { Canvas, useFrame } from '@react-three/fiber';
+import * as THREE from 'three';
+import { safeBrowserAPI } from '../lib/utils';
+import { usePerformanceMonitor } from '../hooks/usePerformanceMonitor';
+
+// Lazy load heavy lighting effects
+const EffectComposer = React.lazy(() => 
+  import('@react-three/postprocessing').then(m => ({ default: m.EffectComposer }))
+);
+const Bloom = React.lazy(() => 
+  import('@react-three/postprocessing').then(m => ({ default: m.Bloom }))
+);
+
+// Lighting Effects Component with Error Handling
+const LightingEffects: React.FC = () => {
+  const [lightingEnabled, setLightingEnabled] = useState(true);
+  const [lightingError, setLightingError] = useState(false);
+
+  useEffect(() => {
+    // Check if WebGL supports the required features for lighting
+    const canvas = document.createElement('canvas');
+    const gl = canvas.getContext('webgl2') || canvas.getContext('webgl');
+    
+    if (!gl) {
+      setLightingEnabled(false);
+      return;
+    }
+
+    // Check for required extensions
+    const requiredExtensions = ['OES_texture_float', 'OES_texture_half_float'];
+    const missingExtensions = requiredExtensions.filter(ext => !gl.getExtension(ext));
+    
+    if (missingExtensions.length > 0) {
+      setLightingEnabled(false);
+    }
+  }, []);
+
+  if (!lightingEnabled || lightingError) {
+    return null; // Graceful fallback - no lighting effects
+  }
+
+  return (
+    <EffectComposer 
+      disableNormalPass 
+      multisampling={0}
+      onError={() => {
+        setLightingError(true);
+      }}
+    >
+      <Bloom 
+        luminanceThreshold={0.3} 
+        mipmapBlur 
+        intensity={1.0} 
+        radius={0.4}
+        levels={5}
+      />
+    </EffectComposer>
+  );
+};
+
+// --- Shaders --- //
+
+const vertexShader = `
+  uniform float uTime;
+  uniform vec2 uMouse;
+  uniform float uHover;
+  
+  attribute vec3 initialPosition;
+  attribute float aRandom;
+  attribute float aLayer;
+  
+  varying vec3 vColor;
+  varying float vDistance;
+  varying float vLayer;
+  varying float vSpeed;
+  varying vec3 vPosition;
+
+  // ===== ADVANCED NOISE FUNCTIONS =====
+  
+  // Simplex 3D Noise (Ken Perlin's improved noise)
+  vec3 mod289(vec3 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
+  vec4 mod289(vec4 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
+  vec4 permute(vec4 x) { return mod289(((x*34.0)+1.0)*x); }
+  vec4 taylorInvSqrt(vec4 r) { return 1.79284291400159 - 0.85373472095314 * r; }
+  
+  float snoise(vec3 v) {
+    const vec2 C = vec2(1.0/6.0, 1.0/3.0);
+    const vec4 D = vec4(0.0, 0.5, 1.0, 2.0);
+    
+    vec3 i  = floor(v + dot(v, C.yyy));
+    vec3 x0 = v - i + dot(i, C.xxx);
+    
+    vec3 g = step(x0.yzx, x0.xyz);
+    vec3 l = 1.0 - g;
+    vec3 i1 = min(g.xyz, l.zxy);
+    vec3 i2 = max(g.xyz, l.zxy);
+    
+    vec3 x1 = x0 - i1 + C.xxx;
+    vec3 x2 = x0 - i2 + C.yyy;
+    vec3 x3 = x0 - D.yyy;
+    
+    i = mod289(i);
+    vec4 p = permute(permute(permute(
+              i.z + vec4(0.0, i1.z, i2.z, 1.0))
+            + i.y + vec4(0.0, i1.y, i2.y, 1.0))
+            + i.x + vec4(0.0, i1.x, i2.x, 1.0));
+    
+    float n_ = 0.142857142857;
+    vec3 ns = n_ * D.wyz - D.xzx;
+    
+    vec4 j = p - 49.0 * floor(p * ns.z * ns.z);
+    
+    vec4 x_ = floor(j * ns.z);
+    vec4 y_ = floor(j - 7.0 * x_);
+    
+    vec4 x = x_ *ns.x + ns.yyyy;
+    vec4 y = y_ *ns.x + ns.yyyy;
+    vec4 h = 1.0 - abs(x) - abs(y);
+    
+    vec4 b0 = vec4(x.xy, y.xy);
+    vec4 b1 = vec4(x.zw, y.zw);
+    
+    vec4 s0 = floor(b0)*2.0 + 1.0;
+    vec4 s1 = floor(b1)*2.0 + 1.0;
+    vec4 sh = -step(h, vec4(0.0));
+    
+    vec4 a0 = b0.xzyw + s0.xzyw*sh.xxyy;
+    vec4 a1 = b1.xzyw + s1.xzyw*sh.zzww;
+    
+    vec3 p0 = vec3(a0.xy, h.x);
+    vec3 p1 = vec3(a0.zw, h.y);
+    vec3 p2 = vec3(a1.xy, h.z);
+    vec3 p3 = vec3(a1.zw, h.w);
+    
+    vec4 norm = taylorInvSqrt(vec4(dot(p0,p0), dot(p1,p1), dot(p2,p2), dot(p3,p3)));
+    p0 *= norm.x;
+    p1 *= norm.y;
+    p2 *= norm.z;
+    p3 *= norm.w;
+    
+    vec4 m = max(0.6 - vec4(dot(x0,x0), dot(x1,x1), dot(x2,x2), dot(x3,x3)), 0.0);
+    m = m * m;
+    return 42.0 * dot(m*m, vec4(dot(p0,x0), dot(p1,x1), dot(p2,x2), dot(p3,x3)));
+  }
+  
+  // Curl Noise (divergence-free vector field for fluid motion)
+  vec3 curlNoise(vec3 p) {
+    float e = 0.1;
+    float n1 = snoise(vec3(p.x, p.y + e, p.z));
+    float n2 = snoise(vec3(p.x, p.y - e, p.z));
+    float n3 = snoise(vec3(p.x, p.y, p.z + e));
+    float n4 = snoise(vec3(p.x, p.y, p.z - e));
+    float n5 = snoise(vec3(p.x + e, p.y, p.z));
+    float n6 = snoise(vec3(p.x - e, p.y, p.z));
+    
+    float x = n1 - n2;
+    float y = n3 - n4;
+    float z = n5 - n6;
+    
+    return normalize(vec3(x, y, z));
+  }
+  
+  // FBM (Fractional Brownian Motion) for multi-scale detail
+  float fbm(vec3 p) {
+    float value = 0.0;
+    float amplitude = 0.5;
+    float frequency = 1.0;
+    
+    for(int i = 0; i < 4; i++) {
+      value += amplitude * snoise(p * frequency);
+      frequency *= 2.0;
+      amplitude *= 0.5;
+    }
+    return value;
+  }
+
+  void main() {
+    vec3 pos = initialPosition;
+    
+    float layerSpeed = mix(0.5, 1.5, aLayer / 2.0);
+    float t = uTime * 0.3 * layerSpeed;
+    
+    // 1. CURL NOISE FLOW FIELD (fluid, turbulent motion)
+    vec3 curlForce = curlNoise(pos * 0.8 + t * 0.5);
+    pos += curlForce * 0.4 * layerSpeed;
+    
+    // 2. FBM for organic variation
+    float fbmNoise = fbm(pos * 1.5 + t);
+    pos.z += fbmNoise * 0.2;
+    
+    // 3. SIMPLEX NOISE for smooth undulation
+    float simplexX = snoise(vec3(pos.y * 2.0, t, pos.z));
+    float simplexY = snoise(vec3(pos.x * 2.0, t + 100.0, pos.z));
+    pos.x += simplexX * 0.15 * layerSpeed;
+    pos.y += simplexY * 0.15 * layerSpeed;
+    
+    // 4. VORTEX effect (particles spiral around center)
+    vec2 toCenter = -pos.xy;
+    float distToCenter = length(toCenter);
+    float vortexStrength = smoothstep(3.0, 0.0, distToCenter);
+    float angle = atan(pos.y, pos.x) + t * 0.5;
+    pos.x += sin(angle) * vortexStrength * 0.1;
+    pos.y += cos(angle) * vortexStrength * 0.1;
+    
+    // 5. MOUSE INTERACTION (enhanced with curl noise)
+    vec2 mouseVec = pos.xy - uMouse * vec2(4.0, 2.0);
+    float mouseDist = length(mouseVec);
+    float influenceRadius = 2.5;
+    float parallaxStrength = mix(0.3, 1.2, aLayer / 2.0);
+    
+    if (mouseDist < influenceRadius) {
+      float force = (influenceRadius - mouseDist) / influenceRadius;
+      force = pow(force, 2.0);
+      vec2 pushDir = normalize(mouseVec);
+      
+      // Add curl noise to mouse interaction for organic feel
+      vec3 curlOffset = curlNoise(vec3(pos.xy * 2.0, t)) * force * 0.3;
+      pos.xy += pushDir * force * 1.2 * uHover * parallaxStrength;
+      pos.xy += curlOffset.xy * uHover;
+      pos.z += force * 0.6 * uHover * parallaxStrength;
+    }
+    
+    vec4 mvPosition = modelViewMatrix * vec4(pos, 1.0);
+    gl_Position = projectionMatrix * mvPosition;
+    
+    // 6. DYNAMIC SIZE (based on distance and layer)
+    float layerSize = mix(5.0, 12.0, aLayer / 2.0);
+    float sizeState = smoothstep(2.5, 0.0, mouseDist) * uHover;
+    float depthSize = 1.0 / -mvPosition.z;
+    
+    // Pulsing based on noise
+    float pulse = snoise(vec3(pos.xy * 0.5, t * 2.0)) * 0.5 + 0.5;
+    float finalSize = (layerSize + sizeState * 8.0 + pulse * 2.0) * depthSize;
+    gl_PointSize = finalSize;
+    
+    // 7. PASS DATA TO FRAGMENT SHADER
+    vDistance = mouseDist;
+    vLayer = aLayer;
+    vSpeed = length(curlForce);
+    vPosition = pos;
+  }
+`;
+
+const fragmentShader = `
+  varying float vDistance;
+  varying float vLayer;
+  varying float vSpeed;
+  varying vec3 vPosition;
+  uniform float uTime;
+  
+  // Simplex 2D noise for texture variation
+  vec3 mod289(vec3 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
+  vec2 mod289(vec2 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
+  vec3 permute(vec3 x) { return mod289(((x*34.0)+1.0)*x); }
+  
+  float snoise(vec2 v) {
+    const vec4 C = vec4(0.211324865405187, 0.366025403784439, -0.577350269189626, 0.024390243902439);
+    vec2 i  = floor(v + dot(v, C.yy));
+    vec2 x0 = v - i + dot(i, C.xx);
+    vec2 i1 = (x0.x > x0.y) ? vec2(1.0, 0.0) : vec2(0.0, 1.0);
+    vec4 x12 = x0.xyxy + C.xxzz;
+    x12.xy -= i1;
+    i = mod289(i);
+    vec3 p = permute(permute(i.y + vec3(0.0, i1.y, 1.0)) + i.x + vec3(0.0, i1.x, 1.0));
+    vec3 m = max(0.5 - vec3(dot(x0,x0), dot(x12.xy,x12.xy), dot(x12.zw,x12.zw)), 0.0);
+    m = m*m;
+    m = m*m;
+    vec3 x = 2.0 * fract(p * C.www) - 1.0;
+    vec3 h = abs(x) - 0.5;
+    vec3 ox = floor(x + 0.5);
+    vec3 a0 = x - ox;
+    m *= 1.79284291400159 - 0.85373472095314 * (a0*a0 + h*h);
+    vec3 g;
+    g.x  = a0.x  * x0.x  + h.x  * x0.y;
+    g.yz = a0.yz * x12.xz + h.yz * x12.yw;
+    return 130.0 * dot(m, g);
+  }
+  
+  void main() {
+    vec2 uv = gl_PointCoord - 0.5;
+    float dist = length(uv);
+    
+    // Soft circular particle with glow
+    if (dist > 0.5) discard;
+    
+    // CORE: Soft falloff with enhanced glow
+    float core = 1.0 - smoothstep(0.0, 0.3, dist);
+    float glow = 1.0 - smoothstep(0.0, 0.5, dist);
+    glow = pow(glow, 1.5);
+    
+    // SHIMMER: Animated noise texture
+    float shimmer = snoise(vPosition.xy * 10.0 + uTime * 0.5) * 0.5 + 0.5;
+    shimmer = pow(shimmer, 3.0) * 0.3;
+    
+    // ENERGY: Speed-based intensity
+    float energy = smoothstep(0.0, 1.0, vSpeed * 2.0);
+    
+    // BREATHING: Global pulsation
+    float breath = sin(uTime * 1.2) * 0.15 + 0.85;
+    
+    // LAYER BRIGHTNESS: Foreground brighter
+    float layerBrightness = mix(0.5, 1.2, vLayer / 2.0);
+    
+    // ===== COLOR PALETTE =====
+    // Base colors (AI aesthetic: cyan, purple, blue, pink)
+    vec3 deepPurple = vec3(0.4, 0.2, 1.0);
+    vec3 cyan = vec3(0.0, 0.9, 1.0);
+    vec3 electricBlue = vec3(0.2, 0.6, 1.0);
+    vec3 hotPink = vec3(1.0, 0.3, 0.7);
+    vec3 white = vec3(1.0, 1.0, 1.0);
+    
+    // MOUSE INTERACTION: Color shift near cursor
+    float mouseInfluence = smoothstep(2.0, 0.0, vDistance);
+    
+    // Base color (depth-based gradient)
+    vec3 baseColor = mix(deepPurple, electricBlue, vLayer / 2.0);
+    
+    // Add cyan for active particles
+    baseColor = mix(baseColor, cyan, mouseInfluence * 0.6);
+    
+    // SPEED COLORING: Fast particles glow pink/white
+    baseColor = mix(baseColor, hotPink, energy * 0.4);
+    baseColor = mix(baseColor, white, energy * mouseInfluence * 0.5);
+    
+    // IRIDESCENT SHIMMER: Add sparkle
+    baseColor += shimmer * vec3(0.3, 0.5, 1.0);
+    
+    // Apply brightness modifiers
+    vec3 finalColor = baseColor * breath * layerBrightness;
+    
+    // ALPHA: Combine core and glow
+    float alpha = mix(glow * 0.6, core, 0.5);
+    
+    // Depth fade (background softer)
+    float depthFade = mix(0.6, 1.0, vLayer / 2.0);
+    alpha *= depthFade;
+    
+    // Energy boost (fast particles more visible)
+    alpha += energy * 0.2;
+    
+    // Mouse interaction boost
+    alpha += mouseInfluence * 0.3;
+    
+    // Final clamp
+    alpha = clamp(alpha, 0.0, 1.0);
+    
+    gl_FragColor = vec4(finalColor, alpha);
+  }
+`;
+
+function NeuralParticles() {
+  const points = useRef<THREE.Points>(null!);
+  const geometryRef = useRef<THREE.BufferGeometry>(null!);
+  const hoverStrength = useRef(0);
+  const [particleCount, setParticleCount] = useState(3000);
+  const [displayCount, setDisplayCount] = useState(500); // Start with fewer particles
+  const [isLoading, setIsLoading] = useState(true);
+  const [isScrolling, setIsScrolling] = useState(false);
+  const debounceTimer = useRef<NodeJS.Timeout>();
+  const progressiveTimer = useRef<NodeJS.Timeout>();
+  const scrollTimer = useRef<NodeJS.Timeout>();
+  const { quality } = usePerformanceMonitor(30, isScrolling);
+
+  // Initial progressive particle spawning
+  useEffect(() => {
+    const getInitialCount = () => {
+      try {
+        const isMobile = window.innerWidth < 768;
+        const isTablet = window.innerWidth < 1024;
+        const isLowEnd = safeBrowserAPI.getHardwareConcurrency() < 4;
+        const prefersReducedMotion = safeBrowserAPI.prefersReducedMotion();
+
+        if (prefersReducedMotion) return 300;
+        if (isMobile) return 500;
+        if (isTablet) return 700;
+        if (isLowEnd) return 600;
+        return 1000;
+      } catch (error) {
+        return 1200;
+      }
+    };
+
+    const targetCount = getInitialCount();
+    setParticleCount(targetCount);
+    
+    // Set target count immediately (no progressive loading needed now)
+    setDisplayCount(targetCount);
+    setIsLoading(false); // Loading complete
+
+    return () => {
+      if (progressiveTimer.current) {
+        clearTimeout(progressiveTimer.current);
+      }
+    };
+  }, []);
+
+  // Dynamic particle count based on performance (only after loading complete)
+  useEffect(() => {
+    // Skip performance adjustments during initial loading
+    if (isLoading) return;
+
+    // Clear existing timer
+    if (debounceTimer.current) {
+      clearTimeout(debounceTimer.current);
+    }
+
+    // Debounce performance-based adjustments
+    debounceTimer.current = setTimeout(() => {
+      const getAdaptiveParticleCount = () => {
+        try {
+          const isMobile = window.innerWidth < 768;
+          const isTablet = window.innerWidth < 1024;
+          const isLowEnd = safeBrowserAPI.getHardwareConcurrency() < 4;
+          const prefersReducedMotion = safeBrowserAPI.prefersReducedMotion();
+
+          if (prefersReducedMotion) return 300;
+          
+          // Base count on device type
+          let baseCount = 1800;
+          if (isMobile) baseCount = 800;
+          if (isTablet) baseCount = 1200;
+          if (isLowEnd) baseCount = 1200;
+
+          // Adjust based on performance quality
+          switch (quality) {
+            case 'low':
+              return Math.floor(baseCount * 0.6);
+            case 'medium':
+              return Math.floor(baseCount * 0.8);
+            case 'high':
+            default:
+              return baseCount;
+          }
+        } catch (error) {
+          return 1200; // Safe fallback
+        }
+      };
+
+      const targetCount = getAdaptiveParticleCount();
+      setParticleCount(targetCount);
+      setDisplayCount(targetCount); // Direct update after loading
+    }, 2000); // 2 second debounce
+
+    return () => {
+      if (debounceTimer.current) {
+        clearTimeout(debounceTimer.current);
+      }
+    };
+  }, [quality, isLoading]);
+
+  // Scroll detection for performance optimization
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolling(true);
+      
+      // Clear existing timer
+      if (scrollTimer.current) {
+        clearTimeout(scrollTimer.current);
+      }
+      
+      // Reset scrolling state after 150ms of no scroll
+      scrollTimer.current = setTimeout(() => {
+        setIsScrolling(false);
+      }, 150);
+    };
+
+    // Add scroll listener with passive option for better performance
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      if (scrollTimer.current) {
+        clearTimeout(scrollTimer.current);
+      }
+    };
+  }, []);
+
+  // Reduce particles during scroll for better performance
+  useEffect(() => {
+    const scrollOptimizedCount = isScrolling ? Math.floor(displayCount * 0.5) : displayCount;
+    
+    if (geometryRef.current) {
+      geometryRef.current.setDrawRange(0, scrollOptimizedCount);
+    }
+  }, [displayCount, isScrolling]);
+
+  // Proper Three.js cleanup on unmount to prevent memory leaks
+  useEffect(() => {
+    return () => {
+      // Dispose of geometry and material when component unmounts
+      if (geometryRef.current) {
+        geometryRef.current.dispose();
+      }
+      if (points.current && points.current.material) {
+        if (points.current.material instanceof THREE.Material) {
+          points.current.material.dispose();
+        }
+      }
+    };
+  }, []);
+  const { positions, initialPositions, randoms, layers } = useMemo(() => {
+    const count = particleCount;
+    const positions = new Float32Array(count * 3);
+    const initialPositions = new Float32Array(count * 3);
+    const randoms = new Float32Array(count);
+    const layers = new Float32Array(count);
+
+    for (let i = 0; i < count; i++) {
+      const i3 = i * 3;
+      
+      // Assign layer (0 = background, 1 = mid, 2 = foreground)
+      const layer = Math.floor(Math.random() * 3);
+      layers[i] = layer;
+      
+      // Z-depth based on layer
+      const zRange = [
+        [1.5, 3.0],   // Background (far)
+        [0, 1.5],     // Midground
+        [-1.5, 0]     // Foreground (near)
+      ][layer];
+      
+      const r = Math.random() * 3.5;
+      const theta = Math.random() * Math.PI * 2;
+      const phi = Math.acos(2 * Math.random() - 1);
+      
+      const x = r * Math.sin(phi) * Math.cos(theta);
+      const y = r * Math.sin(phi) * Math.sin(theta) * 0.6;
+      const z = zRange[0] + Math.random() * (zRange[1] - zRange[0]);
+
+      positions[i3] = x * 3.0;
+      positions[i3 + 1] = y * 1.8;
+      positions[i3 + 2] = z;
+
+      initialPositions[i3] = positions[i3];
+      initialPositions[i3 + 1] = positions[i3 + 1];
+      initialPositions[i3 + 2] = positions[i3 + 2];
+      
+      randoms[i] = Math.random();
+    }
+    return { positions, initialPositions, randoms, layers };
+  }, [particleCount]);
+
+  // Shader Material setup
+  const uniforms = useMemo(() => ({
+    uTime: { value: 0 },
+    uMouse: { value: new THREE.Vector2(0, 0) },
+    uHover: { value: 0 }
+  }), []);
+
+  useFrame((state) => {
+    // Skip Three.js updates entirely during scroll to reduce main thread contention
+    if (isScrolling) return;
+    
+    const { clock, pointer } = state;
+    
+    if (points.current) {
+      try {
+        // Check if material and uniforms exist
+        if (!points.current.material || !points.current.material.uniforms) {
+          return;
+        }
+
+        // Update Uniforms
+        points.current.material.uniforms.uTime.value = clock.getElapsedTime();
+        
+        // Direct mouse tracking (no smoothing)
+        points.current.material.uniforms.uMouse.value.copy(pointer);
+        
+        // Calculate hover strength (are we moving?)
+        const targetHover = (Math.abs(pointer.x) + Math.abs(pointer.y)) > 0 ? 1 : 0;
+        hoverStrength.current = targetHover; // Direct assignment, no lerp
+        points.current.material.uniforms.uHover.value = hoverStrength.current;
+
+        // Subtle overall rotation
+        points.current.rotation.y = clock.getElapsedTime() * 0.03;
+        points.current.rotation.x = pointer.y * 0.02;
+      } catch (error) {
+        // Silently handle errors in animation frame
+      }
+    }
+  });
+
+  return (
+    <points ref={points}>
+      <bufferGeometry ref={geometryRef}>
+        <bufferAttribute
+          attach="attributes-position"
+          count={positions.length / 3}
+          array={positions}
+          itemSize={3}
+        />
+        <bufferAttribute
+          attach="attributes-initialPosition"
+          count={initialPositions.length / 3}
+          array={initialPositions}
+          itemSize={3}
+        />
+        <bufferAttribute
+          attach="attributes-aRandom"
+          count={randoms.length}
+          array={randoms}
+          itemSize={1}
+        />
+        <bufferAttribute
+          attach="attributes-aLayer"
+          count={layers.length}
+          array={layers}
+          itemSize={1}
+        />
+      </bufferGeometry>
+      <shaderMaterial
+        vertexShader={vertexShader}
+        fragmentShader={fragmentShader}
+        transparent
+        depthWrite={false}
+        blending={THREE.AdditiveBlending}
+        uniforms={uniforms}
+      />
+    </points>
+  );
+}
+
+export function HeroBackground() {
+  const [canvasReady, setCanvasReady] = useState(false);
+  const [hasError, setHasError] = useState(false);
+  const [isVisible, setIsVisible] = useState(true);
+  const [fadeIn, setFadeIn] = useState(false);
+
+  useEffect(() => {
+    // Check WebGL support
+    try {
+      const canvas = document.createElement('canvas');
+      const gl = canvas.getContext('webgl2') || canvas.getContext('webgl');
+      
+      if (!gl) {
+        setHasError(true);
+        return;
+      }
+
+      // Wait a bit before initializing canvas to ensure DOM is ready
+      const timer = setTimeout(() => {
+        setCanvasReady(true);
+        // Trigger fade-in animation shortly after canvas is ready
+        setTimeout(() => setFadeIn(true), 50);
+      }, 200);
+
+      return () => clearTimeout(timer);
+    } catch (error) {
+      setHasError(true);
+    }
+  }, []);
+
+  // Intersection Observer for performance optimization
+  useEffect(() => {
+    if (!canvasReady) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach(entry => {
+          setIsVisible(entry.isIntersecting);
+        });
+      },
+      { threshold: 0.1 }
+    );
+
+    // Try to find hero element first, fallback to document body
+    const targetElement = document.querySelector('#hero') || document.body;
+    observer.observe(targetElement);
+
+    return () => {
+      observer.unobserve(targetElement);
+    };
+  }, [canvasReady]);
+
+  // Fallback for no WebGL support
+  if (hasError || !canvasReady) {
+    return (
+      <div className="fixed inset-0 z-0 pointer-events-none bg-[#030305]">
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/40 to-[#030305]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(15,20,40,0.3),rgba(0,0,0,1))]" />
+      </div>
+    );
+  }
+
+  return (
+    <div 
+      className="fixed inset-0 z-0 pointer-events-none bg-[#030305]" 
+      role="presentation" 
+      aria-hidden="true"
+    >
+        {/* Atmosphere Layers - Darker again, but keeping stars visible */}
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/40 to-[#030305] z-10" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(15,20,40,0.3),rgba(0,0,0,1))] z-0" />
+        
+        <div className={`absolute inset-0 w-full h-full transition-opacity duration-500 ${fadeIn ? 'opacity-100' : 'opacity-0'}`}>
+          <Canvas
+              camera={{ position: [0, 0, 4], fov: 60 }}
+              gl={{ 
+                antialias: false, 
+                alpha: true, 
+                powerPreference: "high-performance",
+                stencil: false,
+                depth: false
+              }}
+              dpr={[1, 2]} 
+              eventSource={document.body}
+              eventPrefix="client"
+              onCreated={() => {}}
+              frameloop={isVisible ? 'always' : 'never'}
+              aria-label="Animated particle background"
+          >
+            <NeuralParticles />
+            <Suspense fallback={null}>
+              <LightingEffects />
+            </Suspense>
+          </Canvas>
+        </div>
+    </div>
+  );
+}

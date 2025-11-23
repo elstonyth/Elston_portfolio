@@ -1,0 +1,208 @@
+import React, { lazy, Suspense, useState, useEffect } from 'react';
+import { usePerformanceMonitor } from '../hooks/usePerformanceMonitor';
+
+// Critical components - load immediately
+import { GradientMesh } from './GradientMesh';
+
+// Stage 1 components - load after performance assessment
+const CursorGlow = lazy(() => import('./CursorGlow').then(m => ({ default: m.CursorGlow })));
+const ScrollColorTransition = lazy(() => import('./ScrollColorTransition').then(m => ({ default: m.ScrollColorTransition })));
+const LightLeaks = lazy(() => import('./LightLeaks').then(m => ({ default: m.LightLeaks })));
+
+// Stage 2 components - load after 1 second
+const ParallaxLayers = lazy(() => import('./ParallaxLayers').then(m => ({ default: m.ParallaxLayers })));
+const SectionTransitions = lazy(() => import('./SectionTransitions').then(m => ({ default: m.SectionTransitions })));
+const ClickRipple = lazy(() => import('./ClickRipple').then(m => ({ default: m.ClickRipple })));
+
+// Stage 3 components - load after 2 seconds
+const ScrollVelocityEffect = lazy(() => import('./ScrollVelocityEffect').then(m => ({ default: m.ScrollVelocityEffect })));
+const MouseTrail = lazy(() => import('./MouseTrail').then(m => ({ default: m.MouseTrail })));
+const MagneticCursor = lazy(() => import('./MagneticCursor').then(m => ({ default: m.MagneticCursor })));
+const SectionAwareParticles = lazy(() => import('./SectionAwareParticles').then(m => ({ default: m.SectionAwareParticles })));
+
+// Stage 4 components - load after 3 seconds (polish effects)
+const ChromaticAberration = lazy(() => import('./ChromaticAberration').then(m => ({ default: m.ChromaticAberration })));
+const AnimatedGrain = lazy(() => import('./AnimatedGrain').then(m => ({ default: m.AnimatedGrain })));
+const DynamicVignette = lazy(() => import('./DynamicVignette').then(m => ({ default: m.DynamicVignette })));
+const ColorGrading = lazy(() => import('./ColorGrading').then(m => ({ default: m.ColorGrading })));
+
+const HeroBackground = lazy(() => import('./HeroBackground').then(m => ({ default: m.HeroBackground })));
+
+export const BackgroundOrchestrator: React.FC = () => {
+  const { quality, isLowPerformance } = usePerformanceMonitor(30);
+  
+  // Initialization state
+  const [isInitialized, setIsInitialized] = useState(false);
+  
+  // Staged loading states
+  const [performanceReady, setPerformanceReady] = useState(false);
+  const [stage1Ready, setStage1Ready] = useState(false);
+  const [stage2Ready, setStage2Ready] = useState(false);
+  const [stage3Ready, setStage3Ready] = useState(false);
+  const [stage4Ready, setStage4Ready] = useState(false);
+
+  // Initial setup effect
+  useEffect(() => {
+    // Wait for DOM to be ready
+    const initTimer = setTimeout(() => {
+      setIsInitialized(true);
+    }, 100);
+
+    return () => clearTimeout(initTimer);
+  }, []);
+
+  // Performance-based rendering flags
+  const shouldRenderParticles = quality !== 'low' && performanceReady;
+  const shouldRenderGradientMesh = true; // Always render - lightweight
+  const shouldRenderCursorGlow = !isLowPerformance && stage1Ready;
+  const shouldRenderScrollEffects = quality !== 'low' && stage2Ready;
+  const shouldRenderInteractiveEffects = quality !== 'low' && stage3Ready;
+  const shouldRenderMagneticCursor = quality === 'high' && stage3Ready;
+  const shouldRenderPolishEffects = quality !== 'low' && stage4Ready;
+  const shouldRenderGrain = quality === 'high' && stage4Ready;
+
+  // Staged loading effect - Much faster to reduce sequential loading feel
+  useEffect(() => {
+    // Wait for performance monitor to stabilize
+    const performanceTimer = setTimeout(() => {
+      setPerformanceReady(true);
+    }, 100);
+
+    // Stage 1: Essential effects - Load almost immediately
+    const stage1Timer = setTimeout(() => {
+      if (quality !== 'low') {
+        setStage1Ready(true);
+      }
+    }, 150);
+
+    // Stage 2: Scroll effects - Load very quickly
+    const stage2Timer = setTimeout(() => {
+      if (quality !== 'low') {
+        setStage2Ready(true);
+      }
+    }, 200);
+
+    // Stage 3: Interactive effects - Load quickly
+    const stage3Timer = setTimeout(() => {
+      if (quality !== 'low') {
+        setStage3Ready(true);
+      }
+    }, 300);
+
+    // Stage 4: Polish effects - Load after a short delay
+    const stage4Timer = setTimeout(() => {
+      if (quality === 'high') {
+        setStage4Ready(true);
+      } else if (quality === 'medium') {
+        // Load some polish effects for medium quality
+        setTimeout(() => setStage4Ready(true), 200);
+      }
+    }, 500);
+
+    return () => {
+      clearTimeout(performanceTimer);
+      clearTimeout(stage1Timer);
+      clearTimeout(stage2Timer);
+      clearTimeout(stage3Timer);
+      clearTimeout(stage4Timer);
+    };
+  }, [quality, isLowPerformance]);
+
+  // Don't render anything until initialized
+  if (!isInitialized) {
+    return (
+      <div className="fixed inset-0 z-0 pointer-events-none bg-[#030305]">
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/40 to-[#030305]" />
+      </div>
+    );
+  }
+
+  return (
+    <>
+      {/* Critical: Gradient Mesh - Always render first */}
+      {shouldRenderGradientMesh && <GradientMesh />}
+      
+      {/* Stage 0: 3D Particle System - Load after performance assessment */}
+      {shouldRenderParticles && (
+        <Suspense fallback={
+          <div className="fixed inset-0 bg-background flex items-center justify-center z-[1]">
+            <div className="text-white/60 text-sm">Loading 3D background...</div>
+          </div>
+        }>
+          <HeroBackground />
+        </Suspense>
+      )}
+      
+      {/* Stage 1: Essential Effects + Base Lighting */}
+      {shouldRenderCursorGlow && (
+        <Suspense fallback={null}>
+          <CursorGlow />
+        </Suspense>
+      )}
+      
+      {/* Stage 1: Base Lighting - Load early for lighting foundation */}
+      {stage1Ready && (
+        <Suspense fallback={null}>
+          <LightLeaks />
+        </Suspense>
+      )}
+      
+      {/* Stage 2: Scroll Effects */}
+      {shouldRenderScrollEffects && (
+        <Suspense fallback={null}>
+          <ScrollColorTransition />
+          <ParallaxLayers />
+          <SectionTransitions />
+        </Suspense>
+      )}
+      
+      {/* Stage 3: Interactive Effects */}
+      {shouldRenderInteractiveEffects && (
+        <Suspense fallback={null}>
+          <SectionAwareParticles />
+          <ScrollVelocityEffect />
+          <ClickRipple />
+          {/* <MouseTrail /> - Disabled per user request */}
+        </Suspense>
+      )}
+      
+      {/* Stage 3: Magnetic Cursor (High performance only) */}
+      {shouldRenderMagneticCursor && (
+        <Suspense fallback={null}>
+          <MagneticCursor />
+        </Suspense>
+      )}
+      
+      {/* Stage 4: Polish Effects */}
+      {shouldRenderPolishEffects && (
+        <Suspense fallback={null}>
+          <ChromaticAberration />
+          <DynamicVignette />
+          <ColorGrading />
+        </Suspense>
+      )}
+      
+      {/* Stage 4: Grain Effect (Highest quality only) */}
+      {shouldRenderGrain && (
+        <Suspense fallback={null}>
+          <AnimatedGrain />
+        </Suspense>
+      )}
+
+      {/* Fallback for low-end devices */}
+      {!shouldRenderParticles && performanceReady && (
+        <div className="fixed inset-0 z-0 pointer-events-none bg-[#030305]">
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/40 to-[#030305]" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(15,20,40,0.3),rgba(0,0,0,1))]" />
+        </div>
+      )}
+      
+      {/* Loading indicator for performance assessment */}
+      {!performanceReady && (
+        <div className="fixed bottom-4 right-4 z-50 text-white/40 text-xs">
+          Optimizing performance...
+        </div>
+      )}
+    </>
+  );
+};
