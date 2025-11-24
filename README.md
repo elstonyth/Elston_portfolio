@@ -1,20 +1,52 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
-</div>
+# Elston Yeo — Portfolio
 
-# Run and deploy your AI Studio app
+Interactive portfolio for a full-stack AI developer, showcasing analytics, automation, and UI engineering work. Built with Vite + React + Tailwind, with motion powered by Framer Motion and custom GLSL backgrounds.
 
-This contains everything you need to run your app locally.
+## Quickstart
 
-View your app in AI Studio: https://ai.studio/apps/drive/1gJQnPRu2UywqHjuazoxIcYDeyaUkCgKA
+**Prerequisite:** Node 18+
 
-## Run Locally
+```bash
+npm install
+npm run dev       # start at http://localhost:5173
+```
 
-**Prerequisites:**  Node.js
+To build the production bundle:
 
+```bash
+npm run build
+```
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+If Rollup reports a missing native binary, clear dependencies then reinstall:
+
+```bash
+rm -rf node_modules package-lock.json
+npm install
+```
+
+## Stack
+- Vite + React 19 + TypeScript
+- Tailwind CSS 4
+- Framer Motion for animations
+- Lenis for smooth scrolling (disabled for reduced-motion users)
+- Three.js helpers for background effects
+
+## Key Features
+- Hero with immediate proof points and clear CTAs (view work, book a call, download resume)
+- Scroll-spy navigation with accessible focus states
+- Lazy-loaded sections (preview, features, work, testimonials) for faster first paint
+- Toggle-friendly background: respects reduced-motion and mobile constraints
+
+## Project Structure
+- `src/app` — App shell, entry, and global styles
+- `src/components` — UI primitives, sections, layout
+- `src/features` — Preview/interactive showcases
+- `public` — Static assets (resume PDF, card images)
+
+## Common Scripts
+- `npm run dev` — Start dev server
+- `npm run build` — Production build
+- `npm run preview` — Preview built assets
+
+## Contact / Resume
+Resume PDF lives at `public/ElstonYeo_FullStack_AI_Resume_2025.pdf`. Contact links in the hero and navbar route to `#contact` or mailto for quick outreach.***

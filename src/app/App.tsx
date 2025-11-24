@@ -8,6 +8,7 @@ import { ChevronRight, ArrowRight, Sparkles, Briefcase, Users, Calendar, Send, Q
 import { GradientMesh } from '@/components/GradientMesh';
 import { ModernParticleBackground } from '@/components/ModernParticleBackground';
 import { PrestigeFlipCard } from '@/components/ui/PrestigeFlipCard';
+import { ResumeDownload } from '@/components/layout/ResumeDownload';
 
 // Lazy load heavy components for better performance
 const PreviewSection = lazy(() => import('@/features/preview/PreviewSection').then(m => ({ default: m.PreviewSection })));
@@ -216,7 +217,7 @@ function App() {
               
             {/* Status Badge - AI Style */}
             <motion.a 
-              href="#" 
+              href="#contact" 
               className="group inline-flex items-center gap-3 px-4 py-2 rounded-full bg-white/5 border border-white/10 text-sm text-white/80 hover:border-white/20 hover:bg-white/10 transition-all mb-6 backdrop-blur-md"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -226,7 +227,7 @@ function App() {
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
               </span>
-              <span className="font-medium tracking-wide text-xs uppercase">Open to full-stack AI roles & projects</span>
+              <span className="font-medium tracking-wide text-xs uppercase">Open for analytics + AI mandates</span>
               <ChevronRight size={12} className="text-white/50 group-hover:text-white group-hover:translate-x-0.5 transition-all" />
             </motion.a>
 
@@ -240,9 +241,9 @@ function App() {
               {[{
                 icon: <Sparkles size={14} />, label: 'Role', value: 'Full-Stack AI Developer'
               }, {
-                icon: <Briefcase size={14} />, label: 'Stack', value: 'Python · SQL · GCP'
+                icon: <Briefcase size={14} />, label: 'Reliability', value: '30% fewer data issues'
               }, {
-                icon: <Users size={14} />, label: 'Impact', value: 'Automation & analytics'
+                icon: <Users size={14} />, label: 'Time saved', value: '10–15 hrs/month'
               }].map(({ icon, label, value }) => (
                 <div key={label} className="flex items-center gap-3 px-4 py-2 rounded-full bg-white/5 border border-white/10 backdrop-blur-sm">
                   <span className="text-white/80">{icon}</span>
@@ -273,7 +274,7 @@ function App() {
                   backgroundClip: 'text',
                   color: 'white !important'
                 }}>
-                Full-Stack AI Developer
+                Reliable analytics, automation, and AI delivery
               </span>
             </motion.h1>
 
@@ -284,12 +285,12 @@ function App() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
             >
-              I am a full-stack AI developer working across Python, JavaScript/TypeScript, and cloud platforms to build AI-powered applications, analytics, and automations that improve reliability and reduce manual work.
+              I help teams ship dashboards, automations, and AI copilots that reduce manual work without sacrificing reliability. Recent wins: pharma validation errors down ~30% and 10–15 hours of reporting saved every month.
             </motion.p>
 
             {/* CTA Buttons */}
             <motion.div 
-              className="flex flex-col sm:flex-row items-start sm:items-center gap-4 w-full sm:w-auto"
+              className="flex flex-col sm:flex-row sm:flex-wrap items-start sm:items-center gap-3 w-full sm:w-auto"
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
@@ -303,14 +304,16 @@ function App() {
                   </Button>
                 </div>
               </a>
-              <a href="#contact" className="w-full sm:w-auto">
+              <a href="mailto:hello@elston.dev?subject=Project%20or%20role%20inquiry&body=Share%20your%20goals%2C%20timeline%2C%20and%20links.%20I%20typically%20reply%20within%20one%20business%20day." className="w-full sm:w-auto">
                 <Button variant="outline" size="lg" className="w-full sm:w-auto backdrop-blur-sm bg-black/20 group/cta">
                   <span className="flex items-center">
-                    Get in Touch
-                    <Send size={16} className="ml-2 opacity-60 transition-transform group-hover/cta:translate-x-1" />
+                    Book a call
+                    <Calendar size={16} className="ml-2 opacity-60 transition-transform group-hover/cta:translate-x-1" />
                   </span>
                 </Button>
               </a>
+              <ResumeDownload variant="secondary" className="w-full sm:w-auto px-6" />
+              <p className="text-xs text-white/60 pl-1 sm:pl-0 sm:basis-full">Replies within one business day.</p>
             </motion.div>
             </div>
             {/* Hero Visual - Desktop: fixed on right, Mobile: centered below hero */}
