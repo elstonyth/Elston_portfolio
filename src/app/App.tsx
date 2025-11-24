@@ -1,0 +1,506 @@
+import React, { useState, useEffect, useCallback, useRef, lazy, Suspense } from 'react';
+import Lenis from 'lenis';
+import { AnimatePresence, motion } from 'framer-motion';
+import { Navbar } from '@/components/layout/Navbar';
+import { Button } from '@/components/ui/Button';
+import { Preloader } from '@/components/feedback/Preloader';
+import { ChevronRight, ArrowRight, Sparkles, Briefcase, Users, Calendar, Send, Quote } from 'lucide-react';
+import { GradientMesh } from '@/components/GradientMesh';
+import { ModernParticleBackground } from '@/components/ModernParticleBackground';
+import { PrestigeFlipCard } from '@/components/ui/PrestigeFlipCard';
+
+// Lazy load heavy components for better performance
+const PreviewSection = lazy(() => import('@/features/preview/PreviewSection').then(m => ({ default: m.PreviewSection })));
+const Features = lazy(() => import('@/components/Features').then(m => ({ default: m.Features })));
+const SelectedWork = lazy(() => import('@/components/SelectedWork').then(m => ({ default: m.SelectedWork })));
+const TrustedBy = lazy(() => import('@/components/TrustedBy').then(m => ({ default: m.TrustedBy })));
+const Footer = lazy(() => import('@/components/layout/Footer').then(m => ({ default: m.Footer })));
+
+function App() {
+  const [isLoading, setIsLoading] = useState(true);
+  const [showLaunchToast, setShowLaunchToast] = useState(false);
+  const [enableDynamicBackground, setEnableDynamicBackground] = useState(true);
+  const toastTimeoutRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (toastTimeoutRef.current) {
+        window.clearTimeout(toastTimeoutRef.current);
+      }
+    };
+  }, []);
+
+  const handlePreloaderComplete = useCallback(() => {
+    if (toastTimeoutRef.current) {
+      window.clearTimeout(toastTimeoutRef.current);
+    }
+
+    setIsLoading(false);
+    setShowLaunchToast(true);
+
+    toastTimeoutRef.current = window.setTimeout(() => {
+      setShowLaunchToast(false);
+    }, 4000);
+  }, []);
+
+  useEffect(() => {
+    if (typeof window === 'undefined' || !window.matchMedia) {
+      return;
+    }
+
+    const motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const mobileQuery = window.matchMedia('(max-width: 768px)');
+
+    const evaluatePreferences = () => {
+      const prefersReducedMotion = motionQuery.matches;
+      const isMobileViewport = mobileQuery.matches;
+      setEnableDynamicBackground(!(prefersReducedMotion || isMobileViewport));
+    };
+
+    const handleChange = () => {
+      evaluatePreferences();
+    };
+
+    const addListener = (query: MediaQueryList) => {
+      if (query.addEventListener) {
+        query.addEventListener('change', handleChange);
+      } else if (query.addListener) {
+        query.addListener(handleChange);
+      }
+    };
+
+    const removeListener = (query: MediaQueryList) => {
+      if (query.removeEventListener) {
+        query.removeEventListener('change', handleChange);
+      } else if (query.removeListener) {
+        query.removeListener(handleChange);
+      }
+    };
+
+    evaluatePreferences();
+    addListener(motionQuery);
+    addListener(mobileQuery);
+
+    return () => {
+      removeListener(motionQuery);
+      removeListener(mobileQuery);
+    };
+  }, []);
+
+  useEffect(() => {
+    const prefersReducedMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+    const isMobile = window.innerWidth < 768;
+
+    if (prefersReducedMotion || isMobile) {
+      return;
+    }
+
+    const lenis = new Lenis({
+      duration: 1.2,
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      orientation: 'vertical',
+      gestureOrientation: 'vertical',
+      smoothWheel: true,
+    });
+
+    function raf(time: number) {
+      lenis.raf(time);
+      requestAnimationFrame(raf);
+    }
+
+    requestAnimationFrame(raf);
+
+    // Handle smooth scroll to anchor links
+    const handleAnchorClick = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      const anchor = target.closest('a[href^="#"]');
+      
+      if (anchor) {
+        const href = anchor.getAttribute('href');
+        if (href && href !== '#') {
+          e.preventDefault();
+          const element = document.querySelector(href);
+          if (element) {
+            lenis.scrollTo(element as HTMLElement, {
+              offset: -80, // Account for fixed navbar
+              duration: 1.5,
+            });
+          }
+        }
+      }
+    };
+
+    document.addEventListener('click', handleAnchorClick);
+
+    return () => {
+      document.removeEventListener('click', handleAnchorClick);
+      lenis.destroy();
+    };
+  }, []);
+
+  return (
+    <>
+      <AnimatePresence mode="wait">
+        {isLoading && <Preloader onComplete={handlePreloaderComplete} />}
+      </AnimatePresence>
+
+      {!isLoading && (
+        <motion.div 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.6, ease: "easeOut" }}
+          className="min-h-screen bg-background text-white selection:bg-cyan-500/30 selection:text-cyan-100 overflow-x-hidden font-sans before:fixed before:inset-0 before:z-0 before:bg-noise before:opacity-20 before:pointer-events-none"
+        >
+          {/* Void Galaxy Background System */}
+          <div className="fixed inset-0 z-0 bg-[#030305] pointer-events-none">
+            {/* Base void tone */}
+            <div className="absolute inset-0 bg-[#030305]" />
+
+            {/* Static nebula color wash (cheap, works even when animations are disabled) */}
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(56,189,248,0.22),transparent_60%),radial-gradient(circle_at_bottom,_rgba(139,92,246,0.2),transparent_65%)]" />
+
+            {enableDynamicBackground ? (
+              <>
+                {/* Deep nebula layers */}
+                <GradientMesh />
+
+                {/* Starfield */}
+                <ModernParticleBackground />
+              </>
+            ) : (
+              <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_rgba(56,189,248,0.12),transparent_55%)]" />
+            )}
+
+            {/* Vignette + depth */}
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,rgba(0,0,0,0.55)_100%)]" />
+          </div>
+
+          {/* Transition veil to bridge preloader + main scene */}
+          
+          {/* Launch toast */}
+          <AnimatePresence>
+            {showLaunchToast && (
+              <motion.div
+                className="fixed top-24 right-6 z-40 flex items-center gap-3 px-4 py-3 rounded-2xl border border-white/10 bg-black/70 backdrop-blur-2xl shadow-[0_0_30px_rgba(15,23,42,0.45)]"
+                initial={{ opacity: 0, y: -10, scale: 0.95 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: -10, scale: 0.95 }}
+                transition={{ duration: 0.4, ease: "easeOut" }}
+              >
+                <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-white/5 border border-white/10 shadow-inner">
+                  <Sparkles size={16} className="text-cyan-200" />
+                </div>
+                <div>
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.35em] text-white/60">Systems Online</p>
+                  <p className="text-sm text-white">Void galaxy warmed up</p>
+                </div>
+                <div className="h-2 w-2 rounded-full bg-emerald-400 animate-ping" />
+              </motion.div>
+            )}
+          </AnimatePresence>
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, ease: "easeOut" }}
+          >
+            <Navbar />
+          </motion.div>
+
+          {/* Hero Section */}
+      <main id="home" className="relative pt-32 pb-16 px-6 md:pt-48 md:pb-24">
+        <div className="max-w-7xl mx-auto">
+          
+          {/* Hero Layout */}
+          <div className="flex flex-col lg:flex-row gap-12 items-start z-10 mb-24 relative">
+            <div className="flex-1 max-w-3xl xl:max-w-4xl">
+              
+            {/* Status Badge - AI Style */}
+            <motion.a 
+              href="#" 
+              className="group inline-flex items-center gap-3 px-4 py-2 rounded-full bg-white/5 border border-white/10 text-sm text-white/80 hover:border-white/20 hover:bg-white/10 transition-all mb-6 backdrop-blur-md"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, ease: "easeOut" }}
+            >
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+              </span>
+              <span className="font-medium tracking-wide text-xs uppercase">Open to full-stack AI roles & projects</span>
+              <ChevronRight size={12} className="text-white/50 group-hover:text-white group-hover:translate-x-0.5 transition-all" />
+            </motion.a>
+
+            {/* Credential Strip */}
+            <motion.div 
+              className="flex flex-wrap gap-3 mb-10 text-sm text-white/70"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, ease: "easeOut" }}
+            >
+              {[{
+                icon: <Sparkles size={14} />, label: 'Role', value: 'Full-Stack AI Developer'
+              }, {
+                icon: <Briefcase size={14} />, label: 'Stack', value: 'Python · SQL · GCP'
+              }, {
+                icon: <Users size={14} />, label: 'Impact', value: 'Automation & analytics'
+              }].map(({ icon, label, value }) => (
+                <div key={label} className="flex items-center gap-3 px-4 py-2 rounded-full bg-white/5 border border-white/10 backdrop-blur-sm">
+                  <span className="text-white/80">{icon}</span>
+                  <div>
+                    <p className="text-[11px] uppercase tracking-ultra text-white/50">{label}</p>
+                    <p className="font-medium">{value}</p>
+                  </div>
+                </div>
+              ))}
+            </motion.div>
+
+            {/* Main Title */}
+            <motion.h1 
+              className="text-4xl sm:text-5xl md:text-8xl font-bold tracking-tight mb-8 leading-[0.9] drop-shadow-2xl"
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+            >
+              <span 
+                className="relative inline-block"
+                data-darkreader-inline-color=""
+                data-darkreader-inline-bgimage=""
+                data-darkreader-inline-bgcolor=""
+                style={{ 
+                  background: 'linear-gradient(to right, #ffffff, rgba(255,255,255,0.9), rgba(255,255,255,0.4))',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                  backgroundClip: 'text',
+                  color: 'white !important'
+                }}>
+                Full-Stack AI Developer
+              </span>
+            </motion.h1>
+
+            {/* Subtitle */}
+            <motion.p 
+              className="text-base md:text-2xl text-white/70 max-w-2xl mb-8 md:mb-10 leading-relaxed font-light"
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+            >
+              I am a full-stack AI developer working across Python, JavaScript/TypeScript, and cloud platforms to build AI-powered applications, analytics, and automations that improve reliability and reduce manual work.
+            </motion.p>
+
+            {/* CTA Buttons */}
+            <motion.div 
+              className="flex flex-col sm:flex-row items-start sm:items-center gap-4 w-full sm:w-auto"
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+            >
+              <a href="#work" className="w-full sm:w-auto">
+                <div className="relative w-full sm:w-auto group/cta">
+                  <div className="absolute inset-0 rounded-full bg-white/40 blur-2xl opacity-0 group-hover/cta:opacity-100 transition duration-500"></div>
+                  <Button variant="primary" size="lg" className="w-full sm:w-auto">
+                    View Work
+                    <ArrowRight size={16} className="ml-2 opacity-70 transition-transform group-hover/cta:translate-x-1" />
+                  </Button>
+                </div>
+              </a>
+              <a href="#contact" className="w-full sm:w-auto">
+                <Button variant="outline" size="lg" className="w-full sm:w-auto backdrop-blur-sm bg-black/20 group/cta">
+                  <span className="flex items-center">
+                    Get in Touch
+                    <Send size={16} className="ml-2 opacity-60 transition-transform group-hover/cta:translate-x-1" />
+                  </span>
+                </Button>
+              </a>
+            </motion.div>
+            </div>
+            {/* Hero Visual - Desktop: fixed on right, Mobile: centered below hero */}
+            {/* Desktop (lg+): original right-side positioning */}
+            <div className="hidden lg:block absolute right-0 top-[250px]">
+              <div className="relative">
+                <div className="absolute -inset-6 bg-gradient-to-r from-cyan-500/20 to-purple-500/10 blur-3xl opacity-40" />
+                <PrestigeFlipCard frontImageUrl="/card-front.png" backImageUrl="/card-back.jpg" />
+                <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 text-center text-xs uppercase tracking-[0.4em] text-white/40">
+                  Elite Access
+                </div>
+              </div>
+            </div>
+
+            {/* Mobile / tablet: centered card below hero content */}
+            <div className="mt-10 w-full flex justify-center lg:hidden">
+              <div className="relative">
+                <div className="absolute -inset-6 bg-gradient-to-r from-cyan-500/20 to-purple-500/10 blur-3xl opacity-40" />
+                <PrestigeFlipCard frontImageUrl="/card-front.png" backImageUrl="/card-back.jpg" />
+                <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 text-center text-xs uppercase tracking-[0.4em] text-white/40">
+                  Elite Access
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+
+      <Suspense fallback={
+        <div className="py-12 px-6">
+          <div className="max-w-7xl mx-auto text-white/50 text-xs animate-pulse">
+            Loading preview section...
+          </div>
+        </div>
+      }>
+        <motion.div
+          id="about"
+          data-section="preview"
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-100px" }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
+        >
+          <PreviewSection />
+        </motion.div>
+      </Suspense>
+
+      <Suspense fallback={
+        <div className="h-96 flex items-center justify-center">
+          <div className="text-white/50 text-sm animate-pulse">Loading...</div>
+        </div>
+      }>
+        <motion.div
+          data-section="features"
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-100px" }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
+        >
+          <Features />
+        </motion.div>
+      </Suspense>
+      
+      <Suspense fallback={
+        <div className="h-96 flex items-center justify-center">
+          <div className="text-white/50 text-sm animate-pulse">Loading...</div>
+        </div>
+      }>
+        <motion.div
+          id="work"
+          data-section="work"
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-100px" }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
+        >
+          <SelectedWork />
+        </motion.div>
+      </Suspense>
+      
+      <Suspense fallback={
+        <div className="h-64 flex items-center justify-center">
+          <div className="text-white/50 text-sm animate-pulse">Loading...</div>
+        </div>
+      }>
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-100px" }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
+        >
+          <TrustedBy />
+        </motion.div>
+      </Suspense>
+      
+      {/* Bottom CTA */}
+      <motion.section 
+        id="contact"
+        data-section="cta"
+        className="py-24 md:py-32 px-6 text-center border-t border-white/5 relative overflow-hidden"
+        initial={{ opacity: 0 }}
+        whileInView={{ opacity: 1 }}
+        viewport={{ once: true, margin: "-100px" }}
+        transition={{ duration: 0.8 }}
+      >
+        {/* Spotlight Effect from Top */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black via-transparent to-transparent"></div>
+        <motion.div 
+          className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[600px] pointer-events-none"
+          style={{
+            background: 'radial-gradient(ellipse at center top, rgba(34, 211, 238, 0.15), transparent 70%)',
+          }}
+          animate={{
+            opacity: [0.5, 0.8, 0.5],
+          }}
+          transition={{
+            duration: 6,
+            repeat: Infinity,
+            ease: "easeInOut"
+          }}
+        />
+        <motion.div 
+          className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-purple-500/10 rounded-full blur-[120px] pointer-events-none"
+          animate={{
+            scale: [1, 1.15, 1],
+          }}
+          transition={{
+            duration: 8,
+            repeat: Infinity,
+            ease: "easeInOut",
+            delay: 0.5
+          }}
+        />
+        <div className="relative max-w-5xl mx-auto z-10 space-y-10">
+          <div>
+            <p className="text-xs uppercase tracking-mega text-white/50 mb-4">Collaboration</p>
+            <h2 className="text-3xl sm:text-4xl md:text-6xl font-bold tracking-tight mb-6 drop-shadow-2xl">
+              Have a project in mind?
+            </h2>
+            <p className="text-text-dim text-base md:text-xl max-w-3xl mx-auto">
+              I collaborate with teams to design analytics, dashboards, and automation that make work more reliable and less manual. Share a brief or reach out if you're exploring how data can better support your decisions.
+            </p>
+          </div>
+
+          <div className="flex flex-col sm:flex-row justify-center gap-4">
+             <Button variant="primary" size="lg" className="min-w-[200px]">
+               Share Project Brief
+               <Send size={16} className="ml-2 opacity-70" />
+             </Button>
+             <Button variant="secondary" size="lg" className="min-w-[200px]">
+               Book Discovery Call
+               <Calendar size={16} className="ml-2" />
+             </Button>
+          </div>
+
+          <div className="space-y-6">
+            <blockquote className="text-white/80 text-lg italic leading-relaxed">
+              <Quote className="mx-auto mb-4 opacity-50" />
+              “Elston transformed our prototype into a refined product experience in under four weeks. His systems thinking and polish level rival top-tier studios.”
+              <div className="mt-4 text-sm uppercase tracking-ultra text-white/50">Avery Tan · Product Lead, Nova Labs</div>
+            </blockquote>
+            <div className="flex flex-wrap justify-center gap-6 text-xs uppercase tracking-mega text-white/50">
+              {['Nova Labs', 'OrbitX', 'Pixelcraft', 'Studio Apex'].map((logo) => (
+                <span key={logo} className="text-white/50">
+                  {logo}
+                </span>
+              ))}
+            </div>
+          </div>
+        </div>
+      </motion.section>
+
+      <Suspense fallback={
+        <div className="h-96 flex items-center justify-center">
+          <div className="text-white/50 text-sm animate-pulse">Loading...</div>
+        </div>
+      }>
+        <motion.div
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.8 }}
+        >
+          <Footer />
+        </motion.div>
+      </Suspense>
+        </motion.div>
+      )}
+    </>
+  );
+}
+
+export default App;
