@@ -1,5 +1,5 @@
 import React from 'react';
-import { Smartphone, Server, Palette, Code, Globe, Database, Cpu, Zap } from 'lucide-react';
+import { Server, Palette, Code, Cpu, Zap } from 'lucide-react';
 import { SpotlightCard } from '@/components/ui/SpotlightCard';
 import { motion, type Variants } from 'framer-motion';
 
@@ -51,14 +51,14 @@ const itemVariants: Variants = {
     y: 0,
     transition: {
       duration: 0.5,
-      ease: [0.22, 1, 0.36, 1] as any
+      ease: [0.22, 1, 0.36, 1]
     }
   }
 };
 
 export const Features: React.FC = () => {
   return (
-    <section className="py-24 md:py-32 px-6 border-t border-white/5 relative overflow-hidden">
+    <section className="py-24 md:py-32 px-6 relative overflow-hidden">
       {/* Animated Background Layers */}
       <div className="absolute inset-0 -z-10 overflow-hidden">
         {/* Grid Pattern */}
@@ -88,7 +88,7 @@ export const Features: React.FC = () => {
           }}
         />
         <motion.div 
-          className="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-purple-500/8 rounded-full blur-[100px] hidden md:block"
+          className="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-purple-500/10 rounded-full blur-[100px] hidden md:block"
           animate={{
             x: [0, -40, 0],
             y: [0, 40, 0],
@@ -118,9 +118,6 @@ export const Features: React.FC = () => {
            <h2 className="text-4xl md:text-6xl font-bold tracking-tight mb-6 text-white">
              Data & analytics <br/>
              <span 
-               data-darkreader-inline-color=""
-               data-darkreader-inline-bgimage=""
-               data-darkreader-inline-bgcolor=""
                style={{
                  background: 'linear-gradient(to right, #c084fc, #22d3ee)',
                  WebkitBackgroundClip: 'text',

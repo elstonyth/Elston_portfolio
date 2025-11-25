@@ -98,13 +98,22 @@ const ProjectCard: React.FC<{ project: Project; index: number }> = ({ project, i
             </div>
 
             <div className="flex items-center gap-4 mt-6">
-              <Button variant="primary" className="group">
-                View Project 
-                <ArrowUpRight size={16} className="ml-2 group-hover:rotate-45 transition-transform" />
-              </Button>
-              <a href={project.links.github} className="p-3 rounded-full bg-white/5 border border-white/10 text-white hover:bg-white hover:text-black transition-all">
-                <Github size={20} />
-              </a>
+              {project.links.demo !== '#' ? (
+                <Button as="a" href={project.links.demo} variant="primary" className="group">
+                  View Project 
+                  <ArrowUpRight size={16} className="ml-2 group-hover:rotate-45 transition-transform" />
+                </Button>
+              ) : (
+                <Button variant="primary" className="group opacity-60 cursor-not-allowed" disabled>
+                  Coming Soon
+                  <ArrowUpRight size={16} className="ml-2" />
+                </Button>
+              )}
+              {project.links.github !== '#' && (
+                <a href={project.links.github} target="_blank" rel="noopener noreferrer" className="p-3 rounded-full bg-white/5 border border-white/10 text-white hover:bg-white hover:text-black transition-all">
+                  <Github size={20} />
+                </a>
+              )}
             </div>
             </div>
           </div>
@@ -120,6 +129,7 @@ const ProjectCard: React.FC<{ project: Project; index: number }> = ({ project, i
                   alt={project.title} 
                   className="w-full h-full object-cover"
                   loading="lazy"
+                  decoding="async"
                />
              </div>
              
@@ -152,19 +162,11 @@ export const SelectedWork: React.FC = () => {
               <h2 className="text-2xl sm:text-3xl md:text-6xl font-bold tracking-tighter text-white mb-4 md:mb-6 flex flex-wrap gap-x-3">
                 Analytics 
                 <span 
-                  className="relative inline-block"
-                  style={{
-                    background: 'linear-gradient(to right, #c084fc, #f472b6, #ffffff)',
-                    WebkitBackgroundClip: 'text',
-                    WebkitTextFillColor: 'transparent',
-                    backgroundClip: 'text',
-                    color: '#c084fc'
-                  }}
+                  className="relative inline-block bg-gradient-to-r from-purple-400 via-pink-400 to-white bg-clip-text text-transparent"
                 >
                   <TextScramble 
                     text="Case Studies" 
-                    trigger={isHeaderInView} 
-                    className="!text-transparent"
+                    trigger={isHeaderInView}
                   />
                 </span>
               </h2>

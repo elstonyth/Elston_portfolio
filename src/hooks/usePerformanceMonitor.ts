@@ -15,7 +15,6 @@ export function usePerformanceMonitor(threshold: number = 30, isScrolling: boole
   });
 
   const frameCount = useRef(0);
-  const lastTime = useRef(safeBrowserAPI.now());
   const fpsHistory = useRef<number[]>([]);
   const rafId = useRef<number | undefined>(undefined);
 
@@ -31,13 +30,16 @@ export function usePerformanceMonitor(threshold: number = 30, isScrolling: boole
           return;
         }
         
-        frameCount.current++;
+        frameCount.current = (frameCount.current + 1) % 1000000; // Prevent overflow
         const currentTime = safeBrowserAPI.now();
         const elapsed = currentTime - lastSampleTime;
 
         // Sample every 100ms instead of every frame
         if (elapsed >= 100) {
-          const currentFPS = Math.round(((frameCount.current - lastFrameCount) * 1000) / elapsed);
+          const framesDelta = frameCount.current >= lastFrameCount 
+            ? frameCount.current - lastFrameCount 
+            : frameCount.current + (1000000 - lastFrameCount); // Handle wrap-around
+          const currentFPS = Math.round((framesDelta * 1000) / elapsed);
           
           fpsHistory.current.push(currentFPS);
           if (fpsHistory.current.length > 10) {

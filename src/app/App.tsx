@@ -97,19 +97,22 @@ function App() {
     }
 
     const lenis = new Lenis({
-      duration: 1.2,
+      duration: 0.8, // Reduced for snappier feel
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
       orientation: 'vertical',
       gestureOrientation: 'vertical',
       smoothWheel: true,
+      wheelMultiplier: 1.2, // Slightly faster wheel response
+      touchMultiplier: 1.5, // Better touch response
     });
 
+    let rafId: number;
     function raf(time: number) {
       lenis.raf(time);
-      requestAnimationFrame(raf);
+      rafId = requestAnimationFrame(raf);
     }
 
-    requestAnimationFrame(raf);
+    rafId = requestAnimationFrame(raf);
 
     // Handle smooth scroll to anchor links
     const handleAnchorClick = (e: MouseEvent) => {
@@ -134,6 +137,7 @@ function App() {
     document.addEventListener('click', handleAnchorClick);
 
     return () => {
+      cancelAnimationFrame(rafId);
       document.removeEventListener('click', handleAnchorClick);
       lenis.destroy();
     };
@@ -153,7 +157,7 @@ function App() {
           className="min-h-screen bg-background text-white selection:bg-cyan-500/30 selection:text-cyan-100 overflow-x-hidden font-sans before:fixed before:inset-0 before:z-0 before:bg-noise before:opacity-20 before:pointer-events-none"
         >
           {/* Void Galaxy Background System */}
-          <div className="fixed inset-0 z-0 bg-[#030305] pointer-events-none">
+          <div className="fixed inset-0 z-0 bg-[#030305] pointer-events-none" style={{ willChange: 'transform', contain: 'strict' }}>
             {/* Base void tone */}
             <div className="absolute inset-0 bg-[#030305]" />
 
@@ -182,6 +186,8 @@ function App() {
           <AnimatePresence>
             {showLaunchToast && (
               <motion.div
+                role="status"
+                aria-live="polite"
                 className="fixed top-24 right-6 z-40 flex items-center gap-3 px-4 py-3 rounded-2xl border border-white/10 bg-black/70 backdrop-blur-2xl shadow-[0_0_30px_rgba(15,23,42,0.45)]"
                 initial={{ opacity: 0, y: -10, scale: 0.95 }}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -257,25 +263,12 @@ function App() {
 
             {/* Main Title */}
             <motion.h1 
-              className="text-4xl sm:text-5xl md:text-8xl font-bold tracking-tight mb-8 leading-[0.9] drop-shadow-2xl"
+              className="text-4xl sm:text-5xl md:text-8xl font-bold tracking-tight mb-8 leading-[0.9] drop-shadow-2xl text-white"
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
             >
-              <span 
-                className="relative inline-block"
-                data-darkreader-inline-color=""
-                data-darkreader-inline-bgimage=""
-                data-darkreader-inline-bgcolor=""
-                style={{ 
-                  background: 'linear-gradient(to right, #ffffff, rgba(255,255,255,0.9), rgba(255,255,255,0.4))',
-                  WebkitBackgroundClip: 'text',
-                  WebkitTextFillColor: 'transparent',
-                  backgroundClip: 'text',
-                  color: 'white !important'
-                }}>
-                Reliable analytics, automation, and AI delivery
-              </span>
+              Reliable analytics, automation, and AI delivery
             </motion.h1>
 
             {/* Subtitle */}
@@ -304,7 +297,7 @@ function App() {
                   </Button>
                 </div>
               </a>
-              <a href="mailto:hello@elston.dev?subject=Project%20or%20role%20inquiry&body=Share%20your%20goals%2C%20timeline%2C%20and%20links.%20I%20typically%20reply%20within%20one%20business%20day." className="w-full sm:w-auto">
+              <a href="mailto:elstonyth@outlook.com?subject=Project%20or%20role%20inquiry&body=Share%20your%20goals%2C%20timeline%2C%20and%20links.%20I%20typically%20reply%20within%20one%20business%20day." className="w-full sm:w-auto">
                 <Button variant="outline" size="lg" className="w-full sm:w-auto backdrop-blur-sm bg-black/20 group/cta">
                   <span className="flex items-center">
                     Book a call
@@ -413,14 +406,14 @@ function App() {
       <motion.section 
         id="contact"
         data-section="cta"
-        className="py-24 md:py-32 px-6 text-center border-t border-white/5 relative overflow-hidden"
+        className="py-24 md:py-32 px-6 text-center relative overflow-hidden"
         initial={{ opacity: 0 }}
         whileInView={{ opacity: 1 }}
         viewport={{ once: true, margin: "-100px" }}
         transition={{ duration: 0.8 }}
       >
         {/* Spotlight Effect from Top */}
-        <div className="absolute inset-0 bg-gradient-to-b from-black via-transparent to-transparent"></div>
+        <div className="absolute inset-0 bg-gradient-to-b from-[#030305] via-transparent to-transparent"></div>
         <motion.div 
           className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[600px] pointer-events-none"
           style={{
@@ -459,11 +452,23 @@ function App() {
           </div>
 
           <div className="flex flex-col sm:flex-row justify-center gap-4">
-             <Button variant="primary" size="lg" className="min-w-[200px]">
+             <Button 
+               as="a" 
+               href="mailto:elstonyth@outlook.com?subject=Project%20Brief&body=Hi%20Elston%2C%0A%0AI%27d%20like%20to%20discuss%20a%20project%20with%20you.%0A%0AProject%20details%3A%0A" 
+               variant="primary" 
+               size="lg" 
+               className="min-w-[200px]"
+             >
                Share Project Brief
                <Send size={16} className="ml-2 opacity-70" />
              </Button>
-             <Button variant="secondary" size="lg" className="min-w-[200px]">
+             <Button 
+               as="a" 
+               href="mailto:elstonyth@outlook.com?subject=Discovery%20Call%20Request&body=Hi%20Elston%2C%0A%0AI%27d%20like%20to%20schedule%20a%20discovery%20call.%0A%0APreferred%20times%3A%0A" 
+               variant="secondary" 
+               size="lg" 
+               className="min-w-[200px]"
+             >
                Book Discovery Call
                <Calendar size={16} className="ml-2" />
              </Button>

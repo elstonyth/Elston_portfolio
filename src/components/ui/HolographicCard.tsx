@@ -41,6 +41,13 @@ export const HolographicCard: React.FC<HolographicCardProps> = ({
 
   const settings = intensityMap[intensity];
 
+  // Move useTransform to top level (hooks rule)
+  const glowBackground = useTransform(
+    [springGlowX, springGlowY],
+    ([x, y]) =>
+      `radial-gradient(circle at ${x}% ${y}%, rgba(0, 255, 255, ${settings.glow}), transparent 50%)`
+  );
+
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!cardRef.current) return;
 
@@ -96,11 +103,7 @@ export const HolographicCard: React.FC<HolographicCardProps> = ({
       <motion.div
         className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-2xl"
         style={{
-          background: useTransform(
-            [springGlowX, springGlowY],
-            ([x, y]) =>
-              `radial-gradient(circle at ${x}% ${y}%, rgba(0, 255, 255, ${settings.glow}), transparent 50%)`
-          ),
+          background: glowBackground,
           mixBlendMode: 'screen',
         }}
       />

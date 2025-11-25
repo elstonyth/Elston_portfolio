@@ -1,10 +1,10 @@
 import React from 'react';
-import { Github, Twitter, Linkedin, Mail, ArrowUpRight } from 'lucide-react';
+import { Github, Twitter, Linkedin, Mail } from 'lucide-react';
 import { ResumeDownload } from './ResumeDownload';
 
 export const Footer: React.FC = () => {
   return (
-    <footer className="border-t border-white/10 relative overflow-hidden">
+    <footer className="relative overflow-hidden">
         {/* Decorative gradient at bottom */}
       <div className="absolute bottom-0 left-0 w-full h-[300px] bg-gradient-to-t from-purple-900/20 to-transparent pointer-events-none" />
 
@@ -14,9 +14,6 @@ export const Footer: React.FC = () => {
              <h2 className="text-3xl sm:text-4xl md:text-6xl font-bold tracking-tighter text-white mb-8">
                Let's talk <br/>
                <span 
-                 data-darkreader-inline-color=""
-                 data-darkreader-inline-bgimage=""
-                 data-darkreader-inline-bgcolor=""
                  style={{
                    background: 'linear-gradient(to right, #ffffff, rgba(255,255,255,0.8), rgba(255,255,255,0.4))',
                    WebkitBackgroundClip: 'text',
@@ -43,7 +40,7 @@ export const Footer: React.FC = () => {
             <div className="flex gap-4">
                 {[
                     { icon: Github, href: "https://github.com/elstonyth" },
-                    { icon: Twitter, href: "#" },
+                    { icon: Twitter, href: "https://twitter.com/elstonyth" },
                     { icon: Linkedin, href: "https://www.linkedin.com/in/elstonyth" },
                     { icon: Mail, href: "mailto:elstonyth@outlook.com" }
                 ].map((social, i) => (
@@ -55,11 +52,11 @@ export const Footer: React.FC = () => {
           </div>
         </div>
         
-        <div className="flex flex-col md:flex-row items-center justify-between pt-8 border-t border-white/5 text-sm text-text-dim font-mono uppercase tracking-wider">
+        <div className="flex flex-col md:flex-row items-center justify-between pt-8 text-sm text-text-dim font-mono uppercase tracking-wider">
           <p>&copy; {new Date().getFullYear()} Elston Yeo. All rights reserved.</p>
           <div className="flex gap-8 mt-4 md:mt-0">
             <ResumeDownload variant="link" showIcon={false} />
-            <a href="#" className="hover:text-white transition-colors">Process</a>
+            <a href="#work" className="hover:text-white transition-colors">Work</a>
             <a href="mailto:elstonyth@outlook.com" className="hover:text-white transition-colors">Contact</a>
           </div>
         </div>

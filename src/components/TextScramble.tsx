@@ -22,8 +22,8 @@ export const TextScramble: React.FC<TextScrambleProps> = ({
 }) => {
   const [displayText, setDisplayText] = useState('');
   const [isScrambling, setIsScrambling] = useState(false);
+  const [resolveIndex, setResolveIndex] = useState(0);
   const frameRef = useRef(0);
-  const resolveRef = useRef(0);
 
   useEffect(() => {
     if (!trigger) return;
@@ -37,7 +37,7 @@ export const TextScramble: React.FC<TextScrambleProps> = ({
     const scramble = () => {
       let output = '';
       const resolve = Math.floor(frame / speed);
-      resolveRef.current = resolve;
+      setResolveIndex(resolve);
 
       for (let i = 0; i < targetLength; i++) {
         if (i < resolve) {
@@ -86,7 +86,7 @@ export const TextScramble: React.FC<TextScrambleProps> = ({
             delay: index * 0.02,
           }}
           style={{
-            color: isScrambling && index >= resolveRef.current ? 'rgba(0, 255, 255, 0.5)' : 'inherit',
+            color: isScrambling && index >= resolveIndex ? 'rgba(0, 255, 255, 0.5)' : 'inherit',
           }}
         >
           {char === ' ' ? '\u00A0' : char}

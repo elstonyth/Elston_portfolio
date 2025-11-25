@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { safeBrowserAPI } from '@/lib/utils';
 import { usePerformanceMonitor } from '@/hooks/usePerformanceMonitor';
 
@@ -20,8 +20,9 @@ export const ModernParticleBackground: React.FC = () => {
   const particlesRef = useRef<Particle[]>([]);
   const mouseRef = useRef({ x: 0, y: 0, isMoving: false });
   const animationRef = useRef<number | undefined>(undefined);
-  const [isScrolling, setIsScrolling] = useState(false);
-  const { quality } = usePerformanceMonitor(30, isScrolling);
+  const isScrollingRef = useRef(false);
+  const scrollTimeoutRef = useRef<number | undefined>(undefined);
+  const { quality } = usePerformanceMonitor(30, false);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -36,19 +37,32 @@ export const ModernParticleBackground: React.FC = () => {
       return;
     }
 
-    // Adaptive particle count - Increased for dense starfield
+    // Adaptive particle count - Reduced for better scroll performance
     const getParticleCount = (): number => {
       switch (quality) {
         case 'low':
-          return 300;
+          return 150;
         case 'medium':
-          return 700;
+          return 300;
         case 'high':
-          return 1200; // Dense starfield on high end
+          return 500; // Reduced from 1200 for smoother scrolling
         default:
-          return 700;
+          return 300;
       }
     };
+
+    // Pause animations during scroll for better performance
+    const handleScroll = () => {
+      isScrollingRef.current = true;
+      if (scrollTimeoutRef.current) {
+        clearTimeout(scrollTimeoutRef.current);
+      }
+      scrollTimeoutRef.current = window.setTimeout(() => {
+        isScrollingRef.current = false;
+      }, 150);
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
 
     const initParticles = () => {
       const count = getParticleCount();
@@ -92,6 +106,8 @@ export const ModernParticleBackground: React.FC = () => {
       canvas.height = window.innerHeight * dpr;
       canvas.style.width = `${window.innerWidth}px`;
       canvas.style.height = `${window.innerHeight}px`;
+      // Reset transform matrix before scaling to prevent accumulation
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
       ctx.scale(dpr, dpr);
       initParticles();
     };
@@ -147,8 +163,27 @@ export const ModernParticleBackground: React.FC = () => {
       if (particle.y > height + 20) particle.y = -20;
     };
 
+    let lastFrameTime = 0;
+    const targetFPS = 30; // Limit to 30 FPS for smoother scrolling
+    const frameInterval = 1000 / targetFPS;
+
     const animate = (time: number) => {
       if (!canvas || !ctx) return;
+      
+      // Skip frames during scroll for better performance
+      if (isScrollingRef.current) {
+        animationRef.current = requestAnimationFrame(animate);
+        return;
+      }
+
+      // Throttle to target FPS
+      const deltaTime = time - lastFrameTime;
+      if (deltaTime < frameInterval) {
+        animationRef.current = requestAnimationFrame(animate);
+        return;
+      }
+      lastFrameTime = time - (deltaTime % frameInterval);
+
       const width = canvas.width / (window.devicePixelRatio || 1);
       const height = canvas.height / (window.devicePixelRatio || 1);
       
@@ -163,7 +198,7 @@ export const ModernParticleBackground: React.FC = () => {
     };
 
     resize();
-    initParticles();
+    // initParticles() removed - already called inside resize()
     
     window.addEventListener('resize', resize);
     window.addEventListener('mousemove', handleMouseMove);
@@ -173,7 +208,9 @@ export const ModernParticleBackground: React.FC = () => {
     return () => {
       window.removeEventListener('resize', resize);
       window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('scroll', handleScroll);
       if (animationRef.current) cancelAnimationFrame(animationRef.current);
+      if (scrollTimeoutRef.current) clearTimeout(scrollTimeoutRef.current);
     };
   }, [quality]);
 
@@ -181,7 +218,11 @@ export const ModernParticleBackground: React.FC = () => {
     <canvas
       ref={canvasRef}
       className="fixed inset-0 z-0 pointer-events-none"
-      style={{ background: 'transparent' }}
+      style={{ 
+        background: 'transparent',
+        willChange: 'transform',
+        contain: 'strict',
+      }}
       aria-hidden="true"
     />
   );

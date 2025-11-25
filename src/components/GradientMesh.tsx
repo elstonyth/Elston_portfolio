@@ -19,6 +19,21 @@ export const GradientMesh: React.FC = () => {
 
     let animationId: number;
     let time = 0;
+    let isScrolling = false;
+    let scrollTimeout: number | undefined;
+    let lastFrameTime = 0;
+    const targetFPS = 24; // Lower FPS for gradient (doesn't need high fps)
+    const frameInterval = 1000 / targetFPS;
+
+    // Pause during scroll
+    const handleScroll = () => {
+      isScrolling = true;
+      if (scrollTimeout) clearTimeout(scrollTimeout);
+      scrollTimeout = window.setTimeout(() => {
+        isScrolling = false;
+      }, 150);
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
 
     const resize = () => {
       canvas.width = window.innerWidth;
@@ -95,10 +110,29 @@ export const GradientMesh: React.FC = () => {
         ctx.fillStyle = vignette;
         ctx.fillRect(0, 0, width, height);
 
-      } catch (error) {}
+      } catch (error) {
+        // Canvas rendering errors are non-critical - fail silently in production
+        if (import.meta.env.DEV) {
+          console.warn('GradientMesh render error:', error);
+        }
+      }
     };
 
-    const animate = () => {
+    const animate = (frameTime: number) => {
+      // Skip during scroll
+      if (isScrolling) {
+        animationId = requestAnimationFrame(animate);
+        return;
+      }
+
+      // Throttle frame rate
+      const deltaTime = frameTime - lastFrameTime;
+      if (deltaTime < frameInterval) {
+        animationId = requestAnimationFrame(animate);
+        return;
+      }
+      lastFrameTime = frameTime - (deltaTime % frameInterval);
+
       if (!prefersReducedMotion) {
         time += 0.005; // Very slow movement
       }
@@ -106,11 +140,13 @@ export const GradientMesh: React.FC = () => {
       animationId = requestAnimationFrame(animate);
     };
 
-    animate();
+    animate(0);
 
     return () => {
       window.removeEventListener('resize', resize);
+      window.removeEventListener('scroll', handleScroll);
       cancelAnimationFrame(animationId);
+      if (scrollTimeout) clearTimeout(scrollTimeout);
     };
   }, []);
 
@@ -118,6 +154,10 @@ export const GradientMesh: React.FC = () => {
     <canvas
       ref={canvasRef}
       className="fixed inset-0 z-[-1] pointer-events-none"
+      style={{ 
+        willChange: 'transform',
+        contain: 'strict',
+      }}
     />
   );
 };

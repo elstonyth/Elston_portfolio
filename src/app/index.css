@@ -1,5 +1,23 @@
 @import "tailwindcss";
 
+/* ============================= */
+/* Scroll Performance Optimizations */
+/* ============================= */
+html {
+  scroll-behavior: auto; /* Let Lenis handle smooth scrolling */
+}
+
+/* Optimize fixed elements for GPU compositing */
+.fixed {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+/* Reduce paint areas during scroll */
+main, section {
+  contain: content;
+}
+
 /* Dark Reader Override - Prevent gradient text from turning black */
 [data-darkreader-inline-color],
 [data-darkreader-inline-bgimage],
@@ -396,5 +414,26 @@ body {
   background-size: cover;
   background-position: center;
   box-shadow: inset 0 0 35px rgba(0, 0, 0, 0.75);
+}
+
+/* ============================= */
+/* Tech Stack Marquee Animation  */
+/* ============================= */
+@keyframes marquee {
+  0% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-marquee {
+  animation: marquee 30s linear infinite;
+  will-change: transform;
+}
+
+.animate-marquee:hover {
+  animation-play-state: paused;
 }
 

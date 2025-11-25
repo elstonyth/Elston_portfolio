@@ -195,7 +195,8 @@ export const Preloader: React.FC<PreloaderProps> = ({ onComplete }) => {
     return () => {
       isMounted = false;
     };
-  }, [onComplete]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <motion.div

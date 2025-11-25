@@ -30,10 +30,10 @@ const CONTACT_TOKENS: Token[][] = [
   [{ text: "export const", color: "text-violet-400" }, { text: " " }, { text: "Footer", color: "text-yellow-200" }, { text: " = () => {" }],
   [{ text: "  " }, { text: "return", color: "text-violet-400" }, { text: " (" }],
   [{ text: "    <" }, { text: "Contact", color: "text-yellow-200" }],
-  [{ text: "      " }, { text: "email", color: "text-cyan-300" }, { text: "=" }, { text: "\"hello@elston.dev\"", color: "text-emerald-300" }],
+  [{ text: "      " }, { text: "email", color: "text-cyan-300" }, { text: "=" }, { text: "\"elstonyth@outlook.com\"", color: "text-emerald-300" }],
   [{ text: "      " }, { text: "socials", color: "text-cyan-300" }, { text: "={{" }],
-  [{ text: "        " }, { text: "github", color: "text-cyan-300" }, { text: ": " }, { text: "\"@elstonyeo\"", color: "text-emerald-300" }, { text: "," }],
-  [{ text: "        " }, { text: "twitter", color: "text-cyan-300" }, { text: ": " }, { text: "\"@elston_builds\"", color: "text-emerald-300" }],
+  [{ text: "        " }, { text: "github", color: "text-cyan-300" }, { text: ": " }, { text: "\"@elstonyth\"", color: "text-emerald-300" }, { text: "," }],
+  [{ text: "        " }, { text: "twitter", color: "text-cyan-300" }, { text: ": " }, { text: "\"@elstonyth\"", color: "text-emerald-300" }],
   [{ text: "      }}" }],
   [{ text: "      " }, { text: "status", color: "text-cyan-300" }, { text: "=" }, { text: "\"online\"", color: "text-emerald-300" }],
   [{ text: "    />" }],
@@ -223,7 +223,7 @@ const ContactView = () => (
              </div>
              <div>
                <div className="text-xs text-white/40 uppercase tracking-wider font-semibold">Email</div>
-               <div className="text-white/90 font-medium">hello@elston.dev</div>
+               <div className="text-white/90 font-medium">elstonyth@outlook.com</div>
              </div>
            </div>
            <Copy size={16} className="text-white/20 group-hover:text-white/60 transition-colors" />
@@ -231,14 +231,14 @@ const ContactView = () => (
       </div>
       
       <div className="grid grid-cols-2 gap-4">
-        <a href="#" className="p-4 rounded-2xl bg-white/5 border border-white/5 hover:bg-white/10 transition-colors group flex flex-col justify-between h-24">
+        <a href="https://github.com/elstonyth" target="_blank" rel="noopener noreferrer" className="p-4 rounded-2xl bg-white/5 border border-white/5 hover:bg-white/10 transition-colors group flex flex-col justify-between h-24">
            <Github size={24} className="text-white/60 group-hover:text-white transition-colors" />
            <div className="flex items-center justify-between">
              <span className="text-sm text-white/80 font-medium">GitHub</span>
              <ExternalLink size={14} className="text-white/20 group-hover:text-white/60" />
            </div>
         </a>
-        <a href="#" className="p-4 rounded-2xl bg-white/5 border border-white/5 hover:bg-white/10 transition-colors group flex flex-col justify-between h-24">
+        <a href="https://twitter.com/elstonyth" target="_blank" rel="noopener noreferrer" className="p-4 rounded-2xl bg-white/5 border border-white/5 hover:bg-white/10 transition-colors group flex flex-col justify-between h-24">
            <Twitter size={24} className="text-blue-400/60 group-hover:text-blue-400 transition-colors" />
            <div className="flex items-center justify-between">
              <span className="text-sm text-white/80 font-medium">Twitter</span>
@@ -275,10 +275,15 @@ export const CodeInterface: React.FC = () => {
     };
   }, []);
 
-  const handleCopy = () => {
-    navigator.clipboard.writeText(activeTab === 'profile' ? PROFILE_CODE_STRING : CONTACT_CODE_STRING);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(activeTab === 'profile' ? PROFILE_CODE_STRING : CONTACT_CODE_STRING);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      // Fallback for browsers that don't support clipboard API
+      console.warn('Clipboard API not supported, copy failed');
+    }
   };
 
   return (

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
 import { Menu, X, Github, Twitter, Mail } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 
@@ -17,8 +18,10 @@ export const Navbar: React.FC = () => {
 
   useEffect(() => {
     const sectionIds = ['home', 'about', 'work', 'contact'];
+    
     const observer = new IntersectionObserver(
       (entries) => {
+        // Find all currently intersecting sections
         const visible = entries
           .filter((entry) => entry.isIntersecting && entry.target.id)
           .sort((a, b) => b.intersectionRatio - a.intersectionRatio);
@@ -28,17 +31,29 @@ export const Navbar: React.FC = () => {
         }
       },
       {
-        threshold: [0.25, 0.5, 0.75],
-        rootMargin: '-20% 0px -40% 0px',
+        threshold: [0.1, 0.2, 0.3, 0.4, 0.5], // Lower thresholds for earlier detection
+        rootMargin: '-10% 0px -30% 0px', // Reduced margins
       }
     );
 
-    sectionIds.forEach((id) => {
-      const el = document.getElementById(id);
-      if (el) observer.observe(el);
-    });
+    // Function to observe sections (called initially and after delay for lazy-loaded content)
+    const observeSections = () => {
+      sectionIds.forEach((id) => {
+        const el = document.getElementById(id);
+        if (el) observer.observe(el);
+      });
+    };
 
-    return () => observer.disconnect();
+    // Observe immediately
+    observeSections();
+    
+    // Re-observe after lazy content loads
+    const timeoutId = setTimeout(observeSections, 1000);
+
+    return () => {
+      observer.disconnect();
+      clearTimeout(timeoutId);
+    };
   }, []);
 
   const navLinks = [
@@ -71,8 +86,8 @@ export const Navbar: React.FC = () => {
           </span>
         </a>
 
-        {/* Desktop Links */}
-        <div className="hidden md:flex items-center gap-1 p-1 rounded-full bg-white/5 border border-white/5 backdrop-blur-md" role="navigation" aria-label="Primary">
+        {/* Desktop Links - Enhanced with sliding pill indicator */}
+        <div className="hidden md:flex items-center gap-1 p-1.5 rounded-full bg-white/5 border border-white/10 backdrop-blur-xl shadow-lg shadow-black/10" role="navigation" aria-label="Primary">
           {navLinks.map((link) => {
             const isActive = activeSection === link.id;
             return (
@@ -81,13 +96,27 @@ export const Navbar: React.FC = () => {
                 href={`#${link.id}`}
                 aria-label={`Navigate to ${link.label}`}
                 aria-current={isActive ? 'page' : undefined}
-                className={`px-5 py-2 text-xs font-medium uppercase tracking-wider rounded-full transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 ${
-                  isActive 
-                    ? 'text-white bg-white/10 border border-white/20 shadow-lg shadow-cyan-500/10'
-                    : 'text-text-dim hover:text-white hover:bg-white/10'
-                }`}
+                className="relative px-5 py-2 text-xs font-medium uppercase tracking-wider rounded-full transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:ring-offset-2 focus-visible:ring-offset-black"
               >
-                {link.label}
+                {/* Animated background pill */}
+                {isActive && (
+                  <motion.div
+                    layoutId="navbar-pill"
+                    className="absolute inset-0 rounded-full bg-gradient-to-r from-white/15 to-white/10 border border-white/20 shadow-lg shadow-cyan-500/20"
+                    style={{ 
+                      boxShadow: '0 0 20px rgba(6, 182, 212, 0.15), inset 0 1px 0 rgba(255,255,255,0.1)' 
+                    }}
+                    transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                  />
+                )}
+                {/* Text */}
+                <span className={`relative z-10 transition-colors duration-200 ${
+                  isActive 
+                    ? 'text-white' 
+                    : 'text-white/50 hover:text-white'
+                }`}>
+                  {link.label}
+                </span>
               </a>
             );
           })}
@@ -95,25 +124,31 @@ export const Navbar: React.FC = () => {
 
         {/* Actions */}
         <div className="hidden md:flex items-center gap-4">
-          <div className="flex gap-3" role="group" aria-label="Social links">
-            <a 
-              href="https://github.com" 
+          <div className="flex gap-2" role="group" aria-label="Social links">
+            <motion.a 
+              href="https://github.com/elstonyth" 
               target="_blank" 
               rel="noopener noreferrer" 
-              className="text-text-dim hover:text-white hover:scale-110 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 rounded"
+              className="relative p-2 text-white/50 hover:text-white rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400"
               aria-label="GitHub profile"
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.95 }}
             >
-              <Github size={20} />
-            </a>
-            <a 
-              href="https://twitter.com" 
+              <span className="absolute inset-0 rounded-full bg-white/0 hover:bg-white/10 transition-colors" />
+              <Github size={18} className="relative z-10" />
+            </motion.a>
+            <motion.a 
+              href="https://twitter.com/elstonyth" 
               target="_blank" 
               rel="noopener noreferrer" 
-              className="text-text-dim hover:text-white hover:scale-110 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 rounded"
+              className="relative p-2 text-white/50 hover:text-white rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400"
               aria-label="Twitter profile"
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.95 }}
             >
-              <Twitter size={20} />
-            </a>
+              <span className="absolute inset-0 rounded-full bg-white/0 hover:bg-white/10 transition-colors" />
+              <Twitter size={18} className="relative z-10" />
+            </motion.a>
           </div>
           <Button
             as="a"
@@ -166,9 +201,9 @@ export const Navbar: React.FC = () => {
           })}
           <div className="h-px bg-white/10 my-2" role="separator" />
           <div className="flex gap-6 text-text-dim justify-center" role="group" aria-label="Social links">
-            <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="hover:text-white active:text-cyan-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 rounded" aria-label="GitHub"><Github size={24} /></a>
-            <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" className="hover:text-white active:text-cyan-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 rounded" aria-label="Twitter"><Twitter size={24} /></a>
-            <a href="mailto:contact@example.com" className="hover:text-white active:text-cyan-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 rounded" aria-label="Email"><Mail size={24} /></a>
+            <a href="https://github.com/elstonyth" target="_blank" rel="noopener noreferrer" className="hover:text-white active:text-cyan-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 rounded" aria-label="GitHub"><Github size={24} /></a>
+            <a href="https://twitter.com/elstonyth" target="_blank" rel="noopener noreferrer" className="hover:text-white active:text-cyan-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 rounded" aria-label="Twitter"><Twitter size={24} /></a>
+            <a href="mailto:elstonyth@outlook.com" className="hover:text-white active:text-cyan-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 rounded" aria-label="Email"><Mail size={24} /></a>
           </div>
           <Button
             as="a"
