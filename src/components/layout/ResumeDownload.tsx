@@ -1,6 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Download, Check, FileText } from 'lucide-react';
 import { cn } from '@/lib/utils';
+
+const getAssetUrl = (path: string) => {
+  const base = import.meta.env.BASE_URL || '/';
+  return `${base}${path.startsWith('/') ? path.slice(1) : path}`;
+};
 
 interface ResumeDownloadProps {
   variant?: 'primary' | 'secondary' | 'link';
@@ -35,9 +40,11 @@ export const ResumeDownload: React.FC<ResumeDownloadProps> = ({
     link: "hover:text-white transition-colors inline-flex items-center gap-2"
   };
 
+  const resumeUrl = useMemo(() => getAssetUrl('ElstonYeo_FullStack_AI_Resume_2025.pdf'), []);
+
   return (
     <a
-      href="/ElstonYeo_FullStack_AI_Resume_2025.pdf"
+      href={resumeUrl}
       download="ElstonYeo_FullStack_AI_Resume_2025.pdf"
       onClick={handleDownload}
       className={cn(variants[variant], className)}

@@ -5,10 +5,17 @@ interface PrestigeFlipCardProps {
   backImageUrl?: string;
 }
 
+const getAssetUrl = (path: string) => {
+  const base = import.meta.env.BASE_URL || '/';
+  return `${base}${path.startsWith('/') ? path.slice(1) : path}`;
+};
+
 export const PrestigeFlipCard: React.FC<PrestigeFlipCardProps> = ({
-  frontImageUrl = '/card-front.png',
-  backImageUrl = '/card-back.jpg',
+  frontImageUrl = 'card-front.png',
+  backImageUrl = 'card-back.jpg',
 }) => {
+  const frontUrl = getAssetUrl(frontImageUrl);
+  const backUrl = getAssetUrl(backImageUrl);
   const [isFlipped, setIsFlipped] = useState(false);
 
   const handleToggle = () => {
@@ -35,7 +42,7 @@ export const PrestigeFlipCard: React.FC<PrestigeFlipCardProps> = ({
         <div 
           className="prestige-flip-card-face prestige-flip-card-front"
           style={{ 
-            backgroundImage: `url(${frontImageUrl})`,
+            backgroundImage: `url(${frontUrl})`,
             backgroundSize: 'cover',
             backgroundPosition: 'center',
             backgroundRepeat: 'no-repeat'
@@ -46,7 +53,7 @@ export const PrestigeFlipCard: React.FC<PrestigeFlipCardProps> = ({
         <div 
           className="prestige-flip-card-face prestige-flip-card-back"
           style={{ 
-            backgroundImage: `url(${backImageUrl})`,
+            backgroundImage: `url(${backUrl})`,
             backgroundSize: 'contain',
             backgroundPosition: 'center',
             backgroundRepeat: 'no-repeat',

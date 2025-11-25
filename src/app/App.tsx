@@ -310,7 +310,7 @@ function App() {
             <div className="hidden lg:block absolute right-0 top-[250px]">
               <div className="relative">
                 <div className="absolute -inset-6 bg-gradient-to-r from-cyan-500/20 to-purple-500/10 blur-3xl opacity-40" />
-                <PrestigeFlipCard frontImageUrl="/card-front.png" backImageUrl="/card-back.jpg" />
+                <PrestigeFlipCard frontImageUrl="card-front.png" backImageUrl="card-back.jpg" />
                 <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 text-center text-xs uppercase tracking-[0.4em] text-white/40">
                   Elite Access
                 </div>
@@ -321,7 +321,7 @@ function App() {
             <div className="mt-10 w-full flex justify-center lg:hidden">
               <div className="relative">
                 <div className="absolute -inset-6 bg-gradient-to-r from-cyan-500/20 to-purple-500/10 blur-3xl opacity-40" />
-                <PrestigeFlipCard frontImageUrl="/card-front.png" backImageUrl="/card-back.jpg" />
+                <PrestigeFlipCard frontImageUrl="card-front.png" backImageUrl="card-back.jpg" />
                 <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 text-center text-xs uppercase tracking-[0.4em] text-white/40">
                   Elite Access
                 </div>
