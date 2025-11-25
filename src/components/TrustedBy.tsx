@@ -46,7 +46,7 @@ export const TrustedBy: React.FC = () => {
             {/* Fade edges - using background color for seamless blend */}
             <div className="absolute left-0 top-0 bottom-0 w-24 bg-gradient-to-r from-[#030305] via-[#030305]/80 to-transparent z-10 pointer-events-none" />
             <div className="absolute right-0 top-0 bottom-0 w-24 bg-gradient-to-l from-[#030305] via-[#030305]/80 to-transparent z-10 pointer-events-none" />
-            <div className="flex animate-marquee gap-8 md:gap-12">
+            <div className="flex animate-marquee gap-8 md:gap-12" style={{ willChange: 'transform', contain: 'content' }}>
               {/* First set */}
               <div className="flex gap-8 md:gap-12 items-center whitespace-nowrap">
                 {techStack.map((tech) => (

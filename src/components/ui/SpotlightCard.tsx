@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback, useRef } from 'react';
 import { motion, useMotionTemplate, useMotionValue } from 'framer-motion';
 import { cn } from '@/lib/utils';
 
@@ -10,12 +10,18 @@ interface SpotlightCardProps {
 export function SpotlightCard({ children, className }: SpotlightCardProps) {
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
+  const lastUpdate = useRef(0);
 
-  function handleMouseMove({ currentTarget, clientX, clientY }: React.MouseEvent) {
+  // Throttled mouse move handler for better scroll performance
+  const handleMouseMove = useCallback(({ currentTarget, clientX, clientY }: React.MouseEvent) => {
+    const now = Date.now();
+    if (now - lastUpdate.current < 16) return; // ~60fps throttle
+    lastUpdate.current = now;
+    
     const { left, top } = currentTarget.getBoundingClientRect();
     mouseX.set(clientX - left);
     mouseY.set(clientY - top);
-  }
+  }, [mouseX, mouseY]);
 
   return (
     <div

@@ -9,6 +9,7 @@ import { GradientMesh } from '@/components/GradientMesh';
 import { ModernParticleBackground } from '@/components/ModernParticleBackground';
 import { PrestigeFlipCard } from '@/components/ui/PrestigeFlipCard';
 import { ResumeDownload } from '@/components/layout/ResumeDownload';
+import { DeferredSection } from '@/components/layout/DeferredSection';
 
 // Lazy load heavy components for better performance
 const PreviewSection = lazy(() => import('@/features/preview/PreviewSection').then(m => ({ default: m.PreviewSection })));
@@ -335,72 +336,112 @@ function App() {
         </div>
       </main>
 
-      <Suspense fallback={
-        <div className="py-12 px-6">
-          <div className="max-w-7xl mx-auto text-white/50 text-xs animate-pulse">
-            Loading preview section...
+      <DeferredSection
+        id="about"
+        minHeight={400}
+        placeholder={
+          <div className="py-12 px-6">
+            <div className="max-w-7xl mx-auto text-white/50 text-xs animate-pulse">
+              Preparing interactive preview...
+            </div>
           </div>
-        </div>
-      }>
-        <motion.div
-          id="about"
-          data-section="preview"
-          initial={{ opacity: 0, y: 40 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-100px" }}
-          transition={{ duration: 0.8, ease: "easeOut" }}
-        >
-          <PreviewSection />
-        </motion.div>
-      </Suspense>
+        }
+      >
+        <Suspense fallback={
+          <div className="py-12 px-6">
+            <div className="max-w-7xl mx-auto text-white/50 text-xs animate-pulse">
+              Loading preview section...
+            </div>
+          </div>
+        }>
+          <motion.div
+            data-section="preview"
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+          >
+            <PreviewSection />
+          </motion.div>
+        </Suspense>
+      </DeferredSection>
 
-      <Suspense fallback={
-        <div className="h-96 flex items-center justify-center">
-          <div className="text-white/50 text-sm animate-pulse">Loading...</div>
-        </div>
-      }>
-        <motion.div
-          data-section="features"
-          initial={{ opacity: 0, y: 40 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-100px" }}
-          transition={{ duration: 0.8, ease: "easeOut" }}
-        >
-          <Features />
-        </motion.div>
-      </Suspense>
+      <DeferredSection
+        id="features"
+        minHeight={500}
+        placeholder={
+          <div className="h-96 flex items-center justify-center">
+            <div className="text-white/50 text-sm animate-pulse">Loading features...</div>
+          </div>
+        }
+      >
+        <Suspense fallback={
+          <div className="h-96 flex items-center justify-center">
+            <div className="text-white/50 text-sm animate-pulse">Loading...</div>
+          </div>
+        }>
+          <motion.div
+            data-section="features"
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+          >
+            <Features />
+          </motion.div>
+        </Suspense>
+      </DeferredSection>
       
-      <Suspense fallback={
-        <div className="h-96 flex items-center justify-center">
-          <div className="text-white/50 text-sm animate-pulse">Loading...</div>
-        </div>
-      }>
-        <motion.div
-          id="work"
-          data-section="work"
-          initial={{ opacity: 0, y: 40 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-100px" }}
-          transition={{ duration: 0.8, ease: "easeOut" }}
-        >
-          <SelectedWork />
-        </motion.div>
-      </Suspense>
+      <DeferredSection
+        id="work"
+        minHeight={600}
+        placeholder={
+          <div className="h-96 flex items-center justify-center">
+            <div className="text-white/50 text-sm animate-pulse">Loading case studies...</div>
+          </div>
+        }
+      >
+        <Suspense fallback={
+          <div className="h-96 flex items-center justify-center">
+            <div className="text-white/50 text-sm animate-pulse">Loading...</div>
+          </div>
+        }>
+          <motion.div
+            data-section="work"
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+          >
+            <SelectedWork />
+          </motion.div>
+        </Suspense>
+      </DeferredSection>
       
-      <Suspense fallback={
-        <div className="h-64 flex items-center justify-center">
-          <div className="text-white/50 text-sm animate-pulse">Loading...</div>
-        </div>
-      }>
-        <motion.div
-          initial={{ opacity: 0, y: 40 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-100px" }}
-          transition={{ duration: 0.8, ease: "easeOut" }}
-        >
-          <TrustedBy />
-        </motion.div>
-      </Suspense>
+      <DeferredSection
+        id="trusted"
+        minHeight={320}
+        placeholder={
+          <div className="h-64 flex items-center justify-center">
+            <div className="text-white/50 text-sm animate-pulse">Loading tech stack...</div>
+          </div>
+        }
+      >
+        <Suspense fallback={
+          <div className="h-64 flex items-center justify-center">
+            <div className="text-white/50 text-sm animate-pulse">Loading...</div>
+          </div>
+        }>
+          <motion.div
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+          >
+            <TrustedBy />
+          </motion.div>
+        </Suspense>
+      </DeferredSection>
       
       {/* Bottom CTA */}
       <motion.section 
@@ -491,20 +532,30 @@ function App() {
         </div>
       </motion.section>
 
-      <Suspense fallback={
-        <div className="h-96 flex items-center justify-center">
-          <div className="text-white/50 text-sm animate-pulse">Loading...</div>
-        </div>
-      }>
-        <motion.div
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8 }}
-        >
-          <Footer />
-        </motion.div>
-      </Suspense>
+      <DeferredSection
+        id="footer"
+        minHeight={240}
+        placeholder={
+          <div className="h-48 flex items-center justify-center text-white/40 text-sm">
+            Loading footer...
+          </div>
+        }
+      >
+        <Suspense fallback={
+          <div className="h-96 flex items-center justify-center">
+            <div className="text-white/50 text-sm animate-pulse">Loading...</div>
+          </div>
+        }>
+          <motion.div
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8 }}
+          >
+            <Footer />
+          </motion.div>
+        </Suspense>
+      </DeferredSection>
         </motion.div>
       )}
     </>

@@ -1,9 +1,10 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { motion, useInView } from 'framer-motion';
 import { ArrowUpRight, Github } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { HolographicCard } from '@/components/ui/HolographicCard';
 import { TextScramble, TextReveal } from '@/components/TextScramble';
+import { safeBrowserAPI } from '@/lib/utils';
 
 interface Project {
   id: number;
@@ -56,13 +57,13 @@ const projects: Project[] = [
   }
 ];
 
-const ProjectCard: React.FC<{ project: Project; index: number }> = ({ project, index }) => {
+const ProjectCard: React.FC<{ project: Project; index: number; reducedMotion: boolean }> = ({ project, index, reducedMotion }) => {
   return (
     <motion.div
       initial={{ opacity: 0, y: 50 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-100px" }}
-      transition={{ duration: 0.7, delay: index * 0.2 }}
+      transition={{ duration: reducedMotion ? 0.5 : 0.7, delay: reducedMotion ? 0 : index * 0.2 }}
       className="mb-24 md:mb-32 last:mb-0"
     >
       <HolographicCard intensity="minimal" className={`p-0 bg-gradient-to-br ${project.color}`}>
@@ -82,7 +83,11 @@ const ProjectCard: React.FC<{ project: Project; index: number }> = ({ project, i
               
               <div className="mb-6">
                 <div className="text-base md:text-lg text-text-dim leading-relaxed max-w-md min-h-[3rem]">
-                  <TextReveal text={project.description} delay={0.2} />
+                  {reducedMotion ? (
+                    <p>{project.description}</p>
+                  ) : (
+                    <TextReveal text={project.description} delay={0.2} />
+                  )}
                 </div>
                 <p className="text-sm text-emerald-300 font-medium mt-3">
                   Outcome: {project.outcome}
@@ -123,8 +128,8 @@ const ProjectCard: React.FC<{ project: Project; index: number }> = ({ project, i
              <div className="absolute inset-0 bg-black/20 z-10 group-hover:bg-transparent transition-colors duration-500" />
              <div className="relative h-full w-full">
                <motion.img 
-                  whileHover={{ scale: 1.05 }}
-                  transition={{ duration: 0.7, ease: "easeOut" }}
+                  whileHover={reducedMotion ? undefined : { scale: 1.05 }}
+                  transition={reducedMotion ? undefined : { duration: 0.7, ease: "easeOut" }}
                   src={project.image} 
                   alt={project.title} 
                   className="w-full h-full object-cover"
@@ -149,6 +154,30 @@ const ProjectCard: React.FC<{ project: Project; index: number }> = ({ project, i
 export const SelectedWork: React.FC = () => {
   const headerRef = useRef(null);
   const isHeaderInView = useInView(headerRef, { once: true, margin: "-100px" });
+  const [shouldReduceMotion, setShouldReduceMotion] = useState(false);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    const motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+    const evaluate = () => {
+      const lowPower = safeBrowserAPI.getHardwareConcurrency() <= 4;
+      const isTablet = window.innerWidth < 1024;
+      setShouldReduceMotion(motionQuery.matches || lowPower || isTablet);
+    };
+
+    evaluate();
+    const handleResize = () => evaluate();
+
+    motionQuery.addEventListener?.('change', evaluate);
+    window.addEventListener('resize', handleResize);
+
+    return () => {
+      motionQuery.removeEventListener?.('change', evaluate);
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
 
   return (
     <section className="py-24 md:py-32 px-6 relative z-10">
@@ -164,10 +193,14 @@ export const SelectedWork: React.FC = () => {
                 <span 
                   className="relative inline-block bg-gradient-to-r from-purple-400 via-pink-400 to-white bg-clip-text text-transparent"
                 >
-                  <TextScramble 
-                    text="Case Studies" 
-                    trigger={isHeaderInView}
-                  />
+                  {shouldReduceMotion ? (
+                    <span>Case Studies</span>
+                  ) : (
+                    <TextScramble 
+                      text="Case Studies" 
+                      trigger={isHeaderInView}
+                    />
+                  )}
                 </span>
               </h2>
               <p className="text-base md:text-xl text-text-dim leading-relaxed">
@@ -197,7 +230,7 @@ export const SelectedWork: React.FC = () => {
 
         <div>
           {projects.map((project, index) => (
-            <ProjectCard key={project.id} project={project} index={index} />
+            <ProjectCard key={project.id} project={project} index={index} reducedMotion={shouldReduceMotion} />
           ))}
         </div>
 

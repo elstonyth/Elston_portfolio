@@ -1,7 +1,8 @@
 import React from 'react';
 import { Server, Palette, Code, Cpu, Zap } from 'lucide-react';
 import { SpotlightCard } from '@/components/ui/SpotlightCard';
-import { motion, type Variants } from 'framer-motion';
+import { motion, useInView, type Variants } from 'framer-motion';
+import { useRef } from 'react';
 
 const skills = [
   {
@@ -57,8 +58,11 @@ const itemVariants: Variants = {
 };
 
 export const Features: React.FC = () => {
+  const sectionRef = useRef(null);
+  const isInView = useInView(sectionRef, { margin: '-100px', amount: 0.1 });
+
   return (
-    <section className="py-24 md:py-32 px-6 relative overflow-hidden">
+    <section ref={sectionRef} className="py-24 md:py-32 px-6 relative overflow-hidden">
       {/* Animated Background Layers */}
       <div className="absolute inset-0 -z-10 overflow-hidden">
         {/* Grid Pattern */}
@@ -73,33 +77,14 @@ export const Features: React.FC = () => {
           }}
         />
         
-        {/* Animated Gradient Blobs */}
-        <motion.div 
+        {/* Static Gradient Blobs - CSS only for better scroll performance */}
+        <div 
           className="absolute top-1/3 left-1/4 w-[600px] h-[600px] bg-blue-500/10 rounded-full blur-[120px] hidden md:block"
-          animate={{
-            x: [0, 50, 0],
-            y: [0, -30, 0],
-            scale: [1, 1.1, 1],
-          }}
-          transition={{
-            duration: 15,
-            repeat: Infinity,
-            ease: "easeInOut"
-          }}
+          style={{ willChange: 'auto' }}
         />
-        <motion.div 
+        <div 
           className="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-purple-500/10 rounded-full blur-[100px] hidden md:block"
-          animate={{
-            x: [0, -40, 0],
-            y: [0, 40, 0],
-            scale: [1, 1.15, 1],
-          }}
-          transition={{
-            duration: 18,
-            repeat: Infinity,
-            ease: "easeInOut",
-            delay: 1
-          }}
+          style={{ willChange: 'auto' }}
         />
       </div>
 

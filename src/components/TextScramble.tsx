@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useMemo } from 'react';
 import { motion } from 'framer-motion';
 
 interface TextScrambleProps {
@@ -101,21 +101,28 @@ export const TextReveal: React.FC<{
   className?: string;
   delay?: number;
 }> = ({ text, className = '', delay = 0 }) => {
+  // Animate words instead of individual characters for better performance
+  const words = useMemo(() => text.split(' '), [text]);
+
   return (
-    <motion.span className={`inline-block overflow-hidden ${className}`}>
-      <motion.span
-        className="inline-block"
-        initial={{ y: '100%' }}
-        animate={{ y: 0 }}
-        transition={{
-          duration: 0.8,
-          delay,
-          ease: [0.22, 1, 0.36, 1],
-        }}
-      >
-        {text}
-      </motion.span>
-    </motion.span>
+    <span className={className}>
+      {words.map((word, wordIndex) => (
+        <motion.span
+          key={wordIndex}
+          className="inline-block mr-[0.25em]"
+          initial={{ y: '100%', opacity: 0 }}
+          whileInView={{ y: 0, opacity: 1 }}
+          viewport={{ once: true, margin: '-50px' }}
+          transition={{
+            duration: 0.4,
+            delay: delay + wordIndex * 0.05,
+            ease: [0.33, 1, 0.68, 1],
+          }}
+        >
+          {word}
+        </motion.span>
+      ))}
+    </span>
   );
 };
 

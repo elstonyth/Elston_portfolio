@@ -2,9 +2,26 @@
 
 /* ============================= */
 /* Scroll Performance Optimizations */
-/* ============================= */
+/* === SCROLL PERFORMANCE === */
+* {
+  scroll-behavior: smooth;
+}
+
 html {
-  scroll-behavior: auto; /* Let Lenis handle smooth scrolling */
+  scroll-behavior: smooth;
+}
+
+/* GPU acceleration hints for animated elements */
+.gpu-accelerate {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  will-change: transform;
+}
+
+/* Reduce animation work during scroll */
+html.is-scrolling .reduce-motion-on-scroll {
+  animation-play-state: paused !important;
+  transition: none !important;
 }
 
 /* Optimize fixed elements for GPU compositing */
@@ -16,6 +33,19 @@ html {
 /* Reduce paint areas during scroll */
 main, section {
   contain: content;
+}
+
+/* Optimize backdrop-blur elements - expensive during scroll */
+.backdrop-blur-xl, .backdrop-blur-2xl, .backdrop-blur-md {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+/* Pause marquee animation during scroll for better performance */
+@media (prefers-reduced-motion: no-preference) {
+  .animate-marquee {
+    will-change: transform;
+  }
 }
 
 /* Dark Reader Override - Prevent gradient text from turning black */

@@ -1,5 +1,5 @@
-import React, { useRef, useState } from 'react';
-import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
+import React, { useRef, useState, useEffect } from 'react';
+import { motion, useMotionValue, useSpring, useTransform, useInView } from 'framer-motion';
 
 interface HolographicCardProps {
   children: React.ReactNode;
@@ -14,6 +14,26 @@ export const HolographicCard: React.FC<HolographicCardProps> = ({
 }) => {
   const cardRef = useRef<HTMLDivElement>(null);
   const [isHovered, setIsHovered] = useState(false);
+  const [isScrolling, setIsScrolling] = useState(false);
+  const isInView = useInView(cardRef, { margin: '-50px', amount: 0.1 });
+
+  // Pause animations during scroll
+  useEffect(() => {
+    let scrollTimeout: ReturnType<typeof setTimeout>;
+    const handleScroll = () => {
+      setIsScrolling(true);
+      clearTimeout(scrollTimeout);
+      scrollTimeout = setTimeout(() => setIsScrolling(false), 150);
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      clearTimeout(scrollTimeout);
+    };
+  }, []);
+
+  // Skip expensive calculations when not needed
+  const shouldAnimate = isInView && !isScrolling;
 
   const rotateX = useMotionValue(0);
   const rotateY = useMotionValue(0);
@@ -49,7 +69,7 @@ export const HolographicCard: React.FC<HolographicCardProps> = ({
   );
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!cardRef.current) return;
+    if (!cardRef.current || isScrolling) return;
 
     const rect = cardRef.current.getBoundingClientRect();
     const x = e.clientX - rect.left;
@@ -108,47 +128,49 @@ export const HolographicCard: React.FC<HolographicCardProps> = ({
         }}
       />
 
-      {/* Iridescent Edge Glow */}
-      <motion.div
-        className="absolute inset-0 rounded-2xl pointer-events-none"
-        animate={{
-          background: isHovered
-            ? [
-                'linear-gradient(45deg, rgba(0, 255, 255, 0.3), rgba(255, 0, 255, 0.3), rgba(0, 255, 255, 0.3))',
-                'linear-gradient(90deg, rgba(255, 0, 255, 0.3), rgba(0, 255, 255, 0.3), rgba(255, 0, 255, 0.3))',
-                'linear-gradient(135deg, rgba(0, 255, 255, 0.3), rgba(255, 0, 255, 0.3), rgba(0, 255, 255, 0.3))',
-              ]
-            : 'linear-gradient(45deg, transparent, transparent)',
-        }}
-        transition={{
-          duration: 3,
-          repeat: Infinity,
-          ease: 'linear',
-        }}
-        style={{
-          backgroundSize: '200% 200%',
-          mixBlendMode: 'screen',
-          opacity: isHovered ? 0.5 : 0,
-        }}
-      />
+      {/* Iridescent Edge Glow - only animate when hovered AND in view */}
+      {shouldAnimate && isHovered && (
+        <motion.div
+          className="absolute inset-0 rounded-2xl pointer-events-none"
+          initial={{ opacity: 0 }}
+          animate={{
+            opacity: 0.5,
+            background: [
+              'linear-gradient(45deg, rgba(0, 255, 255, 0.3), rgba(255, 0, 255, 0.3), rgba(0, 255, 255, 0.3))',
+              'linear-gradient(90deg, rgba(255, 0, 255, 0.3), rgba(0, 255, 255, 0.3), rgba(255, 0, 255, 0.3))',
+              'linear-gradient(135deg, rgba(0, 255, 255, 0.3), rgba(255, 0, 255, 0.3), rgba(0, 255, 255, 0.3))',
+            ],
+          }}
+          transition={{
+            duration: 3,
+            repeat: Infinity,
+            ease: 'linear',
+          }}
+          style={{
+            backgroundSize: '200% 200%',
+            mixBlendMode: 'screen',
+          }}
+        />
+      )}
 
-      {/* Scanline Effect */}
-      <motion.div
-        className="absolute inset-0 pointer-events-none rounded-2xl"
-        animate={{
-          backgroundPosition: ['0% 0%', '0% 100%'],
-        }}
-        transition={{
-          duration: 2,
-          repeat: Infinity,
-          ease: 'linear',
-        }}
-        style={{
-          backgroundImage:
-            'repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0, 255, 255, 0.03) 2px, rgba(0, 255, 255, 0.03) 4px)',
-          opacity: isHovered ? 1 : 0,
-        }}
-      />
+      {/* Scanline Effect - only render when hovered AND in view */}
+      {shouldAnimate && isHovered && (
+        <motion.div
+          className="absolute inset-0 pointer-events-none rounded-2xl"
+          animate={{
+            backgroundPosition: ['0% 0%', '0% 100%'],
+          }}
+          transition={{
+            duration: 2,
+            repeat: Infinity,
+            ease: 'linear',
+          }}
+          style={{
+            backgroundImage:
+              'repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0, 255, 255, 0.03) 2px, rgba(0, 255, 255, 0.03) 4px)',
+          }}
+        />
+      )}
 
       {/* Noise Texture */}
       <div
