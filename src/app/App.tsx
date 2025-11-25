@@ -6,10 +6,12 @@ import { Button } from '@/components/ui/Button';
 import { Preloader } from '@/components/feedback/Preloader';
 import { ChevronRight, ArrowRight, Sparkles, Briefcase, Users, Calendar, Send, Quote } from 'lucide-react';
 import { GradientMesh } from '@/components/GradientMesh';
+import { ScrollProgress } from '@/components/ScrollProgress';
 import { ModernParticleBackground } from '@/components/ModernParticleBackground';
 import { PrestigeFlipCard } from '@/components/ui/PrestigeFlipCard';
 import { ResumeDownload } from '@/components/layout/ResumeDownload';
 import { DeferredSection } from '@/components/layout/DeferredSection';
+import { ProjectCardSkeleton, FeaturesSkeleton, TechStackSkeleton } from '@/components/ui/Skeleton';
 
 // Lazy load heavy components for better performance
 const PreviewSection = lazy(() => import('@/features/preview/PreviewSection').then(m => ({ default: m.PreviewSection })));
@@ -206,6 +208,7 @@ function App() {
               </motion.div>
             )}
           </AnimatePresence>
+          <ScrollProgress />
           <motion.div
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -246,13 +249,13 @@ function App() {
               transition={{ duration: 0.5, ease: "easeOut" }}
             >
               {[{
-                icon: <Sparkles size={14} />, label: 'Role', value: 'Full-Stack AI Developer'
+                icon: <Sparkles size={14} />, label: 'Role', value: 'Full-Stack AI Developer', showOnMobile: true
               }, {
-                icon: <Briefcase size={14} />, label: 'Reliability', value: '30% fewer data issues'
+                icon: <Briefcase size={14} />, label: 'Reliability', value: '30% fewer data issues', showOnMobile: true
               }, {
-                icon: <Users size={14} />, label: 'Time saved', value: '10–15 hrs/month'
-              }].map(({ icon, label, value }) => (
-                <div key={label} className="flex items-center gap-3 px-4 py-2 rounded-full bg-white/5 border border-white/10 backdrop-blur-sm">
+                icon: <Users size={14} />, label: 'Time saved', value: '10–15 hrs/month', showOnMobile: false
+              }].map(({ icon, label, value, showOnMobile }) => (
+                <div key={label} className={`flex items-center gap-3 px-4 py-2 rounded-full bg-white/5 border border-white/10 backdrop-blur-sm ${!showOnMobile ? 'hidden sm:flex' : ''}`}>
                   <span className="text-white/80">{icon}</span>
                   <div>
                     <p className="text-[11px] uppercase tracking-ultra text-white/50">{label}</p>
@@ -297,14 +300,6 @@ function App() {
                     <ArrowRight size={16} className="ml-2 opacity-70 transition-transform group-hover/cta:translate-x-1" />
                   </Button>
                 </div>
-              </a>
-              <a href="mailto:elstonyth@outlook.com?subject=Project%20or%20role%20inquiry&body=Share%20your%20goals%2C%20timeline%2C%20and%20links.%20I%20typically%20reply%20within%20one%20business%20day." className="w-full sm:w-auto">
-                <Button variant="outline" size="lg" className="w-full sm:w-auto backdrop-blur-sm bg-black/20 group/cta">
-                  <span className="flex items-center">
-                    Book a call
-                    <Calendar size={16} className="ml-2 opacity-60 transition-transform group-hover/cta:translate-x-1" />
-                  </span>
-                </Button>
               </a>
               <ResumeDownload variant="secondary" className="w-full sm:w-auto px-6" />
               <p className="text-xs text-white/60 pl-1 sm:pl-0 sm:basis-full">Replies within one business day.</p>
@@ -369,17 +364,9 @@ function App() {
       <DeferredSection
         id="features"
         minHeight={500}
-        placeholder={
-          <div className="h-96 flex items-center justify-center">
-            <div className="text-white/50 text-sm animate-pulse">Loading features...</div>
-          </div>
-        }
+        placeholder={<FeaturesSkeleton />}
       >
-        <Suspense fallback={
-          <div className="h-96 flex items-center justify-center">
-            <div className="text-white/50 text-sm animate-pulse">Loading...</div>
-          </div>
-        }>
+        <Suspense fallback={<FeaturesSkeleton />}>
           <motion.div
             data-section="features"
             initial={{ opacity: 0, y: 40 }}
@@ -395,17 +382,9 @@ function App() {
       <DeferredSection
         id="work"
         minHeight={600}
-        placeholder={
-          <div className="h-96 flex items-center justify-center">
-            <div className="text-white/50 text-sm animate-pulse">Loading case studies...</div>
-          </div>
-        }
+        placeholder={<ProjectCardSkeleton />}
       >
-        <Suspense fallback={
-          <div className="h-96 flex items-center justify-center">
-            <div className="text-white/50 text-sm animate-pulse">Loading...</div>
-          </div>
-        }>
+        <Suspense fallback={<ProjectCardSkeleton />}>
           <motion.div
             data-section="work"
             initial={{ opacity: 0, y: 40 }}
@@ -421,17 +400,9 @@ function App() {
       <DeferredSection
         id="trusted"
         minHeight={320}
-        placeholder={
-          <div className="h-64 flex items-center justify-center">
-            <div className="text-white/50 text-sm animate-pulse">Loading tech stack...</div>
-          </div>
-        }
+        placeholder={<TechStackSkeleton />}
       >
-        <Suspense fallback={
-          <div className="h-64 flex items-center justify-center">
-            <div className="text-white/50 text-sm animate-pulse">Loading...</div>
-          </div>
-        }>
+        <Suspense fallback={<TechStackSkeleton />}>
           <motion.div
             initial={{ opacity: 0, y: 40 }}
             whileInView={{ opacity: 1, y: 0 }}

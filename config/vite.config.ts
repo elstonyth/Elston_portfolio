@@ -6,6 +6,8 @@ export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '');
 
   return {
+    // GitHub Pages base path - change to '/' if using custom domain
+    base: mode === 'production' ? '/Elston_portfolio/' : '/',
     server: {
       port: 3000,
       host: '0.0.0.0',

@@ -109,10 +109,10 @@ const ProjectCard: React.FC<{ project: Project; index: number; reducedMotion: bo
                   <ArrowUpRight size={16} className="ml-2 group-hover:rotate-45 transition-transform" />
                 </Button>
               ) : (
-                <Button variant="primary" className="group opacity-60 cursor-not-allowed" disabled>
-                  Coming Soon
-                  <ArrowUpRight size={16} className="ml-2" />
-                </Button>
+                <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 text-white/50 text-sm">
+                  <span className="w-1.5 h-1.5 rounded-full bg-amber-400/80 animate-pulse" />
+                  Case Study Coming
+                </span>
               )}
               {project.links.github !== '#' && (
                 <a href={project.links.github} target="_blank" rel="noopener noreferrer" className="p-3 rounded-full bg-white/5 border border-white/10 text-white hover:bg-white hover:text-black transition-all">
