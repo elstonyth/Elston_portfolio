@@ -2,25 +2,25 @@ import React from 'react';
 import { motion } from 'framer-motion';
 
 const techStack = [
-  { name: "React", icon: "⚛️" },
-  { name: "Next.js", icon: "▲" },
-  { name: "TypeScript", icon: "🔷" },
-  { name: "Tailwind CSS", icon: "🎨" },
-  { name: "Vue.js", icon: "💚" },
-  { name: "Python", icon: "🐍" },
-  { name: "Node.js", icon: "🟢" },
-  { name: "Express", icon: "🚂" },
-  { name: "Django", icon: "🎸" },
-  { name: "PostgreSQL", icon: "🐘" },
-  { name: "MongoDB", icon: "🍃" },
-  { name: "Redis", icon: "🔴" },
-  { name: "GCP", icon: "☁️" },
-  { name: "AWS", icon: "🟠" },
-  { name: "Docker", icon: "🐳" },
-  { name: "Kubernetes", icon: "☸️" },
-  { name: "Git", icon: "📦" },
-  { name: "Figma", icon: "🎯" },
-  { name: "VS Code", icon: "💻" }
+  { name: "React", color: "from-cyan-400 to-blue-500" },
+  { name: "Next.js", color: "from-white to-gray-400" },
+  { name: "TypeScript", color: "from-blue-400 to-blue-600" },
+  { name: "Tailwind", color: "from-cyan-400 to-teal-500" },
+  { name: "Vue.js", color: "from-emerald-400 to-green-500" },
+  { name: "Python", color: "from-yellow-400 to-blue-500" },
+  { name: "Node.js", color: "from-green-400 to-emerald-500" },
+  { name: "Express", color: "from-gray-300 to-gray-500" },
+  { name: "Django", color: "from-green-500 to-emerald-600" },
+  { name: "PostgreSQL", color: "from-blue-400 to-indigo-500" },
+  { name: "MongoDB", color: "from-green-400 to-lime-500" },
+  { name: "Redis", color: "from-red-400 to-rose-500" },
+  { name: "GCP", color: "from-blue-400 to-red-400" },
+  { name: "AWS", color: "from-orange-400 to-yellow-500" },
+  { name: "Docker", color: "from-blue-400 to-cyan-500" },
+  { name: "Kubernetes", color: "from-blue-500 to-indigo-500" },
+  { name: "Git", color: "from-orange-400 to-red-500" },
+  { name: "Figma", color: "from-purple-400 to-pink-500" },
+  { name: "VS Code", color: "from-blue-400 to-cyan-400" }
 ];
 
 export const TrustedBy: React.FC = () => {
@@ -52,9 +52,9 @@ export const TrustedBy: React.FC = () => {
                 {techStack.map((tech) => (
                   <span 
                     key={tech.name + '-1'} 
-                    className="text-xl md:text-2xl text-white/90 font-medium hover:text-white transition-all duration-300 cursor-pointer flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-white/5"
+                    className="text-xl md:text-2xl text-white/90 font-medium hover:text-white transition-all duration-300 cursor-pointer flex items-center gap-3 px-4 py-2 rounded-xl tech-item-glow border border-transparent hover:border-white/10"
                   >
-                    <span className="text-2xl md:text-3xl">{tech.icon}</span>
+                    <span className={`w-3 h-3 rounded-full bg-gradient-to-r ${tech.color} shadow-lg`}></span>
                     {tech.name}
                   </span>
                 ))}
@@ -65,9 +65,9 @@ export const TrustedBy: React.FC = () => {
                 {techStack.map((tech) => (
                   <span 
                     key={tech.name + '-2'} 
-                    className="text-xl md:text-2xl text-white/90 font-medium hover:text-white transition-all duration-300 cursor-pointer flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-white/5"
+                    className="text-xl md:text-2xl text-white/90 font-medium hover:text-white transition-all duration-300 cursor-pointer flex items-center gap-3 px-4 py-2 rounded-xl tech-item-glow border border-transparent hover:border-white/10"
                   >
-                    <span className="text-2xl md:text-3xl">{tech.icon}</span>
+                    <span className={`w-3 h-3 rounded-full bg-gradient-to-r ${tech.color} shadow-lg`}></span>
                     {tech.name}
                   </span>
                 ))}

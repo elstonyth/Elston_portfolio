@@ -228,7 +228,7 @@ function App() {
             {/* Status Badge - AI Style */}
             <motion.a 
               href="#contact" 
-              className="group inline-flex items-center gap-3 px-4 py-2 rounded-full bg-white/5 border border-white/10 text-sm text-white/80 hover:border-white/20 hover:bg-white/10 transition-all mb-6 backdrop-blur-md"
+              className="group inline-flex items-center gap-3 px-4 py-2 rounded-full bg-white/5 border border-white/10 text-sm text-white/80 hover:border-cyan-400/30 hover:bg-white/10 hover:shadow-[0_0_20px_rgba(34,211,238,0.15)] transition-all duration-300 mb-6 backdrop-blur-md shimmer-effect"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, ease: "easeOut" }}
@@ -249,19 +249,26 @@ function App() {
               transition={{ duration: 0.5, ease: "easeOut" }}
             >
               {[{
-                icon: <Sparkles size={14} />, label: 'Role', value: 'Full-Stack AI Developer', showOnMobile: true
+                icon: <Sparkles size={14} />, label: 'Role', value: 'Full-Stack AI Developer', showOnMobile: true, delay: 0
               }, {
-                icon: <Briefcase size={14} />, label: 'Reliability', value: '30% fewer data issues', showOnMobile: true
+                icon: <Briefcase size={14} />, label: 'Reliability', value: '30% fewer data issues', showOnMobile: true, delay: 0.1
               }, {
-                icon: <Users size={14} />, label: 'Time saved', value: '10–15 hrs/month', showOnMobile: false
-              }].map(({ icon, label, value, showOnMobile }) => (
-                <div key={label} className={`flex items-center gap-3 px-4 py-2 rounded-full bg-white/5 border border-white/10 backdrop-blur-sm ${!showOnMobile ? 'hidden sm:flex' : ''}`}>
-                  <span className="text-white/80">{icon}</span>
+                icon: <Users size={14} />, label: 'Time saved', value: '10–15 hrs/month', showOnMobile: false, delay: 0.2
+              }].map(({ icon, label, value, showOnMobile, delay }) => (
+                <motion.div 
+                  key={label} 
+                  className={`flex items-center gap-3 px-4 py-2 rounded-full bg-white/5 border border-white/10 backdrop-blur-sm hover:border-white/20 hover:bg-white/10 hover:shadow-[0_0_15px_rgba(139,92,246,0.1)] transition-all duration-300 cursor-default ${!showOnMobile ? 'hidden sm:flex' : ''}`}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.4, delay: 0.3 + delay }}
+                  whileHover={{ y: -2 }}
+                >
+                  <span className="text-cyan-400/80">{icon}</span>
                   <div>
                     <p className="text-[11px] uppercase tracking-ultra text-white/50">{label}</p>
                     <p className="font-medium">{value}</p>
                   </div>
-                </div>
+                </motion.div>
               ))}
             </motion.div>
 
@@ -307,29 +314,52 @@ function App() {
             </div>
             {/* Hero Visual - Desktop: fixed on right, Mobile: centered below hero */}
             {/* Desktop (lg+): original right-side positioning */}
-            <div className="hidden lg:block absolute right-0 top-[250px]">
-              <div className="relative">
-                <div className="absolute -inset-6 bg-gradient-to-r from-cyan-500/20 to-purple-500/10 blur-3xl opacity-40" />
+            <motion.div 
+              className="hidden lg:block absolute right-0 top-[250px]"
+              initial={{ opacity: 0, x: 30 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8, delay: 0.4, ease: "easeOut" }}
+            >
+              <div className="relative group">
+                <div className="absolute -inset-6 bg-gradient-to-r from-cyan-500/20 to-purple-500/10 blur-3xl opacity-40 group-hover:opacity-60 transition-opacity duration-500" />
+                <div className="absolute -inset-1 rounded-2xl bg-gradient-to-r from-cyan-500/0 via-purple-500/0 to-pink-500/0 opacity-0 group-hover:opacity-100 group-hover:from-cyan-500/20 group-hover:via-purple-500/20 group-hover:to-pink-500/20 blur-md transition-all duration-500" />
                 <PrestigeFlipCard frontImageUrl="card-front.png" backImageUrl="card-back.jpg" />
-                <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 text-center text-xs uppercase tracking-[0.4em] text-white/40">
+                <motion.div 
+                  className="absolute -bottom-8 left-1/2 -translate-x-1/2 text-center text-xs uppercase tracking-[0.4em] text-white/40"
+                  animate={{ opacity: [0.4, 0.7, 0.4] }}
+                  transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+                >
                   Elite Access
-                </div>
+                </motion.div>
               </div>
-            </div>
+            </motion.div>
 
             {/* Mobile / tablet: centered card below hero content */}
-            <div className="mt-10 w-full flex justify-center lg:hidden">
-              <div className="relative">
-                <div className="absolute -inset-6 bg-gradient-to-r from-cyan-500/20 to-purple-500/10 blur-3xl opacity-40" />
+            <motion.div 
+              className="mt-10 w-full flex justify-center lg:hidden"
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.4, ease: "easeOut" }}
+            >
+              <div className="relative group">
+                <div className="absolute -inset-6 bg-gradient-to-r from-cyan-500/20 to-purple-500/10 blur-3xl opacity-40 group-hover:opacity-60 transition-opacity duration-500" />
+                <div className="absolute -inset-1 rounded-2xl bg-gradient-to-r from-cyan-500/0 via-purple-500/0 to-pink-500/0 opacity-0 group-hover:opacity-100 group-hover:from-cyan-500/20 group-hover:via-purple-500/20 group-hover:to-pink-500/20 blur-md transition-all duration-500" />
                 <PrestigeFlipCard frontImageUrl="card-front.png" backImageUrl="card-back.jpg" />
-                <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 text-center text-xs uppercase tracking-[0.4em] text-white/40">
+                <motion.div 
+                  className="absolute -bottom-8 left-1/2 -translate-x-1/2 text-center text-xs uppercase tracking-[0.4em] text-white/40"
+                  animate={{ opacity: [0.4, 0.7, 0.4] }}
+                  transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+                >
                   Elite Access
-                </div>
+                </motion.div>
               </div>
-            </div>
+            </motion.div>
           </div>
         </div>
       </main>
+
+      {/* Section Divider */}
+      <div className="section-divider mx-auto max-w-4xl" />
 
       <DeferredSection
         id="about"
@@ -360,6 +390,9 @@ function App() {
           </motion.div>
         </Suspense>
       </DeferredSection>
+
+      {/* Section Divider */}
+      <div className="section-divider mx-auto max-w-4xl my-8" />
 
       <DeferredSection
         id="features"

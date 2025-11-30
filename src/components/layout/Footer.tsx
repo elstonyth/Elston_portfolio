@@ -23,10 +23,10 @@ export const Footer: React.FC = () => {
                  }}>data & impact.</span>
              </h2>
              <div className="flex flex-col sm:flex-row gap-4">
-                <a href="mailto:elstonyth@outlook.com" className="inline-flex items-center justify-center px-8 py-4 rounded-full bg-white text-black font-medium hover:bg-gray-200 transition-colors">
-                    Start a Conversation
+                <a href="mailto:elstonyth@outlook.com" className="inline-flex items-center justify-center px-8 py-4 rounded-full bg-white text-black font-medium hover:bg-gray-100 hover:shadow-[0_0_40px_rgba(255,255,255,0.3)] transition-all duration-300 group">
+                    <span className="group-hover:translate-x-1 transition-transform duration-300">Start a Conversation</span>
                 </a>
-                <a href="mailto:elstonyth@outlook.com" className="inline-flex items-center justify-center px-8 py-4 rounded-full bg-white/5 border border-white/10 text-white font-medium hover:bg-white/10 transition-colors backdrop-blur-sm">
+                <a href="mailto:elstonyth@outlook.com" className="inline-flex items-center justify-center px-8 py-4 rounded-full bg-white/5 border border-white/10 text-white font-medium hover:bg-white/10 hover:border-cyan-400/30 hover:shadow-[0_0_25px_rgba(34,211,238,0.15)] transition-all duration-300 backdrop-blur-sm">
                     elstonyth@outlook.com
                 </a>
              </div>
@@ -39,13 +39,13 @@ export const Footer: React.FC = () => {
             
             <div className="flex gap-4">
                 {[
-                    { icon: Github, href: "https://github.com/elstonyth" },
-                    { icon: Twitter, href: "https://twitter.com/elstonyth" },
-                    { icon: Linkedin, href: "https://www.linkedin.com/in/elstonyth" },
-                    { icon: Mail, href: "mailto:elstonyth@outlook.com" }
+                    { icon: Github, href: "https://github.com/elstonyth", hoverColor: "hover:shadow-purple-500/30" },
+                    { icon: Twitter, href: "https://twitter.com/elstonyth", hoverColor: "hover:shadow-cyan-500/30" },
+                    { icon: Linkedin, href: "https://www.linkedin.com/in/elstonyth", hoverColor: "hover:shadow-blue-500/30" },
+                    { icon: Mail, href: "mailto:elstonyth@outlook.com", hoverColor: "hover:shadow-pink-500/30" }
                 ].map((social, i) => (
-                    <a key={i} href={social.href} className="w-12 h-12 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white hover:bg-white hover:text-black hover:scale-110 transition-all duration-300 group">
-                        <social.icon size={20} className="group-hover:rotate-12 transition-transform" />
+                    <a key={i} href={social.href} className={`w-12 h-12 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white hover:bg-white hover:text-black social-icon-hover hover:shadow-[0_0_25px] ${social.hoverColor} group`}>
+                        <social.icon size={20} className="group-hover:rotate-12 transition-transform duration-300" />
                     </a>
                 ))}
             </div>

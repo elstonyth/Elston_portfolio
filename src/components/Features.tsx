@@ -126,15 +126,12 @@ export const Features: React.FC = () => {
           {skills.map((skill, index) => (
             <motion.div key={index} variants={itemVariants} className={`${skill.colSpan} h-full`}>
               <SpotlightCard className={`p-8 h-full group ${skill.bg}`}>
-                {/* Color tint - Inner Glow */}
-                {/* <div className={`absolute inset-0 opacity-20 ${skill.bg}`}></div> */}
-                
                 <div className="relative z-10 flex flex-col h-full">
-                  <div className="w-12 h-12 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center mb-6 text-white group-hover:scale-110 transition-transform duration-300 shadow-[0_0_15px_rgba(255,255,255,0.05)]">
-                    <skill.icon size={24} strokeWidth={1.5} />
+                  <div className="w-12 h-12 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center mb-6 text-white group-hover:scale-110 group-hover:border-cyan-400/30 group-hover:shadow-[0_0_25px_rgba(34,211,238,0.2)] transition-all duration-300 shadow-[0_0_15px_rgba(255,255,255,0.05)]">
+                    <skill.icon size={24} strokeWidth={1.5} className="group-hover:text-cyan-300 transition-colors duration-300" />
                   </div>
-                  <h3 className="text-2xl font-bold text-white mb-3 tracking-tight">{skill.title}</h3>
-                  <p className="text-text-dim leading-relaxed text-base mt-auto">
+                  <h3 className="text-2xl font-bold text-white mb-3 tracking-tight group-hover:text-glow-hover transition-all duration-300">{skill.title}</h3>
+                  <p className="text-text-dim leading-relaxed text-base mt-auto group-hover:text-white/70 transition-colors duration-300">
                     {skill.description}
                   </p>
                 </div>
@@ -146,8 +143,10 @@ export const Features: React.FC = () => {
           <motion.div variants={itemVariants} className="md:col-span-1 h-full">
             <SpotlightCard className="p-8 h-full group">
               <div className="relative z-10 flex flex-col h-full justify-center items-center text-center">
-                <div className="text-5xl font-bold text-white mb-2">3+</div>
-                <div className="text-sm text-text-dim uppercase tracking-widest font-medium">Years Experience</div>
+                <div className="text-5xl font-bold text-white mb-2 group-hover:scale-110 transition-transform duration-300">
+                  <span className="gradient-text-animated">3+</span>
+                </div>
+                <div className="text-sm text-text-dim uppercase tracking-widest font-medium group-hover:text-white/70 transition-colors duration-300">Years Experience</div>
               </div>
             </SpotlightCard>
           </motion.div>

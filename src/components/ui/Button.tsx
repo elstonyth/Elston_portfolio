@@ -37,14 +37,14 @@ export const Button: React.FC<ButtonProps> = ({
 
   const variants: Record<ButtonVariants, string> = {
     primary:
-      'bg-white text-black hover:bg-gray-100 relative overflow-hidden group shadow-[0_0_20px_rgba(255,255,255,0.1)] hover:shadow-[0_0_30px_rgba(255,255,255,0.3)]',
+      'bg-white text-black hover:bg-gray-100 relative overflow-hidden group shadow-[0_0_20px_rgba(255,255,255,0.1)] hover:shadow-[0_0_40px_rgba(255,255,255,0.4)] transition-shadow duration-300',
     secondary:
-      'bg-white/10 text-white hover:bg-white/20 border border-white/10 backdrop-blur-sm',
+      'bg-white/10 text-white hover:bg-white/20 border border-white/10 backdrop-blur-sm hover:border-white/30 hover:shadow-[0_0_20px_rgba(34,211,238,0.15)] transition-all duration-300',
     outline:
-      'bg-transparent border border-white/20 text-white hover:border-white/50 hover:bg-white/5 backdrop-blur-sm',
-    ghost: 'bg-transparent text-text-dim hover:text-white hover:bg-white/5',
+      'bg-transparent border border-white/20 text-white hover:border-cyan-400/50 hover:bg-white/5 backdrop-blur-sm hover:shadow-[0_0_25px_rgba(34,211,238,0.2)] transition-all duration-300',
+    ghost: 'bg-transparent text-text-dim hover:text-white hover:bg-white/5 transition-colors duration-200',
     galaxy:
-      'relative overflow-hidden border border-transparent text-white bg-transparent before:absolute before:inset-[1px] before:rounded-full before:bg-black/70 before:backdrop-blur before:border before:border-white/10 after:absolute after:inset-0 after:rounded-full after:bg-gradient-to-r after:from-[#0ea5e9] after:via-[#8b5cf6] after:to-[#ec4899] after:opacity-70 after:blur-[18px] after:-z-10 shadow-[0_0_25px_rgba(14,165,233,0.35)]',
+      'relative overflow-hidden border border-transparent text-white bg-transparent before:absolute before:inset-[1px] before:rounded-full before:bg-black/70 before:backdrop-blur before:border before:border-white/10 after:absolute after:inset-0 after:rounded-full after:bg-gradient-to-r after:from-[#0ea5e9] after:via-[#8b5cf6] after:to-[#ec4899] after:opacity-70 after:blur-[18px] after:-z-10 shadow-[0_0_25px_rgba(14,165,233,0.35)] hover:shadow-[0_0_40px_rgba(14,165,233,0.5)] transition-shadow duration-300',
   };
 
   const sizes: Record<ButtonSizes, string> = {

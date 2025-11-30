@@ -96,7 +96,7 @@ const ProjectCard: React.FC<{ project: Project; index: number; reducedMotion: bo
 
               <div className="flex flex-wrap gap-2">
               {project.tech.map((t) => (
-                <span key={t} className="px-3 py-1 rounded-full bg-white/5 border border-white/10 text-xs text-white/60 font-mono">
+                <span key={t} className="px-3 py-1 rounded-full bg-white/5 border border-white/10 text-xs text-white/60 font-mono pill-hover cursor-default">
                   {t}
                 </span>
               ))}
@@ -125,10 +125,10 @@ const ProjectCard: React.FC<{ project: Project; index: number; reducedMotion: bo
 
           {/* Image Side (Parallax) */}
           <div className="relative h-[320px] sm:h-[360px] lg:h-full overflow-hidden order-1 lg:order-2 group rounded-r-2xl">
-             <div className="absolute inset-0 bg-black/20 z-10 group-hover:bg-transparent transition-colors duration-500" />
-             <div className="relative h-full w-full">
+             <div className="absolute inset-0 bg-black/20 z-10 group-hover:bg-black/0 transition-colors duration-500" />
+             <div className="relative h-full w-full overflow-hidden">
                <motion.img 
-                  whileHover={reducedMotion ? undefined : { scale: 1.05 }}
+                  whileHover={reducedMotion ? undefined : { scale: 1.08 }}
                   transition={reducedMotion ? undefined : { duration: 0.7, ease: "easeOut" }}
                   src={project.image} 
                   alt={project.title} 
@@ -138,9 +138,12 @@ const ProjectCard: React.FC<{ project: Project; index: number; reducedMotion: bo
                />
              </div>
              
+             {/* Gradient overlay on hover */}
+             <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-15" />
+             
              {/* Hover Overlay */}
              <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none z-20">
-                <div className="w-24 h-24 rounded-full bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center text-white">
+                <div className="w-24 h-24 rounded-full bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center text-white breathing-glow">
                    <span className="font-mono text-xs uppercase tracking-widest">Explore</span>
                 </div>
              </div>
