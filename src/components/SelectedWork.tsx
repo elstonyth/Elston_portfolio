@@ -216,7 +216,6 @@ const AnalyticsIllustration: React.FC<{ id: number; color: string }> = ({ id, co
           isDark ? 'border-white/10 bg-white/5' : 'border-gray-200/60 bg-white/70'
         }`}>
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-emerald-500/10 via-transparent to-transparent" />
-          <div className="absolute inset-0 bg-grid-white/[0.02]" />
 
           {/* Radar / Scan Effect */}
           <div className="relative flex items-center justify-center z-10">
@@ -224,14 +223,14 @@ const AnalyticsIllustration: React.FC<{ id: number; color: string }> = ({ id, co
              <motion.div 
                 animate={{ rotate: 360 }}
                 transition={{ duration: 8, ease: "linear", repeat: Infinity }}
-                className="absolute w-48 h-48 rounded-full bg-gradient-to-tr from-transparent via-emerald-500/10 to-transparent"
+                className="absolute w-48 h-48 rounded-full bg-gradient-to-tr from-transparent via-emerald-500/20 to-transparent"
              />
 
              {[80, 55, 30].map((size, i) => (
                <motion.div
                  key={i}
                  initial={{ scale: 0.8, opacity: 0 }}
-                 whileInView={{ scale: 1, opacity: [0.1, 0.4, 0.1] }}
+                 whileInView={{ scale: 1, opacity: [0.2, 0.5, 0.2] }}
                  transition={{ 
                    delay: i * 0.15, 
                    duration: 3, 
@@ -239,7 +238,7 @@ const AnalyticsIllustration: React.FC<{ id: number; color: string }> = ({ id, co
                    ease: "easeInOut"
                  }}
                  style={{ width: size * 2, height: size * 2 }}
-                 className={`absolute rounded-full border ${i === 0 ? 'border-emerald-500/10' : 'border-emerald-400/20'}`}
+                 className={`absolute rounded-full border ${i === 0 ? 'border-emerald-500/20' : 'border-emerald-400/30'}`}
                />
              ))}
              
@@ -251,9 +250,9 @@ const AnalyticsIllustration: React.FC<{ id: number; color: string }> = ({ id, co
                transition={{ type: "spring", stiffness: 200, delay: 0.2 }}
                className="w-16 h-16 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-700 flex items-center justify-center shadow-[0_0_30px_rgba(16,185,129,0.4)] relative overflow-hidden"
              >
-                <div className="absolute inset-0 bg-gradient-to-tr from-white/20 to-transparent opacity-50" />
-                <div className="w-6 h-6 rounded-full border-[3px] border-white/90 flex items-center justify-center shadow-inner">
-                  <div className="w-2 h-2 bg-white rounded-full animate-pulse" />
+                <div className="absolute inset-0 bg-gradient-to-tr from-emerald-300/30 to-transparent opacity-50" />
+                <div className="w-6 h-6 rounded-full border-[3px] border-emerald-100 flex items-center justify-center shadow-inner">
+                  <div className="w-2 h-2 bg-emerald-200 rounded-full animate-pulse" />
                 </div>
              </motion.div>
           </div>
@@ -263,7 +262,11 @@ const AnalyticsIllustration: React.FC<{ id: number; color: string }> = ({ id, co
                initial={{ opacity: 0, y: 5 }}
                whileInView={{ opacity: 1, y: 0 }}
                transition={{ delay: 0.8 }}
-               className="text-[10px] font-mono text-emerald-400/80 tracking-[0.2em] uppercase bg-emerald-900/30 px-3 py-1 rounded-full border border-emerald-500/20"
+               className={`text-[10px] font-mono tracking-[0.2em] uppercase px-3 py-1 rounded-full border ${
+                 isDark 
+                   ? 'text-emerald-400/80 bg-emerald-900/30 border-emerald-500/20' 
+                   : 'text-emerald-600 bg-emerald-100/80 border-emerald-300/50'
+               }`}
              >
                 100% Private
              </motion.span>
