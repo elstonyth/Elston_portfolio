@@ -1,6 +1,7 @@
 import React, { useCallback, useRef } from 'react';
 import { motion, useMotionTemplate, useMotionValue } from 'framer-motion';
 import { cn } from '@/lib/utils';
+import { useTheme } from '@/context/ThemeContext';
 
 interface SpotlightCardProps {
   children: React.ReactNode;
@@ -8,6 +9,7 @@ interface SpotlightCardProps {
 }
 
 export function SpotlightCard({ children, className }: SpotlightCardProps) {
+  const { isDark } = useTheme();
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
   const lastUpdate = useRef(0);
@@ -27,7 +29,10 @@ export function SpotlightCard({ children, className }: SpotlightCardProps) {
     <div
       onMouseMove={handleMouseMove}
       className={cn(
-        "relative overflow-hidden rounded-xl border border-white/10 bg-black/40 backdrop-blur-xl shadow-2xl group transition-all duration-500 hover:border-white/20 hover:shadow-[0_0_40px_rgba(34,211,238,0.1)]",
+        "relative overflow-hidden rounded-xl border backdrop-blur-xl shadow-2xl group transition-all duration-500",
+        isDark 
+          ? "border-white/10 bg-black/40 hover:border-white/20 hover:shadow-[0_0_40px_rgba(34,211,238,0.1)]"
+          : "border-slate-200/60 bg-white/50 hover:border-slate-300/80 hover:shadow-[0_8px_30px_rgba(0,0,0,0.08)] hover:bg-white/70",
         className
       )}
     >

@@ -1,63 +1,23 @@
 import React from 'react';
-import { Github, Twitter, Linkedin, Mail } from 'lucide-react';
 import { ResumeDownload } from './ResumeDownload';
+import { useTheme } from '@/context/ThemeContext';
 
 export const Footer: React.FC = () => {
+  const { isDark } = useTheme();
+  
   return (
-    <footer className="relative overflow-hidden">
-        {/* Decorative gradient at bottom */}
-      <div className="absolute bottom-0 left-0 w-full h-[300px] bg-gradient-to-t from-purple-900/20 to-transparent pointer-events-none" />
-
-      <div className="max-w-7xl mx-auto px-6 pt-20 md:pt-24 pb-10 md:pb-12 relative z-10">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-24 mb-24">
-          <div>
-             <h2 className="text-3xl sm:text-4xl md:text-6xl font-bold tracking-tighter text-white mb-8">
-               Let's talk <br/>
-               <span 
-                 style={{
-                   background: 'linear-gradient(to right, #ffffff, rgba(255,255,255,0.8), rgba(255,255,255,0.4))',
-                   WebkitBackgroundClip: 'text',
-                   WebkitTextFillColor: 'transparent',
-                   backgroundClip: 'text',
-                   color: 'white'
-                 }}>data & impact.</span>
-             </h2>
-             <div className="flex flex-col sm:flex-row gap-4">
-                <a href="mailto:elstonyth@outlook.com" className="inline-flex items-center justify-center px-8 py-4 rounded-full bg-white text-black font-medium hover:bg-gray-100 hover:shadow-[0_0_40px_rgba(255,255,255,0.3)] transition-all duration-300 group">
-                    <span className="group-hover:translate-x-1 transition-transform duration-300">Start a Conversation</span>
-                </a>
-                <a href="mailto:elstonyth@outlook.com" className="inline-flex items-center justify-center px-8 py-4 rounded-full bg-white/5 border border-white/10 text-white font-medium hover:bg-white/10 hover:border-cyan-400/30 hover:shadow-[0_0_25px_rgba(34,211,238,0.15)] transition-all duration-300 backdrop-blur-sm">
-                    elstonyth@outlook.com
-                </a>
-             </div>
-          </div>
-
-          <div className="flex flex-col justify-between">
-            <p className="text-base md:text-lg text-text-dim leading-relaxed mb-12 max-w-md">
-               I work across analytics, automation, and IT operations to help teams make better decisions and reduce manual work. Open to data roles, collaborations, and interesting problems.
-            </p>
-            
-            <div className="flex gap-4">
-                {[
-                    { icon: Github, href: "https://github.com/elstonyth", hoverColor: "hover:shadow-purple-500/30" },
-                    { icon: Twitter, href: "https://twitter.com/elstonyth", hoverColor: "hover:shadow-cyan-500/30" },
-                    { icon: Linkedin, href: "https://www.linkedin.com/in/elstonyth", hoverColor: "hover:shadow-blue-500/30" },
-                    { icon: Mail, href: "mailto:elstonyth@outlook.com", hoverColor: "hover:shadow-pink-500/30" }
-                ].map((social, i) => (
-                    <a key={i} href={social.href} className={`w-12 h-12 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white hover:bg-white hover:text-black social-icon-hover hover:shadow-[0_0_25px] ${social.hoverColor} group`}>
-                        <social.icon size={20} className="group-hover:rotate-12 transition-transform duration-300" />
-                    </a>
-                ))}
-            </div>
-          </div>
-        </div>
-        
-        <div className="flex flex-col md:flex-row items-center justify-between pt-8 text-sm text-text-dim font-mono uppercase tracking-wider">
+    <footer className={`relative overflow-hidden border-t transition-colors duration-500 ${
+      isDark ? 'border-white/5' : 'border-slate-200'
+    }`}>
+      <div className="max-w-7xl mx-auto px-6 py-8 relative z-10">
+        <div className={`flex flex-col md:flex-row items-center justify-between text-sm font-mono uppercase tracking-wider transition-colors duration-500 ${
+          isDark ? 'text-white/50' : 'text-slate-500'
+        }`}>
           <p>&copy; {new Date().getFullYear()} Elston Yeo. All rights reserved.</p>
           <div className="flex gap-8 mt-4 md:mt-0">
             <ResumeDownload variant="link" showIcon={false} />
-            <a href="#work" className="hover:text-white transition-colors">Work</a>
-            <a href="mailto:elstonyth@outlook.com" className="hover:text-white transition-colors">Contact</a>
+            <a href="#work" className={`transition-colors ${isDark ? 'hover:text-white' : 'hover:text-slate-900'}`}>Work</a>
+            <a href="#contact" className={`transition-colors ${isDark ? 'hover:text-white' : 'hover:text-slate-900'}`}>Contact</a>
           </div>
         </div>
       </div>

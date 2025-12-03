@@ -157,7 +157,7 @@ const ProfileView = () => (
     
     <div className="mb-8">
       <h2 className="text-3xl font-bold text-white tracking-tight mb-1">Elston Yeo</h2>
-      <p className="text-white/50 font-medium text-sm">Full-Stack AI Developer</p>
+      <p className="text-white/50 font-medium text-sm">Full-Stack AI Engineer</p>
     </div>
 
     <div className="grid grid-cols-2 gap-3 mb-8">
@@ -178,7 +178,7 @@ const ProfileView = () => (
     <div className="mb-8">
       <div className="text-xs text-white/40 mb-3 font-medium uppercase tracking-wider">Tech Stack</div>
       <div className="flex flex-wrap gap-2">
-        {['React', 'TypeScript', 'Node.js', 'WebGL'].map(skill => (
+        {['Python', 'SQL', 'React', 'TypeScript'].map(skill => (
           <span key={skill} className="px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 border border-white/5 text-xs text-white/70 transition-all cursor-default">
             {skill}
           </span>
