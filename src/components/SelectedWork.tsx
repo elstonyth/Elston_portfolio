@@ -299,7 +299,9 @@ const ProjectCard: React.FC<{ project: Project; index: number; reducedMotion: bo
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-0 md:h-[420px] lg:h-[480px]">
             
           {/* Content Side */}
-          <div className="p-8 md:p-12 flex flex-col justify-between order-2 lg:order-1 lg:h-full relative z-10">
+          <div className={`p-8 md:p-12 flex flex-col justify-between order-2 lg:order-1 lg:h-full relative z-10 ${
+            isDark ? '' : 'bg-white/40'
+          }`}>
             <div>
               {/* Project Number Indicator */}
               <motion.div
