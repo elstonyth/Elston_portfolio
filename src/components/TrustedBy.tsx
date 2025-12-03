@@ -50,12 +50,12 @@ export const TrustedBy: React.FC = () => {
             <div className={`absolute left-0 top-0 bottom-0 w-24 z-10 pointer-events-none transition-colors duration-500 ${
               isDark 
                 ? 'bg-gradient-to-r from-[#030305] via-[#030305]/80 to-transparent' 
-                : 'bg-gradient-to-r from-[#e8eaef] via-[#e8eaef]/80 to-transparent'
+                : 'bg-gradient-to-r from-[#c5cad3] via-[#c5cad3]/80 to-transparent'
             }`} />
             <div className={`absolute right-0 top-0 bottom-0 w-24 z-10 pointer-events-none transition-colors duration-500 ${
               isDark 
                 ? 'bg-gradient-to-l from-[#030305] via-[#030305]/80 to-transparent' 
-                : 'bg-gradient-to-l from-[#e8eaef] via-[#e8eaef]/80 to-transparent'
+                : 'bg-gradient-to-l from-[#c5cad3] via-[#c5cad3]/80 to-transparent'
             }`} />
             <div className="flex animate-marquee gap-8 md:gap-12" style={{ willChange: 'transform', contain: 'content' }}>
               {/* First set */}

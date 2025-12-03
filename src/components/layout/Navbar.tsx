@@ -71,8 +71,10 @@ export const Navbar: React.FC = () => {
         isScrolled 
           ? isDark 
             ? 'bg-black/40 backdrop-blur-xl border-b border-white/5 shadow-lg' 
-            : 'bg-[#e8eaef]/80 backdrop-blur-xl border-b border-slate-300/30 shadow-lg shadow-slate-400/10'
-          : 'bg-transparent py-6 border-b border-transparent'
+            : 'bg-[#b8bfc9]/90 backdrop-blur-xl border-b border-gray-400/40 shadow-lg shadow-gray-500/20'
+          : isDark 
+            ? 'bg-transparent py-6 border-b border-transparent'
+            : 'bg-[#b8bfc9]/50 backdrop-blur-sm py-6 border-b border-gray-400/20'
       }`}
       aria-label="Main navigation"
     >
@@ -104,7 +106,7 @@ export const Navbar: React.FC = () => {
         <div className={`hidden md:flex items-center gap-1 p-1.5 rounded-full border backdrop-blur-xl shadow-lg transition-colors duration-500 ${
           isDark 
             ? 'bg-white/5 border-white/10 shadow-black/10' 
-            : 'bg-slate-100/80 border-slate-200/50 shadow-slate-200/20'
+            : 'bg-white/40 border-gray-400/30 shadow-gray-400/20'
         }`} role="navigation" aria-label="Primary">
           {navLinks.map((link) => {
             const isActive = activeSection === link.id;
@@ -219,7 +221,7 @@ export const Navbar: React.FC = () => {
           className={`md:hidden absolute top-[calc(100%+1px)] left-0 right-0 backdrop-blur-xl border-b p-6 flex flex-col gap-4 animate-in slide-in-from-top-5 z-40 ${
             isDark 
               ? 'bg-[#030305]/95 border-white/10' 
-              : 'bg-[#e8eaef]/95 border-slate-300/30'
+              : 'bg-[#b8bfc9]/95 border-gray-400/40'
           }`}
           role="navigation"
           aria-label="Mobile navigation"

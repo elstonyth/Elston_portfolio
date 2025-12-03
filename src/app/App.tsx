@@ -164,19 +164,19 @@ function AppContent() {
           className={`min-h-screen overflow-x-hidden font-sans transition-colors duration-500 ${
             isDark 
               ? 'bg-[#030305] text-white selection:bg-cyan-500/30 selection:text-cyan-100' 
-              : 'bg-[#e8eaef] text-slate-900 selection:bg-cyan-500/30 selection:text-cyan-900'
+              : 'bg-[#c5cad3] text-gray-900 selection:bg-cyan-500/30 selection:text-cyan-900'
           } before:fixed before:inset-0 before:z-0 before:bg-noise before:opacity-20 before:pointer-events-none`}
         >
           {/* Background System - Theme Aware */}
           <div 
             className={`fixed inset-0 z-0 pointer-events-none transition-colors duration-500 ${
-              isDark ? 'bg-[#030305]' : 'bg-[#e8eaef]'
+              isDark ? 'bg-[#030305]' : 'bg-[#c5cad3]'
             }`} 
             style={{ willChange: 'transform', contain: 'strict' }}
           >
             {/* Base tone */}
             <div className={`absolute inset-0 transition-colors duration-500 ${
-              isDark ? 'bg-[#030305]' : 'bg-[#e8eaef]'
+              isDark ? 'bg-[#030305]' : 'bg-[#c5cad3]'
             }`} />
 
             {/* Nebula color wash - enhanced for light mode */}
@@ -261,7 +261,7 @@ function AppContent() {
               className={`group inline-flex items-center gap-3 px-4 py-2 rounded-full border text-sm transition-all duration-300 mb-6 backdrop-blur-md shimmer-effect premium-badge ${
                 isDark 
                   ? 'bg-white/5 border-white/10 text-white/80 hover:border-cyan-400/30 hover:bg-white/10 hover:shadow-[0_0_20px_rgba(34,211,238,0.15)]' 
-                  : 'bg-white/80 border-slate-200 text-slate-700 hover:border-cyan-500/40 hover:bg-white hover:shadow-[0_0_20px_rgba(8,145,178,0.15)]'
+                  : 'bg-white/50 border-gray-400/40 text-gray-800 hover:border-cyan-600/50 hover:bg-white/70 hover:shadow-[0_0_20px_rgba(8,145,178,0.15)]'
               }`}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -296,7 +296,7 @@ function AppContent() {
                   className={`flex items-center gap-3 px-4 py-2 rounded-full border backdrop-blur-sm transition-all duration-300 cursor-default ${!showOnMobile ? 'hidden sm:flex' : ''} ${
                     isDark 
                       ? 'bg-white/5 border-white/10 hover:border-white/20 hover:bg-white/10 hover:shadow-[0_0_15px_rgba(139,92,246,0.1)]' 
-                      : 'bg-white/80 border-slate-200 hover:border-slate-300 hover:bg-white hover:shadow-[0_4px_15px_rgba(0,0,0,0.08)]'
+                      : 'bg-white/50 border-gray-400/40 hover:border-gray-500/50 hover:bg-white/70 hover:shadow-[0_4px_15px_rgba(0,0,0,0.08)]'
                   }`}
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
