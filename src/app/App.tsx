@@ -359,20 +359,13 @@ function AppContent() {
             {/* Hero Visual - Desktop: Premium Phone Card on right */}
             <motion.div 
               className="hidden lg:block absolute right-0 top-[200px]"
-              initial={{ opacity: 0, x: 30, rotateY: -10 }}
-              animate={{ opacity: 1, x: 0, rotateY: 0 }}
-              transition={{ duration: 1, delay: 0.4, ease: [0.22, 1, 0.36, 1] }}
+              initial={{ opacity: 0, x: 30 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6, delay: 0.4, ease: [0.22, 1, 0.36, 1] }}
+              style={{ willChange: 'transform, opacity' }}
             >
-              <div className="relative group premium-float">
+              <div className="relative group">
                 <PremiumPhoneCard />
-                <motion.div 
-                  className="absolute -bottom-12 left-1/2 -translate-x-1/2 text-center"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 1.2, duration: 0.6 }}
-                >
-                  <span className="text-[10px] uppercase tracking-[0.5em] text-white/30 font-medium">Interactive Demo</span>
-                </motion.div>
               </div>
             </motion.div>
 
@@ -381,18 +374,11 @@ function AppContent() {
               className="mt-16 w-full flex justify-center lg:hidden"
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.5, ease: "easeOut" }}
+              transition={{ duration: 0.5, delay: 0.4, ease: "easeOut" }}
+              style={{ willChange: 'transform, opacity' }}
             >
               <div className="relative">
                 <PremiumPhoneCard />
-                <motion.div 
-                  className="absolute -bottom-10 left-1/2 -translate-x-1/2 text-center"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 1, duration: 0.6 }}
-                >
-                  <span className="text-[10px] uppercase tracking-[0.5em] text-white/30 font-medium">Tap to toggle</span>
-                </motion.div>
               </div>
             </motion.div>
           </div>

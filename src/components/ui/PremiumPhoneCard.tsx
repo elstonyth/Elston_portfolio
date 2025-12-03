@@ -10,23 +10,15 @@ export const PremiumPhoneCard: React.FC<PremiumPhoneCardProps> = ({ className = 
   const { isDark, toggleTheme } = useTheme();
 
   return (
-    <div className={`premium-phone-wrapper ${className}`}>
-      {/* Main background glow */}
-      <motion.div 
+    <div className={`premium-phone-wrapper ${className}`} style={{ willChange: 'transform' }}>
+      {/* Main background glow - simplified for performance */}
+      <div 
         className="absolute -inset-8 rounded-[60px] opacity-40 blur-3xl pointer-events-none"
         style={{
           background: isDark 
             ? 'linear-gradient(40deg, #8983F7, #A3DAFB 70%)' 
-            : 'linear-gradient(40deg, #FF0080, #FF8C00 70%)'
-        }}
-        animate={{ 
-          opacity: [0.3, 0.5, 0.3],
-          scale: [1, 1.05, 1]
-        }}
-        transition={{ 
-          duration: 4, 
-          repeat: Infinity, 
-          ease: "easeInOut" 
+            : 'linear-gradient(40deg, #FF0080, #FF8C00 70%)',
+          willChange: 'opacity'
         }}
       />
 
@@ -78,29 +70,25 @@ export const PremiumPhoneCard: React.FC<PremiumPhoneCardProps> = ({ className = 
             style={{
               background: isDark 
                 ? 'linear-gradient(40deg, #8983F7, #A3DAFB 70%)' 
-                : 'linear-gradient(40deg, #FF0080, #FF8C00 70%)'
+                : 'linear-gradient(40deg, #FF0080, #FF8C00 70%)',
+              willChange: 'transform'
             }}
-            animate={{
-              rotate: isDark ? 360 : 0,
-              scale: [1, 1.02, 1]
-            }}
-            transition={{ 
-              rotate: { duration: 0.8, ease: "easeInOut" },
-              scale: { duration: 3, repeat: Infinity, ease: "easeInOut" }
-            }}
+            animate={{ rotate: isDark ? 180 : 0 }}
+            transition={{ duration: 0.5, ease: [0.4, 0, 0.2, 1] }}
           >
             {/* Crescent overlay for moon effect */}
             <motion.div 
               className="absolute top-0 right-0 w-[4.5rem] h-[4.5rem] rounded-full"
               style={{
                 background: isDark ? '#26242E' : 'transparent',
-                transformOrigin: 'top right'
+                transformOrigin: 'top right',
+                willChange: 'transform, opacity'
               }}
               animate={{
                 scale: isDark ? 1 : 0,
                 opacity: isDark ? 1 : 0
               }}
-              transition={{ duration: 0.6, ease: [0.645, 0.045, 0.355, 1] }}
+              transition={{ duration: 0.4, ease: [0.4, 0, 0.2, 1] }}
             />
             
             {/* Glow effect */}
@@ -117,7 +105,7 @@ export const PremiumPhoneCard: React.FC<PremiumPhoneCardProps> = ({ className = 
           {/* Toggle switch */}
           <button
             onClick={toggleTheme}
-            className={`relative w-full h-11 rounded-full cursor-pointer transition-colors duration-300 ${
+            className={`relative w-full h-11 rounded-full cursor-pointer transition-colors duration-200 ${
               isDark ? 'bg-white/10' : 'bg-black/10'
             }`}
             aria-label="Toggle theme"
@@ -126,13 +114,14 @@ export const PremiumPhoneCard: React.FC<PremiumPhoneCardProps> = ({ className = 
             <motion.div 
               className="absolute top-0 h-11 w-1/2 rounded-full"
               style={{
-                boxShadow: '0 2px 15px rgba(0,0,0,0.15)'
+                boxShadow: '0 2px 15px rgba(0,0,0,0.15)',
+                willChange: 'transform'
               }}
               animate={{
                 x: isDark ? '100%' : '0%',
                 backgroundColor: isDark ? '#34323D' : '#ffffff'
               }}
-              transition={{ duration: 0.3, ease: [0.25, 0.46, 0.45, 0.94] }}
+              transition={{ duration: 0.25, ease: [0.4, 0, 0.2, 1] }}
             />
             
             {/* Labels */}
@@ -167,29 +156,23 @@ export const PremiumPhoneCard: React.FC<PremiumPhoneCardProps> = ({ className = 
         </div>
       </motion.div>
 
-      {/* Floating particles */}
-      {[...Array(3)].map((_, i) => (
-        <motion.div
-          key={i}
-          className="absolute w-1 h-1 rounded-full pointer-events-none"
-          style={{
-            background: isDark ? '#A3DAFB' : '#FF8C00',
-            left: `${20 + i * 30}%`,
-            top: `${10 + i * 25}%`,
-          }}
-          animate={{
-            y: [0, -20, 0],
-            opacity: [0.3, 0.8, 0.3],
-            scale: [1, 1.5, 1]
-          }}
-          transition={{
-            duration: 3 + i,
-            repeat: Infinity,
-            delay: i * 0.5,
-            ease: "easeInOut"
-          }}
-        />
-      ))}
+      {/* Static decorative dots - no animation for performance */}
+      <div 
+        className="absolute w-1.5 h-1.5 rounded-full pointer-events-none opacity-40"
+        style={{
+          background: isDark ? '#A3DAFB' : '#FF8C00',
+          left: '20%',
+          top: '15%',
+        }}
+      />
+      <div 
+        className="absolute w-1 h-1 rounded-full pointer-events-none opacity-30"
+        style={{
+          background: isDark ? '#A3DAFB' : '#FF8C00',
+          left: '75%',
+          top: '25%',
+        }}
+      />
     </div>
   );
 };

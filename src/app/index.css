@@ -58,10 +58,32 @@
 }
 
 /* ============================= */
-/* Scroll Performance Optimizations */
-/* === SCROLL PERFORMANCE === */
+/* 60fps Animation Optimizations */
+/* ============================= */
+
+/* Force GPU acceleration for smoother animations */
+.premium-phone-wrapper,
+.premium-phone,
+[class*="motion"] {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  -webkit-font-smoothing: subpixel-antialiased;
+}
+
+/* Optimize transitions to use GPU-accelerated properties */
 * {
   scroll-behavior: smooth;
+}
+
+/* Reduce motion for users who prefer it */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }
 
 html {
