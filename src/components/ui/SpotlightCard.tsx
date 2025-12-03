@@ -29,10 +29,10 @@ export function SpotlightCard({ children, className }: SpotlightCardProps) {
     <div
       onMouseMove={handleMouseMove}
       className={cn(
-        "relative overflow-hidden rounded-xl border backdrop-blur-xl shadow-2xl group transition-all duration-500",
+        "relative overflow-hidden rounded-xl border backdrop-blur-xl shadow-2xl group transition-all duration-300 ease-smooth-out hover:-translate-y-1",
         isDark 
-          ? "border-white/10 bg-black/40 hover:border-white/20 hover:shadow-[0_0_40px_rgba(34,211,238,0.1)]"
-          : "border-slate-200/60 bg-white/50 hover:border-slate-300/80 hover:shadow-[0_8px_30px_rgba(0,0,0,0.08)] hover:bg-white/70",
+          ? "border-white/10 bg-black/40 hover:border-white/20 hover:shadow-[0_8px_40px_rgba(34,211,238,0.15)]"
+          : "border-slate-200/60 bg-white/50 hover:border-slate-300/80 hover:shadow-[0_12px_40px_rgba(0,0,0,0.1)] hover:bg-white/70",
         className
       )}
     >

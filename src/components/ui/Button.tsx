@@ -36,7 +36,7 @@ export const Button: React.FC<ButtonProps> = ({
   const { isDark } = useTheme();
   
   const baseStyles =
-    'inline-flex items-center justify-center font-medium transition-all duration-200 rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cyan-400 disabled:opacity-50 disabled:cursor-not-allowed';
+    'inline-flex items-center justify-center font-medium transition-all duration-300 ease-smooth-out rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cyan-400 disabled:opacity-50 disabled:cursor-not-allowed hover:-translate-y-0.5 active:translate-y-0';
 
   const variants: Record<ButtonVariants, string> = {
     primary: isDark
