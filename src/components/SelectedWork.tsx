@@ -373,18 +373,11 @@ const ProjectCard: React.FC<{ project: Project; index: number; reducedMotion: bo
             </div>
 
             <div className="flex items-center gap-4 mt-6">
-              {project.links.demo !== '#' ? (
+              {project.links.demo !== '#' && (
                 <Button as="a" href={project.links.demo} variant="primary" className="group">
                   View Project 
                   <ArrowUpRight size={16} className="ml-2 group-hover:rotate-45 transition-transform" />
                 </Button>
-              ) : (
-                <span className={`inline-flex items-center gap-2 px-4 py-2 rounded-full border text-sm ${
-                  isDark ? 'bg-white/5 border-white/10 text-white/50' : 'bg-gray-100/80 border-gray-300/50 text-gray-500'
-                }`}>
-                  <span className="w-1.5 h-1.5 rounded-full bg-amber-400/80 animate-pulse" />
-                  Case Study Coming
-                </span>
               )}
               {project.links.github !== '#' && (
                 <a href={project.links.github} target="_blank" rel="noopener noreferrer" className={`p-3 rounded-full border transition-all ${
