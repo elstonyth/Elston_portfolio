@@ -549,14 +549,7 @@ function AppContent() {
                 Let's talk<br />
                 data &{' '}
                 <span 
-                  className="bg-clip-text text-transparent"
-                  style={{
-                    background: isDark 
-                      ? 'linear-gradient(to right, #ffffff, rgba(255,255,255,0.6), rgba(255,255,255,0.3))'
-                      : 'linear-gradient(to right, #0891b2, #7c3aed)',
-                    WebkitBackgroundClip: 'text',
-                    backgroundClip: 'text',
-                  }}
+                  className={isDark ? 'text-white/70' : 'bg-gradient-to-r from-cyan-600 to-purple-600 bg-clip-text text-transparent'}
                 >
                   impact.
                 </span>
