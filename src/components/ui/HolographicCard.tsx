@@ -1,5 +1,6 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { motion, useMotionValue, useSpring, useTransform, useInView } from 'framer-motion';
+import { useTheme } from '@/context/ThemeContext';
 
 interface HolographicCardProps {
   children: React.ReactNode;
@@ -12,6 +13,7 @@ export const HolographicCard: React.FC<HolographicCardProps> = ({
   className = '',
   intensity = 'medium',
 }) => {
+  const { isDark } = useTheme();
   const cardRef = useRef<HTMLDivElement>(null);
   const [isHovered, setIsHovered] = useState(false);
   const [isScrolling, setIsScrolling] = useState(false);
@@ -117,7 +119,9 @@ export const HolographicCard: React.FC<HolographicCardProps> = ({
       }}
     >
       {/* Holographic Glass Layer */}
-      <div className="absolute inset-0 bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl" />
+      <div className={`absolute inset-0 backdrop-blur-xl border rounded-2xl ${
+        isDark ? 'bg-white/5 border-white/10' : 'bg-white/60 border-gray-200/50'
+      }`} />
 
       {/* Animated Gradient Glow */}
       <motion.div

@@ -164,10 +164,10 @@ const AnalyticsIllustration: React.FC<{ id: number; color: string }> = ({ id, co
            
            <div className="flex items-end gap-8 h-28 w-full justify-center px-4 z-10">
               {/* Bar 1: Manual */}
-              <div className="flex flex-col items-center gap-3">
+              <div className="flex flex-col items-center gap-3 h-full">
                  <motion.div 
                    initial={{ height: 0, opacity: 0 }}
-                   whileInView={{ height: "80%", opacity: 1 }}
+                   whileInView={{ height: 80, opacity: 1 }}
                    transition={{ duration: 0.8, delay: 0.2 }}
                    className={`w-10 rounded-t-lg border relative overflow-hidden ${
                      isDark ? 'bg-white/5 border-white/10' : 'bg-gray-100 border-gray-200'
@@ -184,11 +184,11 @@ const AnalyticsIllustration: React.FC<{ id: number; color: string }> = ({ id, co
               </div>
 
               {/* Bar 2: Auto */}
-              <div className="flex flex-col items-center gap-3">
+              <div className="flex flex-col items-center gap-3 h-full justify-end">
                  <div className="relative group-hover:-translate-y-1 transition-transform duration-500">
                     <motion.div 
                       initial={{ height: 0 }}
-                      whileInView={{ height: "30%" }}
+                      whileInView={{ height: 35 }}
                       transition={{ duration: 0.8, delay: 0.4, type: "spring" }}
                       className="w-10 rounded-t-lg bg-gradient-to-t from-purple-600 to-pink-500 shadow-[0_0_25px_rgba(236,72,153,0.4)]"
                     />
