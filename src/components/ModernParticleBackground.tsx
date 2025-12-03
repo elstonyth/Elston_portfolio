@@ -11,13 +11,28 @@ interface Particle {
   opacity: number;
   baseOpacity: number;
   twinkleSpeed: number;
+  twinklePhase: number;
   hue: number;
+  saturation: number;
   layer: number;
+  pulseSpeed: number;
+}
+
+interface ShootingStar {
+  x: number;
+  y: number;
+  vx: number;
+  vy: number;
+  length: number;
+  opacity: number;
+  life: number;
+  maxLife: number;
 }
 
 export const ModernParticleBackground: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const particlesRef = useRef<Particle[]>([]);
+  const shootingStarsRef = useRef<ShootingStar[]>([]);
   const mouseRef = useRef({ x: 0, y: 0, isMoving: false });
   const animationRef = useRef<number | undefined>(undefined);
   const isScrollingRef = useRef(false);
@@ -37,17 +52,17 @@ export const ModernParticleBackground: React.FC = () => {
       return;
     }
 
-    // Adaptive particle count - Reduced for better scroll performance
+    // Adaptive particle count - Increased for better visuals
     const getParticleCount = (): number => {
       switch (quality) {
         case 'low':
-          return 150;
+          return 200;
         case 'medium':
-          return 300;
+          return 450;
         case 'high':
-          return 500; // Reduced from 1200 for smoother scrolling
+          return 700;
         default:
-          return 300;
+          return 450;
       }
     };
 
@@ -75,28 +90,65 @@ export const ModernParticleBackground: React.FC = () => {
 
     const createParticle = (): Particle => {
       // 0: Background (tiny, static), 1: Mid (slow), 2: Foreground (brighter, drifting)
-      const layer = Math.random() < 0.6 ? 0 : Math.random() < 0.9 ? 1 : 2;
+      const layer = Math.random() < 0.5 ? 0 : Math.random() < 0.85 ? 1 : 2;
       
-      const baseOpacity = layer === 0 ? 0.1 + Math.random() * 0.2 
-                       : layer === 1 ? 0.3 + Math.random() * 0.3 
-                       : 0.5 + Math.random() * 0.4;
+      const baseOpacity = layer === 0 ? 0.15 + Math.random() * 0.25 
+                       : layer === 1 ? 0.35 + Math.random() * 0.35 
+                       : 0.6 + Math.random() * 0.4;
 
-      // Rare blue/purple stars, mostly white
-      const hue = Math.random() > 0.9 ? 200 + Math.random() * 60 : 0;
+      // More colorful stars - cyan, purple, pink, blue, white
+      const colorRand = Math.random();
+      let hue = 0;
+      let saturation = 0;
+      if (colorRand > 0.7) {
+        // Colored stars (30%)
+        const colorType = Math.random();
+        if (colorType < 0.3) {
+          hue = 185 + Math.random() * 20; // Cyan
+          saturation = 70 + Math.random() * 30;
+        } else if (colorType < 0.6) {
+          hue = 260 + Math.random() * 30; // Purple
+          saturation = 60 + Math.random() * 30;
+        } else if (colorType < 0.8) {
+          hue = 320 + Math.random() * 30; // Pink
+          saturation = 50 + Math.random() * 30;
+        } else {
+          hue = 210 + Math.random() * 30; // Blue
+          saturation = 60 + Math.random() * 30;
+        }
+      }
 
       return {
         x: Math.random() * canvas.width,
         y: Math.random() * canvas.height,
-        vx: (Math.random() - 0.5) * (layer === 0 ? 0.02 : layer === 1 ? 0.05 : 0.1),
-        vy: (Math.random() - 0.5) * (layer === 0 ? 0.02 : layer === 1 ? 0.05 : 0.1),
-        size: layer === 0 ? 0.5 + Math.random() * 0.5 
-            : layer === 1 ? 0.8 + Math.random() * 0.8 
-            : 1.2 + Math.random() * 1.0,
+        vx: (Math.random() - 0.5) * (layer === 0 ? 0.03 : layer === 1 ? 0.08 : 0.15),
+        vy: (Math.random() - 0.5) * (layer === 0 ? 0.03 : layer === 1 ? 0.08 : 0.15),
+        size: layer === 0 ? 0.6 + Math.random() * 0.6 
+            : layer === 1 ? 1.0 + Math.random() * 1.0 
+            : 1.5 + Math.random() * 1.2,
         opacity: baseOpacity,
         baseOpacity: baseOpacity,
-        twinkleSpeed: 0.02 + Math.random() * 0.05,
+        twinkleSpeed: 0.015 + Math.random() * 0.04,
+        twinklePhase: Math.random() * Math.PI * 2,
         hue,
-        layer
+        saturation,
+        layer,
+        pulseSpeed: 0.5 + Math.random() * 1.5
+      };
+    };
+
+    const createShootingStar = (): ShootingStar => {
+      const angle = Math.PI / 4 + (Math.random() - 0.5) * 0.5; // Mostly diagonal
+      const speed = 8 + Math.random() * 6;
+      return {
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height * 0.3,
+        vx: Math.cos(angle) * speed,
+        vy: Math.sin(angle) * speed,
+        length: 50 + Math.random() * 80,
+        opacity: 0.8 + Math.random() * 0.2,
+        life: 0,
+        maxLife: 60 + Math.random() * 40
       };
     };
 
@@ -118,27 +170,93 @@ export const ModernParticleBackground: React.FC = () => {
     };
 
     const drawParticle = (particle: Particle, time: number) => {
-      const { x, y, size, opacity, hue } = particle;
+      const { x, y, size, hue, saturation, layer, twinklePhase, pulseSpeed } = particle;
       
-      // Twinkle effect
-      const twinkle = Math.sin(time * particle.twinkleSpeed + particle.x) * 0.3;
-      const currentOpacity = Math.max(0, Math.min(1, opacity + twinkle));
+      // Enhanced twinkle effect with phase offset
+      const twinkle = Math.sin(time * particle.twinkleSpeed + twinklePhase) * 0.35;
+      const pulse = Math.sin(time * pulseSpeed) * 0.1;
+      const currentOpacity = Math.max(0, Math.min(1, particle.baseOpacity + twinkle + pulse));
 
-      // Star glow for foreground stars
-      if (particle.layer === 2) {
-        ctx.shadowBlur = size * 4;
-        ctx.shadowColor = hue > 0 ? `hsla(${hue}, 80%, 70%, 0.5)` : 'rgba(255, 255, 255, 0.5)';
+      // Enhanced glow for stars
+      if (layer === 2) {
+        ctx.shadowBlur = size * 6;
+        ctx.shadowColor = hue > 0 
+          ? `hsla(${hue}, ${saturation}%, 70%, 0.7)` 
+          : 'rgba(255, 255, 255, 0.6)';
+      } else if (layer === 1) {
+        ctx.shadowBlur = size * 3;
+        ctx.shadowColor = hue > 0 
+          ? `hsla(${hue}, ${saturation}%, 70%, 0.4)` 
+          : 'rgba(255, 255, 255, 0.3)';
       } else {
-        ctx.shadowBlur = 0;
+        ctx.shadowBlur = size * 1.5;
+        ctx.shadowColor = 'rgba(255, 255, 255, 0.2)';
       }
 
+      // Draw star with color
       ctx.fillStyle = hue > 0 
-        ? `hsla(${hue}, 70%, 85%, ${currentOpacity})` 
+        ? `hsla(${hue}, ${saturation}%, 85%, ${currentOpacity})` 
         : `rgba(255, 255, 255, ${currentOpacity})`;
       
       ctx.beginPath();
       ctx.arc(x, y, size, 0, Math.PI * 2);
       ctx.fill();
+      
+      // Add cross flare for bright stars
+      if (layer === 2 && size > 2) {
+        ctx.strokeStyle = hue > 0 
+          ? `hsla(${hue}, ${saturation}%, 90%, ${currentOpacity * 0.3})` 
+          : `rgba(255, 255, 255, ${currentOpacity * 0.3})`;
+        ctx.lineWidth = 0.5;
+        ctx.beginPath();
+        ctx.moveTo(x - size * 3, y);
+        ctx.lineTo(x + size * 3, y);
+        ctx.moveTo(x, y - size * 3);
+        ctx.lineTo(x, y + size * 3);
+        ctx.stroke();
+      }
+    };
+
+    const drawShootingStar = (star: ShootingStar) => {
+      const progress = star.life / star.maxLife;
+      const fadeIn = Math.min(progress * 5, 1);
+      const fadeOut = 1 - Math.pow(progress, 2);
+      const alpha = star.opacity * fadeIn * fadeOut;
+      
+      const gradient = ctx.createLinearGradient(
+        star.x, star.y,
+        star.x - star.vx * (star.length / 10), 
+        star.y - star.vy * (star.length / 10)
+      );
+      gradient.addColorStop(0, `rgba(255, 255, 255, ${alpha})`);
+      gradient.addColorStop(0.3, `rgba(200, 230, 255, ${alpha * 0.6})`);
+      gradient.addColorStop(1, 'rgba(100, 180, 255, 0)');
+      
+      ctx.strokeStyle = gradient;
+      ctx.lineWidth = 2;
+      ctx.lineCap = 'round';
+      ctx.beginPath();
+      ctx.moveTo(star.x, star.y);
+      ctx.lineTo(
+        star.x - star.vx * (star.length / 10), 
+        star.y - star.vy * (star.length / 10)
+      );
+      ctx.stroke();
+      
+      // Bright head
+      ctx.fillStyle = `rgba(255, 255, 255, ${alpha})`;
+      ctx.shadowBlur = 10;
+      ctx.shadowColor = 'rgba(200, 230, 255, 0.8)';
+      ctx.beginPath();
+      ctx.arc(star.x, star.y, 2, 0, Math.PI * 2);
+      ctx.fill();
+    };
+
+    const updateShootingStar = (star: ShootingStar): boolean => {
+      star.x += star.vx;
+      star.y += star.vy;
+      star.life++;
+      return star.life < star.maxLife;
     };
 
     const updateParticle = (particle: Particle) => {
@@ -164,8 +282,10 @@ export const ModernParticleBackground: React.FC = () => {
     };
 
     let lastFrameTime = 0;
-    const targetFPS = 30; // Limit to 30 FPS for smoother scrolling
+    let lastShootingStarTime = 0;
+    const targetFPS = 45; // Increased for smoother animation
     const frameInterval = 1000 / targetFPS;
+    const shootingStarInterval = 3000 + Math.random() * 5000; // Random interval
 
     const animate = (time: number) => {
       if (!canvas || !ctx) return;
@@ -189,9 +309,24 @@ export const ModernParticleBackground: React.FC = () => {
       
       ctx.clearRect(0, 0, width, height);
       
+      // Draw particles
       particlesRef.current.forEach(particle => {
         updateParticle(particle);
         drawParticle(particle, time * 0.001);
+      });
+      
+      // Spawn shooting stars occasionally
+      if (time - lastShootingStarTime > shootingStarInterval && shootingStarsRef.current.length < 2) {
+        shootingStarsRef.current.push(createShootingStar());
+        lastShootingStarTime = time;
+      }
+      
+      // Update and draw shooting stars
+      ctx.shadowBlur = 0;
+      shootingStarsRef.current = shootingStarsRef.current.filter(star => {
+        const alive = updateShootingStar(star);
+        if (alive) drawShootingStar(star);
+        return alive;
       });
       
       animationRef.current = requestAnimationFrame(animate);

@@ -9,12 +9,12 @@ import { GradientMesh } from '@/components/GradientMesh';
 import { ScrollProgress } from '@/components/ScrollProgress';
 import { ModernParticleBackground } from '@/components/ModernParticleBackground';
 import { PrestigeFlipCard } from '@/components/ui/PrestigeFlipCard';
-import { PremiumPhoneCard } from '@/components/ui/PremiumPhoneCard';
 import { ResumeDownload } from '@/components/layout/ResumeDownload';
 import { DeferredSection } from '@/components/layout/DeferredSection';
 import { ProjectCardSkeleton, FeaturesSkeleton, TechStackSkeleton } from '@/components/ui/Skeleton';
 import { CollaborationForm } from '@/components/ui/CollaborationForm';
-import { ThemeProvider, useTheme } from '@/context/ThemeContext';
+import { ThemeProvider } from '@/context/ThemeContext';
+import { BlackHole } from '@/components/BlackHole';
 
 // Lazy load heavy components for better performance
 const PreviewSection = lazy(() => import('@/features/preview/PreviewSection').then(m => ({ default: m.PreviewSection })));
@@ -24,7 +24,6 @@ const TrustedBy = lazy(() => import('@/components/TrustedBy').then(m => ({ defau
 const Footer = lazy(() => import('@/components/layout/Footer').then(m => ({ default: m.Footer })));
 
 function AppContent() {
-  const { isDark } = useTheme();
   const [isLoading, setIsLoading] = useState(true);
   const [showLaunchToast, setShowLaunchToast] = useState(false);
   const [enableDynamicBackground, setEnableDynamicBackground] = useState(true);
@@ -161,56 +160,33 @@ function AppContent() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.6, ease: "easeOut" }}
-          className={`min-h-screen overflow-x-hidden font-sans transition-colors duration-500 ${
-            isDark 
-              ? 'bg-[#030305] text-white selection:bg-cyan-500/30 selection:text-cyan-100' 
-              : 'bg-[#c5cad3] text-gray-900 selection:bg-cyan-500/30 selection:text-cyan-900'
-          } before:fixed before:inset-0 before:z-0 before:bg-noise before:opacity-20 before:pointer-events-none`}
+          className="min-h-screen overflow-x-hidden font-sans transition-colors duration-500 bg-background text-primary selection:bg-cyan-500/30 before:fixed before:inset-0 before:z-0 before:bg-noise before:opacity-20 before:pointer-events-none"
         >
           {/* Background System - Theme Aware */}
           <div 
-            className={`fixed inset-0 z-0 pointer-events-none transition-colors duration-500 ${
-              isDark ? 'bg-[#030305]' : 'bg-[#c5cad3]'
-            }`} 
+            className="fixed inset-0 z-0 pointer-events-none transition-colors duration-500 bg-background" 
             style={{ willChange: 'transform', contain: 'strict' }}
           >
             {/* Base tone */}
-            <div className={`absolute inset-0 transition-colors duration-500 ${
-              isDark ? 'bg-[#030305]' : 'bg-[#c5cad3]'
-            }`} />
+            <div className="absolute inset-0 transition-colors duration-500 bg-background" />
 
-            {/* Nebula color wash - enhanced for light mode */}
-            <div className={`absolute inset-0 transition-opacity duration-500 ${
-              isDark 
-                ? 'bg-[radial-gradient(circle_at_top,_rgba(56,189,248,0.22),transparent_60%),radial-gradient(circle_at_bottom,_rgba(139,92,246,0.2),transparent_65%)]' 
-                : 'bg-[radial-gradient(ellipse_120%_80%_at_50%_-30%,_rgba(8,145,178,0.15),transparent_50%),radial-gradient(ellipse_100%_60%_at_100%_100%,_rgba(124,58,237,0.12),transparent_50%),radial-gradient(ellipse_80%_50%_at_0%_80%,_rgba(236,72,153,0.08),transparent_50%)]'
-            }`} />
+            {/* Nebula color wash */}
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(56,189,248,0.22),transparent_60%),radial-gradient(circle_at_bottom,_rgba(139,92,246,0.2),transparent_65%)]" />
 
-            {enableDynamicBackground && isDark ? (
+            {enableDynamicBackground ? (
               <>
-                {/* Deep nebula layers - only in dark mode */}
+                {/* Deep nebula layers */}
                 <GradientMesh />
 
-                {/* Starfield - only in dark mode */}
+                {/* Starfield */}
                 <ModernParticleBackground />
-              </>
-            ) : !isDark ? (
-              <>
-                {/* Light mode atmospheric layers - Soft gradient orbs */}
-                <div className="absolute top-0 left-1/4 w-[800px] h-[600px] bg-gradient-to-br from-cyan-400/10 via-transparent to-transparent rounded-full blur-3xl" />
-                <div className="absolute bottom-0 right-1/4 w-[600px] h-[500px] bg-gradient-to-tl from-purple-400/10 via-transparent to-transparent rounded-full blur-3xl" />
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1000px] h-[600px] bg-gradient-to-r from-pink-300/5 via-transparent to-cyan-300/5 rounded-full blur-3xl" />
               </>
             ) : (
               <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_rgba(56,189,248,0.12),transparent_55%)]" />
             )}
 
             {/* Vignette + depth */}
-            <div className={`absolute inset-0 transition-opacity duration-500 ${
-              isDark 
-                ? 'bg-[radial-gradient(circle_at_center,transparent_0%,rgba(0,0,0,0.55)_100%)]' 
-                : 'bg-[radial-gradient(circle_at_center,transparent_20%,rgba(200,205,215,0.4)_100%)]'
-            }`} />
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,rgba(0,0,0,0.55)_100%)]" />
           </div>
 
           {/* Transition veil to bridge preloader + main scene */}
@@ -258,11 +234,7 @@ function AppContent() {
             {/* Status Badge - AI Style */}
             <motion.a 
               href="#contact" 
-              className={`group inline-flex items-center gap-3 px-4 py-2 rounded-full border text-sm transition-all duration-300 mb-6 backdrop-blur-md shimmer-effect premium-badge ${
-                isDark 
-                  ? 'bg-white/5 border-white/10 text-white/80 hover:border-cyan-400/30 hover:bg-white/10 hover:shadow-[0_0_20px_rgba(34,211,238,0.15)]' 
-                  : 'bg-white/50 border-gray-400/40 text-gray-800 hover:border-cyan-600/50 hover:bg-white/70 hover:shadow-[0_0_20px_rgba(8,145,178,0.15)]'
-              }`}
+              className="group inline-flex items-center gap-3 px-4 py-2 rounded-full border text-sm transition-all duration-300 mb-6 backdrop-blur-md shimmer-effect premium-badge bg-white/5 border-white/10 text-white/80 hover:border-cyan-400/30 hover:bg-white/10 hover:shadow-[0_0_20px_rgba(34,211,238,0.15)]"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, ease: "easeOut" }}
@@ -272,14 +244,12 @@ function AppContent() {
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
               </span>
               <span className="font-medium tracking-wide text-xs uppercase">Open for Data & AI Engineering Roles</span>
-              <ChevronRight size={12} className={`group-hover:translate-x-0.5 transition-all ${isDark ? 'text-white/50 group-hover:text-white' : 'text-slate-400 group-hover:text-slate-700'}`} />
+              <ChevronRight size={12} className="group-hover:translate-x-0.5 transition-all text-white/50 group-hover:text-white" />
             </motion.a>
 
             {/* Credential Strip */}
             <motion.div 
-              className={`flex flex-wrap gap-3 mb-10 text-sm transition-colors duration-500 ${
-                isDark ? 'text-white/70' : 'text-slate-600'
-              }`}
+              className="flex flex-wrap gap-3 mb-10 text-sm text-white/70"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, ease: "easeOut" }}
@@ -293,19 +263,15 @@ function AppContent() {
               }].map(({ icon, label, value, showOnMobile, delay }) => (
                 <motion.div 
                   key={label} 
-                  className={`flex items-center gap-3 px-4 py-2 rounded-full border backdrop-blur-sm transition-all duration-300 cursor-default ${!showOnMobile ? 'hidden sm:flex' : ''} ${
-                    isDark 
-                      ? 'bg-white/5 border-white/10 hover:border-white/20 hover:bg-white/10 hover:shadow-[0_0_15px_rgba(139,92,246,0.1)]' 
-                      : 'bg-white/50 border-gray-400/40 hover:border-gray-500/50 hover:bg-white/70 hover:shadow-[0_4px_15px_rgba(0,0,0,0.08)]'
-                  }`}
+                  className={`flex items-center gap-3 px-4 py-2 rounded-full border backdrop-blur-sm transition-all duration-300 cursor-default ${!showOnMobile ? 'hidden sm:flex' : ''} bg-white/5 border-white/10 hover:border-white/20 hover:bg-white/10 hover:shadow-[0_0_15px_rgba(139,92,246,0.1)]`}
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.4, delay: 0.3 + delay }}
                   whileHover={{ y: -2 }}
                 >
-                  <span className={isDark ? 'text-cyan-400/80' : 'text-cyan-600'}>{icon}</span>
+                  <span className="text-cyan-400/80">{icon}</span>
                   <div>
-                    <p className={`text-[11px] uppercase tracking-ultra ${isDark ? 'text-white/50' : 'text-slate-400'}`}>{label}</p>
+                    <p className="text-[11px] uppercase tracking-ultra text-white/50">{label}</p>
                     <p className="font-medium">{value}</p>
                   </div>
                 </motion.div>
@@ -314,9 +280,7 @@ function AppContent() {
 
             {/* Main Title */}
             <motion.h1 
-              className={`text-4xl sm:text-5xl md:text-8xl font-bold tracking-tight mb-8 leading-[0.9] hero-title-premium transition-colors duration-500 ${
-                isDark ? 'text-white drop-shadow-2xl' : 'text-slate-900'
-              }`}
+              className="text-4xl sm:text-5xl md:text-8xl font-bold tracking-tight mb-8 leading-[0.9] hero-title-premium text-white drop-shadow-2xl"
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
@@ -326,9 +290,7 @@ function AppContent() {
 
             {/* Subtitle */}
             <motion.p 
-              className={`text-base md:text-2xl max-w-2xl mb-8 md:mb-10 leading-relaxed font-light transition-colors duration-500 ${
-                isDark ? 'text-white/70' : 'text-slate-600'
-              }`}
+              className="text-base md:text-2xl max-w-2xl mb-8 md:mb-10 leading-relaxed font-light text-white/70"
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
@@ -353,34 +315,19 @@ function AppContent() {
                 </div>
               </a>
               <ResumeDownload variant="secondary" className="w-full sm:w-auto px-6" />
-              <p className={`text-xs pl-1 sm:pl-0 sm:basis-full ${isDark ? 'text-white/60' : 'text-slate-500'}`}>Replies within one business day.</p>
+              <p className="text-xs pl-1 sm:pl-0 sm:basis-full text-white/60">Replies within one business day.</p>
             </motion.div>
             </div>
-            {/* Hero Visual - Desktop: Premium Phone Card on right */}
-            <motion.div 
-              className="hidden lg:block absolute right-0 top-[200px]"
-              initial={{ opacity: 0, x: 30 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.6, delay: 0.4, ease: [0.22, 1, 0.36, 1] }}
-              style={{ willChange: 'transform, opacity' }}
-            >
-              <div className="relative group">
-                <PremiumPhoneCard />
-              </div>
-            </motion.div>
-
-            {/* Mobile / tablet: Premium Phone Card centered below hero */}
-            <motion.div 
-              className="mt-16 w-full flex justify-center lg:hidden"
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.4, ease: "easeOut" }}
-              style={{ willChange: 'transform, opacity' }}
-            >
-              <div className="relative">
-                <PremiumPhoneCard />
-              </div>
-            </motion.div>
+            
+            {/* Black Hole Visual - Desktop */}
+            <div className="hidden lg:block absolute right-0 top-[120px]">
+              <BlackHole size={420} />
+            </div>
+            
+            {/* Black Hole Visual - Mobile */}
+            <div className="lg:hidden mt-12 flex justify-center">
+              <BlackHole size={300} />
+            </div>
           </div>
         </div>
       </main>
@@ -529,7 +476,7 @@ function AppContent() {
         </div>
 
         {/* Top Divider */}
-        <div className={`absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-xl h-px bg-gradient-to-r from-transparent to-transparent ${isDark ? 'via-white/20' : 'via-gray-400/40'}`} />
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-xl h-px bg-gradient-to-r from-transparent via-border to-transparent" />
 
         <div className="relative max-w-5xl mx-auto z-10">
           {/* Two Column CTA */}
@@ -545,39 +492,29 @@ function AppContent() {
                 ease: [0.25, 0.1, 0.25, 1]
               }}
             >
-              <h2 className={`text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-6 leading-[1.1] ${isDark ? 'text-white' : 'text-gray-900'}`}>
+              <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-6 leading-[1.1] text-primary">
                 Let's talk<br />
                 data &{' '}
-                <span 
-                  className={isDark ? 'text-white/70' : 'bg-gradient-to-r from-cyan-600 to-purple-600 bg-clip-text text-transparent'}
-                >
+                <span className="bg-gradient-to-r from-accent-cyan to-accent-purple bg-clip-text text-transparent">
                   impact.
                 </span>
               </h2>
 
-              <p className={`text-base md:text-lg mb-8 max-w-md ${isDark ? 'text-white/50' : 'text-gray-600'}`}>
+              <p className="text-base md:text-lg mb-8 max-w-md text-secondary">
                 Open to data/analytics engineering roles and interesting collaborations. Let's build something meaningful together.
               </p>
               
               <div className="flex flex-wrap gap-3 mb-8">
                 <a 
                   href="mailto:elstonyth@outlook.com?subject=Let's%20Collaborate"
-                  className={`group inline-flex items-center px-6 py-3 rounded-full font-medium text-sm transition-all duration-500 ease-out ${
-                    isDark 
-                      ? 'bg-white text-black hover:bg-white/90 hover:shadow-[0_0_30px_rgba(255,255,255,0.3)]'
-                      : 'bg-gray-900 text-white hover:bg-gray-800 hover:shadow-[0_0_30px_rgba(0,0,0,0.2)]'
-                  }`}
+                  className="group inline-flex items-center px-6 py-3 rounded-full font-medium text-sm transition-all duration-500 ease-out bg-primary text-background hover:opacity-90 hover:shadow-lg"
                 >
                   <span>Start a Conversation</span>
                   <svg className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform duration-300 ease-out" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
                 </a>
                 <a 
                   href="mailto:elstonyth@outlook.com"
-                  className={`inline-flex items-center px-6 py-3 rounded-full border font-medium text-sm transition-all duration-500 ease-out ${
-                    isDark 
-                      ? 'border-white/20 text-white/80 hover:bg-white/5 hover:border-white/40 hover:shadow-[0_0_20px_rgba(34,211,238,0.15)]'
-                      : 'border-gray-400/50 text-gray-700 hover:bg-gray-900/5 hover:border-gray-500 hover:shadow-[0_0_20px_rgba(0,0,0,0.1)]'
-                  }`}
+                  className="inline-flex items-center px-6 py-3 rounded-full border font-medium text-sm transition-all duration-500 ease-out border-border text-secondary hover:bg-glass-bg hover:border-border-hover hover:shadow-lg"
                 >
                   elstonyth@outlook.com
                 </a>
@@ -595,11 +532,7 @@ function AppContent() {
                     href={social.href} 
                     target="_blank" 
                     rel="noopener noreferrer"
-                    className={`w-11 h-11 rounded-full border flex items-center justify-center hover:scale-105 transition-all duration-500 ease-out ${
-                      isDark 
-                        ? 'border-white/10 bg-white/5 text-white/50 hover:text-white hover:border-white/30 hover:bg-white/10'
-                        : 'border-gray-400/40 bg-white/50 text-gray-500 hover:text-gray-900 hover:border-gray-500 hover:bg-white/80'
-                    }`}
+                    className="w-11 h-11 rounded-full border flex items-center justify-center hover:scale-105 transition-all duration-500 ease-out border-border bg-glass-bg text-muted hover:text-primary hover:border-border-hover hover:bg-card"
                     aria-label={social.label}
                   >
                     <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">{social.icon}</svg>

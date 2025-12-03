@@ -5,7 +5,6 @@ import { Button } from '@/components/ui/Button';
 import { HolographicCard } from '@/components/ui/HolographicCard';
 import { TextScramble, TextReveal } from '@/components/TextScramble';
 import { safeBrowserAPI } from '@/lib/utils';
-import { useTheme } from '@/context/ThemeContext';
 
 interface Project {
   id: number;
@@ -55,7 +54,6 @@ const projects: Project[] = [
 ];
 
 const AnalyticsIllustration: React.FC<{ id: number; color: string }> = ({ id, color }) => {
-  const { isDark } = useTheme();
   // Extract base color for borders/accents
   const isBlue = color.includes('blue');
   const isPurple = color.includes('purple');
@@ -64,29 +62,25 @@ const AnalyticsIllustration: React.FC<{ id: number; color: string }> = ({ id, co
   const glowBgClass = isBlue ? "bg-cyan-500/10" : isPurple ? "bg-purple-500/10" : "bg-emerald-500/10";
 
   return (
-    <div className={`w-full h-full flex items-center justify-center backdrop-blur-sm border-l relative overflow-hidden ${
-      isDark ? 'bg-black/40 border-white/5' : 'bg-white/30 border-gray-200/50'
-    }`}>
+    <div className="w-full h-full flex items-center justify-center backdrop-blur-sm border-l relative overflow-hidden bg-glass-bg border-glass-border">
       
       {/* Ambient Background Glow */}
       <div className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-3/4 h-3/4 ${glowBgClass} blur-[80px] rounded-full`} />
 
       {/* ID 1: Line Chart (Error Reduction) */}
       {id === 1 && (
-        <div className={`relative w-72 h-48 p-6 rounded-xl border shadow-2xl flex flex-col justify-between group overflow-hidden backdrop-blur-md ${
-          isDark ? 'border-white/10 bg-white/5' : 'border-gray-200/60 bg-white/70'
-        }`}>
+        <div className="relative w-72 h-48 p-6 rounded-xl border shadow-lg flex flex-col justify-between group overflow-hidden backdrop-blur-md border-border bg-card transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
           <div className="absolute inset-0 bg-grid-white/[0.02]" /> {/* Grid Texture */}
           
           <div className="relative flex justify-between items-start mb-4 z-10">
              <div className="space-y-2">
                <motion.div 
                  initial={{ width: 0 }} whileInView={{ width: 48 }} transition={{ duration: 0.8 }}
-                 className={`h-1.5 rounded-full ${isDark ? 'bg-white/20' : 'bg-gray-300'}`}
+                 className="h-1.5 rounded-full bg-border-hover"
                />
                <motion.div 
                  initial={{ width: 0 }} whileInView={{ width: 32 }} transition={{ duration: 0.8, delay: 0.1 }}
-                 className={`h-1.5 rounded-full ${isDark ? 'bg-white/10' : 'bg-gray-200'}`}
+                 className="h-1.5 rounded-full bg-border"
                />
              </div>
              <motion.div 
@@ -101,9 +95,9 @@ const AnalyticsIllustration: React.FC<{ id: number; color: string }> = ({ id, co
           
           <div className="relative flex-1 flex items-end z-10">
             <div className="absolute inset-0 flex flex-col justify-between py-2 opacity-30">
-              <div className={`w-full h-px dashed-line ${isDark ? 'bg-white/10' : 'bg-gray-300'}`} />
-              <div className={`w-full h-px dashed-line ${isDark ? 'bg-white/10' : 'bg-gray-300'}`} />
-              <div className={`w-full h-px dashed-line ${isDark ? 'bg-white/10' : 'bg-gray-300'}`} />
+              <div className="w-full h-px dashed-line bg-border" />
+              <div className="w-full h-px dashed-line bg-border" />
+              <div className="w-full h-px dashed-line bg-border" />
             </div>
             
             <svg className="w-full h-full overflow-visible" viewBox="0 0 100 50" preserveAspectRatio="none">
@@ -157,9 +151,7 @@ const AnalyticsIllustration: React.FC<{ id: number; color: string }> = ({ id, co
 
       {/* ID 2: Bar Chart (Automation vs Manual) */}
       {id === 2 && (
-        <div className={`relative w-72 h-48 p-6 rounded-xl border shadow-2xl flex flex-col items-center justify-center group overflow-hidden backdrop-blur-md ${
-          isDark ? 'border-white/10 bg-white/5' : 'border-gray-200/60 bg-white/70'
-        }`}>
+        <div className="relative w-72 h-48 p-6 rounded-xl border shadow-lg flex flex-col items-center justify-center group overflow-hidden backdrop-blur-md border-border bg-card transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
            <div className="absolute inset-0 bg-grid-white/[0.02]" />
            
            <div className="flex items-end gap-8 h-28 w-full justify-center px-4 z-10">
@@ -169,17 +161,15 @@ const AnalyticsIllustration: React.FC<{ id: number; color: string }> = ({ id, co
                    initial={{ height: 0, opacity: 0 }}
                    whileInView={{ height: 80, opacity: 1 }}
                    transition={{ duration: 0.8, delay: 0.2 }}
-                   className={`w-10 rounded-t-lg border relative overflow-hidden ${
-                     isDark ? 'bg-white/5 border-white/10' : 'bg-gray-100 border-gray-200'
-                   }`}
+                   className="w-10 rounded-t-lg border relative overflow-hidden bg-surface border-border"
                  >
-                   <div className="absolute inset-0 bg-[url('/noise.png')] opacity-20" /> {/* Texture hint */}
+                   <div className="absolute inset-0 opacity-20" style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg viewBox=\'0 0 200 200\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'noise\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.9\' numOctaves=\'3\' stitchTiles=\'stitch\'/%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23noise)\'/%3E%3C/svg%3E")' }} /> {/* Texture hint */}
                  </motion.div>
-                 <span className={`text-[10px] font-mono tracking-widest ${isDark ? 'text-white/40' : 'text-gray-500'}`}>MANUAL</span>
+                 <span className="text-[10px] font-mono tracking-widest text-muted">MANUAL</span>
               </div>
 
               {/* Arrow Icon */}
-              <div className={`mb-10 ${isDark ? 'text-white/20' : 'text-gray-400'}`}>
+              <div className="mb-10 text-muted">
                  <ArrowUpRight className="rotate-90" size={20} />
               </div>
 
@@ -212,9 +202,7 @@ const AnalyticsIllustration: React.FC<{ id: number; color: string }> = ({ id, co
 
       {/* ID 3: Privacy Shield (Security) */}
       {id === 3 && (
-        <div className={`relative w-72 h-48 p-6 rounded-xl border shadow-2xl flex items-center justify-center group overflow-hidden backdrop-blur-md ${
-          isDark ? 'border-white/10 bg-white/5' : 'border-gray-200/60 bg-white/70'
-        }`}>
+        <div className="relative w-72 h-48 p-6 rounded-xl border shadow-lg flex items-center justify-center group overflow-hidden backdrop-blur-md border-border bg-card transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-emerald-500/10 via-transparent to-transparent" />
 
           {/* Radar / Scan Effect */}
@@ -262,11 +250,7 @@ const AnalyticsIllustration: React.FC<{ id: number; color: string }> = ({ id, co
                initial={{ opacity: 0, y: 5 }}
                whileInView={{ opacity: 1, y: 0 }}
                transition={{ delay: 0.8 }}
-               className={`text-[10px] font-mono tracking-[0.2em] uppercase px-3 py-1 rounded-full border ${
-                 isDark 
-                   ? 'text-emerald-400/80 bg-emerald-900/30 border-emerald-500/20' 
-                   : 'text-emerald-600 bg-emerald-100/80 border-emerald-300/50'
-               }`}
+               className="text-[10px] font-mono tracking-[0.2em] uppercase px-3 py-1 rounded-full border text-emerald-500 bg-emerald-500/10 border-emerald-500/20"
              >
                 100% Private
              </motion.span>
@@ -279,7 +263,6 @@ const AnalyticsIllustration: React.FC<{ id: number; color: string }> = ({ id, co
 };
 
 const ProjectCard: React.FC<{ project: Project; index: number; reducedMotion: boolean }> = ({ project, index, reducedMotion }) => {
-  const { isDark } = useTheme();
   const [isHovered, setIsHovered] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
   const isInView = useInView(cardRef, { once: true, margin: "-100px" });
@@ -295,17 +278,15 @@ const ProjectCard: React.FC<{ project: Project; index: number; reducedMotion: bo
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <HolographicCard intensity="minimal" className={`p-0 bg-gradient-to-br ${project.color}`}>
+      <HolographicCard intensity="minimal" className={`p-0 overflow-hidden rounded-2xl transition-all duration-500 bg-gradient-to-br ${project.color}`}>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-0 md:h-[420px] lg:h-[480px]">
             
           {/* Content Side */}
-          <div className={`p-8 md:p-12 flex flex-col justify-between order-2 lg:order-1 lg:h-full relative z-10 ${
-            isDark ? '' : 'bg-white/40'
-          }`}>
+          <div className="p-8 md:p-12 flex flex-col justify-between order-2 lg:order-1 lg:h-full relative z-10 bg-card/50 backdrop-blur-sm">
             <div>
               {/* Project Number Indicator */}
               <motion.div
-                className="absolute -left-2 md:left-4 top-6 md:top-8 font-mono text-6xl md:text-8xl font-bold text-white/[0.03] select-none pointer-events-none"
+                className="absolute -left-2 md:left-4 top-6 md:top-8 font-mono text-6xl md:text-8xl font-bold select-none pointer-events-none text-white/[0.03]"
                 initial={{ opacity: 0, x: -20 }}
                 animate={isInView ? { opacity: 1, x: 0 } : {}}
                 transition={{ duration: 0.8, delay: 0.3 }}
@@ -315,13 +296,13 @@ const ProjectCard: React.FC<{ project: Project; index: number; reducedMotion: bo
 
               <div className="flex items-center gap-2 mb-4">
                  <motion.div 
-                   className={`h-px ${isDark ? 'bg-white/30' : 'bg-gray-400/50'}`}
+                   className="h-px bg-border-hover"
                    initial={{ width: 0 }}
                    animate={isInView ? { width: 32 } : {}}
                    transition={{ duration: 0.6, delay: 0.2 }}
                  />
                  <motion.span 
-                   className={`text-xs font-mono uppercase tracking-widest ${isDark ? 'text-white/70' : 'text-gray-600'}`}
+                   className="text-xs font-mono uppercase tracking-widest text-secondary"
                    initial={{ opacity: 0 }}
                    animate={isInView ? { opacity: 1 } : {}}
                    transition={{ duration: 0.4, delay: 0.4 }}
@@ -330,12 +311,12 @@ const ProjectCard: React.FC<{ project: Project; index: number; reducedMotion: bo
                  </motion.span>
               </div>
               
-              <h3 className={`text-3xl sm:text-4xl md:text-5xl font-bold mb-4 leading-tight tracking-tight ${isDark ? 'text-white' : 'text-gray-900'}`}>
+              <h3 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 leading-tight tracking-tight text-primary">
                 {project.title}
               </h3>
               
               <div className="mb-6">
-                <div className={`text-base md:text-lg leading-relaxed max-w-md min-h-[3rem] ${isDark ? 'text-white/60' : 'text-gray-600'}`}>
+                <div className="text-base md:text-lg leading-relaxed max-w-md min-h-[3rem] text-secondary">
                   {reducedMotion ? (
                     <p>{project.description}</p>
                   ) : (
@@ -351,9 +332,7 @@ const ProjectCard: React.FC<{ project: Project; index: number; reducedMotion: bo
               {project.tech.map((t, techIndex) => (
                 <motion.span 
                   key={t} 
-                  className={`px-3 py-1 rounded-full border text-xs font-mono pill-hover cursor-default ${
-                    isDark ? 'bg-white/5 border-white/10 text-white/60' : 'bg-gray-100/80 border-gray-300/50 text-gray-600'
-                  }`}
+                  className="px-3 py-1 rounded-full border text-xs font-mono cursor-default transition-all duration-200 bg-white/5 border-white/10 text-white/60 hover:bg-cyan-500/10 hover:border-cyan-500/30 hover:text-white"
                   initial={{ opacity: 0, scale: 0.8, y: 10 }}
                   animate={isHovered || isInView ? { opacity: 1, scale: 1, y: 0 } : {}}
                   transition={{ 
@@ -361,11 +340,7 @@ const ProjectCard: React.FC<{ project: Project; index: number; reducedMotion: bo
                     delay: reducedMotion ? 0 : 0.5 + techIndex * 0.08,
                     ease: [0.22, 1, 0.36, 1]
                   }}
-                  whileHover={{ 
-                    scale: 1.05, 
-                    backgroundColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)',
-                    borderColor: 'rgba(34,211,238,0.3)'
-                  }}
+                  whileHover={{ scale: 1.05 }}
                 >
                   {t}
                 </motion.span>
@@ -380,9 +355,7 @@ const ProjectCard: React.FC<{ project: Project; index: number; reducedMotion: bo
                 </Button>
               )}
               {project.links.github !== '#' && (
-                <a href={project.links.github} target="_blank" rel="noopener noreferrer" className={`p-3 rounded-full border transition-all ${
-                  isDark ? 'bg-white/5 border-white/10 text-white hover:bg-white hover:text-black' : 'bg-gray-100 border-gray-300/50 text-gray-700 hover:bg-gray-900 hover:text-white'
-                }`}>
+                <a href={project.links.github} target="_blank" rel="noopener noreferrer" className="p-3 rounded-full border transition-all bg-white/5 border-white/10 text-white hover:bg-white hover:text-black hover:border-transparent">
                   <Github size={20} />
                 </a>
               )}
@@ -404,7 +377,6 @@ const ProjectCard: React.FC<{ project: Project; index: number; reducedMotion: bo
 };
 
 export const SelectedWork: React.FC = () => {
-  const { isDark } = useTheme();
   const headerRef = useRef(null);
   const isHeaderInView = useInView(headerRef, { once: true, margin: "-100px" });
   const [shouldReduceMotion, setShouldReduceMotion] = useState(false);
@@ -438,10 +410,10 @@ export const SelectedWork: React.FC = () => {
         
         <div ref={headerRef} className="mb-16 md:mb-24 flex flex-col md:flex-row items-end justify-between gap-8">
            <div className="max-w-2xl">
-              <p className={`text-xs uppercase tracking-mega mb-3 ${isDark ? 'text-white/50' : 'text-slate-500'}`}>
+              <p className="text-xs uppercase tracking-mega mb-3 text-muted">
                 Selected Work · Analytics
               </p>
-              <h2 className={`text-2xl sm:text-3xl md:text-6xl font-bold tracking-tighter mb-4 md:mb-6 flex flex-wrap gap-x-3 ${isDark ? 'text-white' : 'text-slate-900'}`}>
+              <h2 className="text-2xl sm:text-3xl md:text-6xl font-bold tracking-tighter mb-4 md:mb-6 flex flex-wrap gap-x-3 text-primary">
                 Analytics 
                 <span 
                   className="relative inline-block bg-gradient-to-r from-purple-400 via-pink-400 to-cyan-400 bg-clip-text text-transparent"
@@ -456,21 +428,21 @@ export const SelectedWork: React.FC = () => {
                   )}
                 </span>
               </h2>
-              <p className={`text-base md:text-xl leading-relaxed ${isDark ? 'text-white/60' : 'text-slate-600'}`}>
+              <p className="text-base md:text-xl leading-relaxed text-secondary">
                 A selection of analytics, automation, and self-hosted projects that improved data quality, efficiency, and reliability.
               </p>
-              <div className={`mt-4 grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs ${isDark ? 'text-white/60' : 'text-slate-600'}`}>
+              <div className="mt-4 grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs text-secondary">
                 <div>
-                  <p className={`font-mono ${isDark ? 'text-white/50' : 'text-slate-500'}`}>Error Reduction</p>
-                  <p className={isDark ? 'text-white/80' : 'text-slate-700'}>Up to 30% fewer data issues</p>
+                  <p className="font-mono text-muted">Error Reduction</p>
+                  <p className="text-primary/80">Up to 30% fewer data issues</p>
                 </div>
                 <div>
-                  <p className={`font-mono ${isDark ? 'text-white/50' : 'text-slate-500'}`}>Time Saved</p>
-                  <p className={isDark ? 'text-white/80' : 'text-slate-700'}>Hours of manual work automated</p>
+                  <p className="font-mono text-muted">Time Saved</p>
+                  <p className="text-primary/80">Hours of manual work automated</p>
                 </div>
                 <div>
-                  <p className={`font-mono ${isDark ? 'text-white/50' : 'text-slate-500'}`}>Stack</p>
-                  <p className={isDark ? 'text-white/80' : 'text-slate-700'}>SQL · Python · Docker</p>
+                  <p className="font-mono text-muted">Stack</p>
+                  <p className="text-primary/80">SQL · Python · Docker</p>
                 </div>
               </div>
            </div>

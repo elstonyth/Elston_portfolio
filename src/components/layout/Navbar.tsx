@@ -2,10 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Menu, X, Github, Twitter, Mail } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
-import { useTheme } from '@/context/ThemeContext';
 
 export const Navbar: React.FC = () => {
-  const { isDark } = useTheme();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState('home');
@@ -69,12 +67,8 @@ export const Navbar: React.FC = () => {
     <nav 
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
         isScrolled 
-          ? isDark 
-            ? 'bg-black/40 backdrop-blur-xl border-b border-white/5 shadow-lg' 
-            : 'bg-[#b8bfc9]/90 backdrop-blur-xl border-b border-gray-400/40 shadow-lg shadow-gray-500/20'
-          : isDark 
-            ? 'bg-transparent py-6 border-b border-transparent'
-            : 'bg-[#b8bfc9]/50 backdrop-blur-sm py-6 border-b border-gray-400/20'
+          ? 'bg-black/60 backdrop-blur-2xl border-b border-white/5 shadow-lg' 
+          : 'bg-transparent py-6 border-b border-transparent'
       }`}
       aria-label="Main navigation"
     >
@@ -87,27 +81,17 @@ export const Navbar: React.FC = () => {
         >
           <div className="relative w-10 h-10 flex items-center justify-center">
              <div className="absolute inset-0 bg-gradient-to-tr from-cyan-500 to-violet-500 rounded-xl blur opacity-20 group-hover:opacity-100 transition-opacity duration-500"></div>
-             <div className={`relative w-full h-full border rounded-xl flex items-center justify-center font-bold text-lg font-mono shadow-inner group-hover:scale-95 transition-all duration-300 ${
-               isDark 
-                 ? 'bg-[#050505] border-white/10 text-white' 
-                 : 'bg-white border-slate-200 text-slate-900'
-             }`}>
+             <div className="relative w-full h-full border rounded-xl flex items-center justify-center font-bold text-lg font-mono shadow-sm group-hover:scale-95 transition-all duration-300 bg-[#050505] border-white/10 text-white">
                EY
              </div>
           </div>
-          <span className={`font-bold text-sm tracking-wider group-hover:text-cyan-500 transition-colors hidden sm:block ${
-            isDark ? 'text-white' : 'text-slate-900'
-          }`}>
+          <span className="font-bold text-sm tracking-wider group-hover:text-cyan-500 transition-colors hidden sm:block text-white">
             ELSTON YEO
           </span>
         </a>
 
         {/* Desktop Links - Enhanced with sliding pill indicator */}
-        <div className={`hidden md:flex items-center gap-1 p-1.5 rounded-full border backdrop-blur-xl shadow-lg transition-colors duration-500 ${
-          isDark 
-            ? 'bg-white/5 border-white/10 shadow-black/10' 
-            : 'bg-white/40 border-gray-400/30 shadow-gray-400/20'
-        }`} role="navigation" aria-label="Primary">
+        <div className="hidden md:flex items-center gap-1 p-1.5 rounded-full border backdrop-blur-xl bg-white/5 border-white/10 shadow-lg shadow-black/10" role="navigation" aria-label="Primary">
           {navLinks.map((link) => {
             const isActive = activeSection === link.id;
             return (
@@ -116,23 +100,15 @@ export const Navbar: React.FC = () => {
                 href={`#${link.id}`}
                 aria-label={`Navigate to ${link.label}`}
                 aria-current={isActive ? 'page' : undefined}
-                className={`relative px-5 py-2 text-xs font-medium uppercase tracking-wider rounded-full transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:ring-offset-2 ${
-                  isDark ? 'focus-visible:ring-offset-black' : 'focus-visible:ring-offset-white'
-                }`}
+                className="relative px-5 py-2 text-xs font-medium uppercase tracking-wider rounded-full transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:ring-offset-2 focus-visible:ring-offset-black"
               >
                 {/* Animated background pill */}
                 {isActive && (
                   <motion.div
                     layoutId="navbar-pill"
-                    className={`absolute inset-0 rounded-full border shadow-lg ${
-                      isDark 
-                        ? 'bg-gradient-to-r from-white/15 to-white/10 border-white/20 shadow-cyan-500/20' 
-                        : 'bg-white border-slate-200 shadow-slate-300/30'
-                    }`}
+                    className="absolute inset-0 rounded-full border bg-gradient-to-r from-white/15 to-white/10 border-white/20 shadow-lg shadow-cyan-500/20"
                     style={{ 
-                      boxShadow: isDark 
-                        ? '0 0 20px rgba(6, 182, 212, 0.15), inset 0 1px 0 rgba(255,255,255,0.1)' 
-                        : '0 4px 12px rgba(0, 0, 0, 0.08)'
+                      boxShadow: '0 0 20px rgba(6, 182, 212, 0.15), inset 0 1px 0 rgba(255,255,255,0.1)'
                     }}
                     transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
                   />
@@ -140,8 +116,8 @@ export const Navbar: React.FC = () => {
                 {/* Text with animated underline for non-active links */}
                 <span className={`relative z-10 transition-colors duration-200 ${
                   isActive 
-                    ? isDark ? 'text-white' : 'text-slate-900'
-                    : isDark ? 'text-white/50 hover:text-white group' : 'text-slate-500 hover:text-slate-900 group'
+                    ? 'text-white'
+                    : 'text-white/50 hover:text-white group'
                 }`}>
                   {link.label}
                   {!isActive && (
@@ -160,32 +136,24 @@ export const Navbar: React.FC = () => {
               href="https://github.com/elstonyth" 
               target="_blank" 
               rel="noopener noreferrer" 
-              className={`relative p-2 rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 ${
-                isDark ? 'text-white/50 hover:text-white' : 'text-slate-400 hover:text-slate-900'
-              }`}
+              className="relative p-2 rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 text-white/50 hover:text-white"
               aria-label="GitHub profile"
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.95 }}
             >
-              <span className={`absolute inset-0 rounded-full transition-colors ${
-                isDark ? 'bg-white/0 hover:bg-white/10' : 'bg-slate-900/0 hover:bg-slate-100'
-              }`} />
+              <span className="absolute inset-0 rounded-full transition-colors bg-white/0 hover:bg-white/10" />
               <Github size={18} className="relative z-10" />
             </motion.a>
             <motion.a 
               href="https://twitter.com/elstonyth" 
               target="_blank" 
               rel="noopener noreferrer" 
-              className={`relative p-2 rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 ${
-                isDark ? 'text-white/50 hover:text-white' : 'text-slate-400 hover:text-slate-900'
-              }`}
+              className="relative p-2 rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 text-white/50 hover:text-white"
               aria-label="Twitter profile"
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.95 }}
             >
-              <span className={`absolute inset-0 rounded-full transition-colors ${
-                isDark ? 'bg-white/0 hover:bg-white/10' : 'bg-slate-900/0 hover:bg-slate-100'
-              }`} />
+              <span className="absolute inset-0 rounded-full transition-colors bg-white/0 hover:bg-white/10" />
               <Twitter size={18} className="relative z-10" />
             </motion.a>
           </div>
@@ -202,9 +170,7 @@ export const Navbar: React.FC = () => {
 
         {/* Mobile Menu Toggle */}
         <button 
-          className={`md:hidden p-2 rounded-lg transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 ${
-            isDark ? 'text-white hover:bg-white/5' : 'text-slate-900 hover:bg-slate-100'
-          }`}
+          className="md:hidden p-2 rounded-lg transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 text-white hover:bg-white/5"
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
           aria-label={isMobileMenuOpen ? "Close menu" : "Open menu"}
           aria-expanded={isMobileMenuOpen}
@@ -218,11 +184,7 @@ export const Navbar: React.FC = () => {
       {isMobileMenuOpen && (
         <div 
           id="mobile-menu"
-          className={`md:hidden absolute top-[calc(100%+1px)] left-0 right-0 backdrop-blur-xl border-b p-6 flex flex-col gap-4 animate-in slide-in-from-top-5 z-40 ${
-            isDark 
-              ? 'bg-[#030305]/95 border-white/10' 
-              : 'bg-[#b8bfc9]/95 border-gray-400/40'
-          }`}
+          className="md:hidden absolute top-[calc(100%+1px)] left-0 right-0 backdrop-blur-2xl border-b p-6 flex flex-col gap-4 animate-in slide-in-from-top-5 z-40 bg-[#030305]/95 border-white/10"
           role="navigation"
           aria-label="Mobile navigation"
         >
@@ -236,23 +198,19 @@ export const Navbar: React.FC = () => {
                 onClick={() => setIsMobileMenuOpen(false)}
                 className={`text-lg font-medium rounded px-2 py-1 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 ${
                   isActive 
-                    ? isDark 
-                      ? 'text-white bg-white/10 border border-white/15'
-                      : 'text-slate-900 bg-slate-100 border border-slate-200'
-                    : isDark 
-                      ? 'text-white/60 hover:text-white active:text-cyan-400'
-                      : 'text-slate-500 hover:text-slate-900 active:text-cyan-600'
+                    ? 'text-white bg-white/10 border border-white/15'
+                    : 'text-white/60 hover:text-white active:text-cyan-400'
                 }`}
               >
                 {link.label}
               </a>
             );
           })}
-          <div className={`h-px my-2 ${isDark ? 'bg-white/10' : 'bg-slate-200'}`} role="separator" />
-          <div className={`flex gap-6 justify-center ${isDark ? 'text-white/60' : 'text-slate-400'}`} role="group" aria-label="Social links">
-            <a href="https://github.com/elstonyth" target="_blank" rel="noopener noreferrer" className={`focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 rounded ${isDark ? 'hover:text-white' : 'hover:text-slate-900'}`} aria-label="GitHub"><Github size={24} /></a>
-            <a href="https://twitter.com/elstonyth" target="_blank" rel="noopener noreferrer" className={`focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 rounded ${isDark ? 'hover:text-white' : 'hover:text-slate-900'}`} aria-label="Twitter"><Twitter size={24} /></a>
-            <a href="mailto:elstonyth@outlook.com" className={`focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 rounded ${isDark ? 'hover:text-white' : 'hover:text-slate-900'}`} aria-label="Email"><Mail size={24} /></a>
+          <div className="h-px my-2 bg-white/10" role="separator" />
+          <div className="flex gap-6 justify-center text-white/60" role="group" aria-label="Social links">
+            <a href="https://github.com/elstonyth" target="_blank" rel="noopener noreferrer" className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 rounded hover:text-white" aria-label="GitHub"><Github size={24} /></a>
+            <a href="https://twitter.com/elstonyth" target="_blank" rel="noopener noreferrer" className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 rounded hover:text-white" aria-label="Twitter"><Twitter size={24} /></a>
+            <a href="mailto:elstonyth@outlook.com" className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 rounded hover:text-white" aria-label="Email"><Mail size={24} /></a>
           </div>
           <Button
             as="a"

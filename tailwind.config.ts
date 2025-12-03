@@ -20,13 +20,40 @@ const config: Config = {
         mega: "0.4em",
       },
       colors: {
-        background: "#030305",
-        surface: "#0B0C0E",
-        accent: "#FFFFFF",
-        border: "#222222",
+        // Semantic background colors (auto-switch with theme)
+        background: "var(--bg-primary)",
+        surface: "var(--bg-secondary)",
+        "surface-tertiary": "var(--bg-tertiary)",
+        card: "var(--bg-card)",
+        input: "var(--bg-input)",
+        
+        // Semantic text colors
+        primary: "var(--text-primary)",
+        secondary: "var(--text-secondary)",
+        tertiary: "var(--text-tertiary)",
+        muted: "var(--text-muted)",
+        
+        // Border colors
+        border: {
+          DEFAULT: "var(--border-primary)",
+          hover: "var(--border-hover)",
+        },
+        
+        // Accent colors (mapped to CSS vars)
+        accent: {
+          cyan: "var(--accent-cyan)",
+          purple: "var(--accent-purple)",
+          pink: "var(--accent-pink)",
+        },
+        
+        // Glass effects
+        glass: {
+          bg: "var(--glass-bg)",
+          border: "var(--glass-border)",
+        },
       },
       textColor: {
-        dim: "#999999",
+        dim: "var(--text-muted)",
       },
       backgroundImage: {
         "glow-gradient":
