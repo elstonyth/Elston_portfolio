@@ -265,6 +265,7 @@ const AnalyticsIllustration: React.FC<{ id: number; color: string }> = ({ id, co
 };
 
 const ProjectCard: React.FC<{ project: Project; index: number; reducedMotion: boolean }> = ({ project, index, reducedMotion }) => {
+  const { isDark } = useTheme();
   const [isHovered, setIsHovered] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
   const isInView = useInView(cardRef, { once: true, margin: "-100px" });
@@ -298,13 +299,13 @@ const ProjectCard: React.FC<{ project: Project; index: number; reducedMotion: bo
 
               <div className="flex items-center gap-2 mb-4">
                  <motion.div 
-                   className="h-px bg-white/30"
+                   className={`h-px ${isDark ? 'bg-white/30' : 'bg-gray-400/50'}`}
                    initial={{ width: 0 }}
                    animate={isInView ? { width: 32 } : {}}
                    transition={{ duration: 0.6, delay: 0.2 }}
                  />
                  <motion.span 
-                   className="text-xs font-mono uppercase tracking-widest text-white/70"
+                   className={`text-xs font-mono uppercase tracking-widest ${isDark ? 'text-white/70' : 'text-gray-600'}`}
                    initial={{ opacity: 0 }}
                    animate={isInView ? { opacity: 1 } : {}}
                    transition={{ duration: 0.4, delay: 0.4 }}
@@ -313,19 +314,19 @@ const ProjectCard: React.FC<{ project: Project; index: number; reducedMotion: bo
                  </motion.span>
               </div>
               
-              <h3 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-4 leading-tight tracking-tight">
+              <h3 className={`text-3xl sm:text-4xl md:text-5xl font-bold mb-4 leading-tight tracking-tight ${isDark ? 'text-white' : 'text-gray-900'}`}>
                 {project.title}
               </h3>
               
               <div className="mb-6">
-                <div className="text-base md:text-lg text-text-dim leading-relaxed max-w-md min-h-[3rem]">
+                <div className={`text-base md:text-lg leading-relaxed max-w-md min-h-[3rem] ${isDark ? 'text-white/60' : 'text-gray-600'}`}>
                   {reducedMotion ? (
                     <p>{project.description}</p>
                   ) : (
                     <TextReveal text={project.description} delay={0.2} />
                   )}
                 </div>
-                <p className="text-sm text-emerald-300 font-medium mt-3">
+                <p className="text-sm text-emerald-500 font-medium mt-3">
                   Outcome: {project.outcome}
                 </p>
               </div>
@@ -334,7 +335,9 @@ const ProjectCard: React.FC<{ project: Project; index: number; reducedMotion: bo
               {project.tech.map((t, techIndex) => (
                 <motion.span 
                   key={t} 
-                  className="px-3 py-1 rounded-full bg-white/5 border border-white/10 text-xs text-white/60 font-mono pill-hover cursor-default"
+                  className={`px-3 py-1 rounded-full border text-xs font-mono pill-hover cursor-default ${
+                    isDark ? 'bg-white/5 border-white/10 text-white/60' : 'bg-gray-100/80 border-gray-300/50 text-gray-600'
+                  }`}
                   initial={{ opacity: 0, scale: 0.8, y: 10 }}
                   animate={isHovered || isInView ? { opacity: 1, scale: 1, y: 0 } : {}}
                   transition={{ 
@@ -344,7 +347,7 @@ const ProjectCard: React.FC<{ project: Project; index: number; reducedMotion: bo
                   }}
                   whileHover={{ 
                     scale: 1.05, 
-                    backgroundColor: 'rgba(255,255,255,0.1)',
+                    backgroundColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)',
                     borderColor: 'rgba(34,211,238,0.3)'
                   }}
                 >
@@ -360,13 +363,17 @@ const ProjectCard: React.FC<{ project: Project; index: number; reducedMotion: bo
                   <ArrowUpRight size={16} className="ml-2 group-hover:rotate-45 transition-transform" />
                 </Button>
               ) : (
-                <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 text-white/50 text-sm">
+                <span className={`inline-flex items-center gap-2 px-4 py-2 rounded-full border text-sm ${
+                  isDark ? 'bg-white/5 border-white/10 text-white/50' : 'bg-gray-100/80 border-gray-300/50 text-gray-500'
+                }`}>
                   <span className="w-1.5 h-1.5 rounded-full bg-amber-400/80 animate-pulse" />
                   Case Study Coming
                 </span>
               )}
               {project.links.github !== '#' && (
-                <a href={project.links.github} target="_blank" rel="noopener noreferrer" className="p-3 rounded-full bg-white/5 border border-white/10 text-white hover:bg-white hover:text-black transition-all">
+                <a href={project.links.github} target="_blank" rel="noopener noreferrer" className={`p-3 rounded-full border transition-all ${
+                  isDark ? 'bg-white/5 border-white/10 text-white hover:bg-white hover:text-black' : 'bg-gray-100 border-gray-300/50 text-gray-700 hover:bg-gray-900 hover:text-white'
+                }`}>
                   <Github size={20} />
                 </a>
               )}

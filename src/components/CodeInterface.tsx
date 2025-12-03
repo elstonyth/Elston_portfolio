@@ -3,6 +3,7 @@ import { Copy, Check, MapPin, Briefcase, Star, Mail, Github, Twitter, ExternalLi
 import { motion, AnimatePresence } from 'framer-motion';
 import { SpotlightCard } from '@/components/ui/SpotlightCard';
 import { ResumeDownload } from '@/components/layout/ResumeDownload';
+import { useTheme } from '@/context/ThemeContext';
 
 type Token = {
   text: string;
@@ -129,7 +130,7 @@ const TypewriterCode = ({ tokens, isActive }: { tokens: Token[][], isActive: boo
   return <>{renderContent()}</>;
 };
 
-const ProfileView = () => (
+const ProfileView = ({ isDark }: { isDark: boolean }) => (
   <motion.div 
     key="profile"
     initial={{ opacity: 0, y: 20, scale: 0.95 }}
@@ -156,30 +157,30 @@ const ProfileView = () => (
     </div>
     
     <div className="mb-8">
-      <h2 className="text-3xl font-bold text-white tracking-tight mb-1">Elston Yeo</h2>
-      <p className="text-white/50 font-medium text-sm">Full-Stack AI Engineer</p>
+      <h2 className={`text-3xl font-bold tracking-tight mb-1 ${isDark ? 'text-white' : 'text-gray-900'}`}>Elston Yeo</h2>
+      <p className={`font-medium text-sm ${isDark ? 'text-white/50' : 'text-gray-600'}`}>Full-Stack AI Engineer</p>
     </div>
 
     <div className="grid grid-cols-2 gap-3 mb-8">
-      <div className="p-4 rounded-2xl bg-white/5 border border-white/5 hover:bg-white/10 transition-colors group/stat">
-        <div className="flex items-center gap-2 text-xs text-white/40 mb-2 font-medium uppercase tracking-wider">
+      <div className={`p-4 rounded-2xl border transition-colors group/stat ${isDark ? 'bg-white/5 border-white/5 hover:bg-white/10' : 'bg-gray-100/80 border-gray-200/50 hover:bg-gray-100'}`}>
+        <div className={`flex items-center gap-2 text-xs mb-2 font-medium uppercase tracking-wider ${isDark ? 'text-white/40' : 'text-gray-500'}`}>
           <MapPin size={12} className="text-blue-400" /> Location
         </div>
-        <div className="text-sm text-white/90 font-medium">Malaysia 🇲🇾</div>
+        <div className={`text-sm font-medium ${isDark ? 'text-white/90' : 'text-gray-800'}`}>Malaysia 🇲🇾</div>
       </div>
-      <div className="p-4 rounded-2xl bg-white/5 border border-white/5 hover:bg-white/10 transition-colors group/stat">
-        <div className="flex items-center gap-2 text-xs text-white/40 mb-2 font-medium uppercase tracking-wider">
+      <div className={`p-4 rounded-2xl border transition-colors group/stat ${isDark ? 'bg-white/5 border-white/5 hover:bg-white/10' : 'bg-gray-100/80 border-gray-200/50 hover:bg-gray-100'}`}>
+        <div className={`flex items-center gap-2 text-xs mb-2 font-medium uppercase tracking-wider ${isDark ? 'text-white/40' : 'text-gray-500'}`}>
           <Briefcase size={12} className="text-purple-400" /> Experience
         </div>
-        <div className="text-sm text-white/90 font-medium">3+ Years</div>
+        <div className={`text-sm font-medium ${isDark ? 'text-white/90' : 'text-gray-800'}`}>3+ Years</div>
       </div>
     </div>
     
     <div className="mb-8">
-      <div className="text-xs text-white/40 mb-3 font-medium uppercase tracking-wider">Tech Stack</div>
+      <div className={`text-xs mb-3 font-medium uppercase tracking-wider ${isDark ? 'text-white/40' : 'text-gray-500'}`}>Tech Stack</div>
       <div className="flex flex-wrap gap-2">
         {['Python', 'SQL', 'React', 'TypeScript'].map(skill => (
-          <span key={skill} className="px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 border border-white/5 text-xs text-white/70 transition-all cursor-default">
+          <span key={skill} className={`px-3 py-1.5 rounded-lg border text-xs transition-all cursor-default ${isDark ? 'bg-white/5 hover:bg-white/10 border-white/5 text-white/70' : 'bg-gray-100 hover:bg-gray-200 border-gray-200 text-gray-700'}`}>
             {skill}
           </span>
         ))}
@@ -188,14 +189,14 @@ const ProfileView = () => (
 
     <div className="flex gap-3">
       <ResumeDownload variant="primary" />
-      <button className="px-4 py-3 rounded-xl bg-white/5 text-white hover:bg-white/10 border border-white/5 transition-colors">
+      <button className={`px-4 py-3 rounded-xl border transition-colors ${isDark ? 'bg-white/5 text-white hover:bg-white/10 border-white/5' : 'bg-gray-100 text-gray-700 hover:bg-gray-200 border-gray-200'}`}>
         <Star size={18} />
       </button>
     </div>
   </motion.div>
 );
 
-const ContactView = () => (
+const ContactView = ({ isDark }: { isDark: boolean }) => (
   <motion.div 
     key="contact"
     initial={{ opacity: 0, y: 20, scale: 0.95 }}
@@ -205,50 +206,50 @@ const ContactView = () => (
     className="relative z-10 h-full flex flex-col justify-center"
   >
     <div className="mb-8">
-       <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-500/20 to-purple-500/20 border border-white/10 flex items-center justify-center mb-6 shadow-lg">
-         <Mail className="text-white w-8 h-8" />
+       <div className={`w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-500/20 to-purple-500/20 border flex items-center justify-center mb-6 shadow-lg ${isDark ? 'border-white/10' : 'border-gray-200'}`}>
+         <Mail className={`w-8 h-8 ${isDark ? 'text-white' : 'text-gray-700'}`} />
        </div>
-       <h2 className="text-3xl font-bold text-white tracking-tight mb-2">Let's Talk</h2>
-       <p className="text-white/50 font-medium text-sm leading-relaxed">
+       <h2 className={`text-3xl font-bold tracking-tight mb-2 ${isDark ? 'text-white' : 'text-gray-900'}`}>Let's Talk</h2>
+       <p className={`font-medium text-sm leading-relaxed ${isDark ? 'text-white/50' : 'text-gray-600'}`}>
          Interested in building something together? I'm currently open for new opportunities and collaborations.
        </p>
     </div>
 
     <div className="space-y-4 mb-8">
-      <div className="p-4 rounded-2xl bg-white/5 border border-white/5 hover:bg-white/10 transition-colors group cursor-pointer">
+      <div className={`p-4 rounded-2xl border transition-colors group cursor-pointer ${isDark ? 'bg-white/5 border-white/5 hover:bg-white/10' : 'bg-gray-100/80 border-gray-200/50 hover:bg-gray-100'}`}>
         <div className="flex items-center justify-between">
            <div className="flex items-center gap-3">
              <div className="p-2 rounded-lg bg-blue-500/10 text-blue-400">
                <Mail size={18} />
              </div>
              <div>
-               <div className="text-xs text-white/40 uppercase tracking-wider font-semibold">Email</div>
-               <div className="text-white/90 font-medium">elstonyth@outlook.com</div>
+               <div className={`text-xs uppercase tracking-wider font-semibold ${isDark ? 'text-white/40' : 'text-gray-500'}`}>Email</div>
+               <div className={`font-medium ${isDark ? 'text-white/90' : 'text-gray-800'}`}>elstonyth@outlook.com</div>
              </div>
            </div>
-           <Copy size={16} className="text-white/20 group-hover:text-white/60 transition-colors" />
+           <Copy size={16} className={`transition-colors ${isDark ? 'text-white/20 group-hover:text-white/60' : 'text-gray-400 group-hover:text-gray-600'}`} />
         </div>
       </div>
       
       <div className="grid grid-cols-2 gap-4">
-        <a href="https://github.com/elstonyth" target="_blank" rel="noopener noreferrer" className="p-4 rounded-2xl bg-white/5 border border-white/5 hover:bg-white/10 transition-colors group flex flex-col justify-between h-24">
-           <Github size={24} className="text-white/60 group-hover:text-white transition-colors" />
+        <a href="https://github.com/elstonyth" target="_blank" rel="noopener noreferrer" className={`p-4 rounded-2xl border transition-colors group flex flex-col justify-between h-24 ${isDark ? 'bg-white/5 border-white/5 hover:bg-white/10' : 'bg-gray-100/80 border-gray-200/50 hover:bg-gray-100'}`}>
+           <Github size={24} className={`transition-colors ${isDark ? 'text-white/60 group-hover:text-white' : 'text-gray-500 group-hover:text-gray-800'}`} />
            <div className="flex items-center justify-between">
-             <span className="text-sm text-white/80 font-medium">GitHub</span>
-             <ExternalLink size={14} className="text-white/20 group-hover:text-white/60" />
+             <span className={`text-sm font-medium ${isDark ? 'text-white/80' : 'text-gray-700'}`}>GitHub</span>
+             <ExternalLink size={14} className={isDark ? 'text-white/20 group-hover:text-white/60' : 'text-gray-400 group-hover:text-gray-600'} />
            </div>
         </a>
-        <a href="https://twitter.com/elstonyth" target="_blank" rel="noopener noreferrer" className="p-4 rounded-2xl bg-white/5 border border-white/5 hover:bg-white/10 transition-colors group flex flex-col justify-between h-24">
+        <a href="https://twitter.com/elstonyth" target="_blank" rel="noopener noreferrer" className={`p-4 rounded-2xl border transition-colors group flex flex-col justify-between h-24 ${isDark ? 'bg-white/5 border-white/5 hover:bg-white/10' : 'bg-gray-100/80 border-gray-200/50 hover:bg-gray-100'}`}>
            <Twitter size={24} className="text-blue-400/60 group-hover:text-blue-400 transition-colors" />
            <div className="flex items-center justify-between">
-             <span className="text-sm text-white/80 font-medium">Twitter</span>
-             <ExternalLink size={14} className="text-white/20 group-hover:text-white/60" />
+             <span className={`text-sm font-medium ${isDark ? 'text-white/80' : 'text-gray-700'}`}>Twitter</span>
+             <ExternalLink size={14} className={isDark ? 'text-white/20 group-hover:text-white/60' : 'text-gray-400 group-hover:text-gray-600'} />
            </div>
         </a>
       </div>
     </div>
 
-    <button className="w-full py-3 rounded-xl bg-white text-black font-semibold text-sm hover:bg-white/90 transition-colors shadow-lg shadow-white/5 flex items-center justify-center gap-2">
+    <button className={`w-full py-3 rounded-xl font-semibold text-sm transition-colors shadow-lg flex items-center justify-center gap-2 ${isDark ? 'bg-white text-black hover:bg-white/90 shadow-white/5' : 'bg-gray-900 text-white hover:bg-gray-800 shadow-gray-400/20'}`}>
       <Send size={16} />
       Send Message
     </button>
@@ -256,6 +257,7 @@ const ContactView = () => (
 );
 
 export const CodeInterface: React.FC = () => {
+  const { isDark } = useTheme();
   const [activeTab, setActiveTab] = useState<'profile' | 'contact'>('profile');
   const [copied, setCopied] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
@@ -347,9 +349,9 @@ export const CodeInterface: React.FC = () => {
            <div className="p-8">
              <AnimatePresence mode="wait">
                {activeTab === 'profile' ? (
-                 <ProfileView key="profile" />
+                 <ProfileView key="profile" isDark={isDark} />
                ) : (
-                 <ContactView key="contact" />
+                 <ContactView key="contact" isDark={isDark} />
                )}
              </AnimatePresence>
            </div>
