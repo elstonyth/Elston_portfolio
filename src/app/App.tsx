@@ -529,7 +529,7 @@ function AppContent() {
         </div>
 
         {/* Top Divider */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-xl h-px bg-gradient-to-r from-transparent via-white/20 to-transparent" />
+        <div className={`absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-xl h-px bg-gradient-to-r from-transparent to-transparent ${isDark ? 'via-white/20' : 'via-gray-400/40'}`} />
 
         <div className="relative max-w-5xl mx-auto z-10">
           {/* Two Column CTA */}
@@ -545,13 +545,15 @@ function AppContent() {
                 ease: [0.25, 0.1, 0.25, 1]
               }}
             >
-              <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-6 leading-[1.1]">
+              <h2 className={`text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-6 leading-[1.1] ${isDark ? 'text-white' : 'text-gray-900'}`}>
                 Let's talk<br />
                 data &{' '}
                 <span 
-                  className="bg-clip-text text-transparent drop-shadow-[0_0_30px_rgba(255,255,255,0.3)]"
+                  className="bg-clip-text text-transparent"
                   style={{
-                    background: 'linear-gradient(to right, #ffffff, rgba(255,255,255,0.6), rgba(255,255,255,0.3))',
+                    background: isDark 
+                      ? 'linear-gradient(to right, #ffffff, rgba(255,255,255,0.6), rgba(255,255,255,0.3))'
+                      : 'linear-gradient(to right, #0891b2, #7c3aed)',
                     WebkitBackgroundClip: 'text',
                     backgroundClip: 'text',
                   }}
@@ -560,21 +562,29 @@ function AppContent() {
                 </span>
               </h2>
 
-              <p className="text-white/50 text-base md:text-lg mb-8 max-w-md">
+              <p className={`text-base md:text-lg mb-8 max-w-md ${isDark ? 'text-white/50' : 'text-gray-600'}`}>
                 Open to data/analytics engineering roles and interesting collaborations. Let's build something meaningful together.
               </p>
               
               <div className="flex flex-wrap gap-3 mb-8">
                 <a 
                   href="mailto:elstonyth@outlook.com?subject=Let's%20Collaborate"
-                  className="group inline-flex items-center px-6 py-3 rounded-full bg-white text-black font-medium text-sm hover:bg-white/90 hover:shadow-[0_0_30px_rgba(255,255,255,0.3)] transition-all duration-500 ease-out"
+                  className={`group inline-flex items-center px-6 py-3 rounded-full font-medium text-sm transition-all duration-500 ease-out ${
+                    isDark 
+                      ? 'bg-white text-black hover:bg-white/90 hover:shadow-[0_0_30px_rgba(255,255,255,0.3)]'
+                      : 'bg-gray-900 text-white hover:bg-gray-800 hover:shadow-[0_0_30px_rgba(0,0,0,0.2)]'
+                  }`}
                 >
                   <span>Start a Conversation</span>
                   <svg className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform duration-300 ease-out" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
                 </a>
                 <a 
                   href="mailto:elstonyth@outlook.com"
-                  className="inline-flex items-center px-6 py-3 rounded-full border border-white/20 text-white/80 font-medium text-sm hover:bg-white/5 hover:border-white/40 hover:shadow-[0_0_20px_rgba(34,211,238,0.15)] transition-all duration-500 ease-out"
+                  className={`inline-flex items-center px-6 py-3 rounded-full border font-medium text-sm transition-all duration-500 ease-out ${
+                    isDark 
+                      ? 'border-white/20 text-white/80 hover:bg-white/5 hover:border-white/40 hover:shadow-[0_0_20px_rgba(34,211,238,0.15)]'
+                      : 'border-gray-400/50 text-gray-700 hover:bg-gray-900/5 hover:border-gray-500 hover:shadow-[0_0_20px_rgba(0,0,0,0.1)]'
+                  }`}
                 >
                   elstonyth@outlook.com
                 </a>
@@ -592,7 +602,11 @@ function AppContent() {
                     href={social.href} 
                     target="_blank" 
                     rel="noopener noreferrer"
-                    className="w-11 h-11 rounded-full border border-white/10 bg-white/5 flex items-center justify-center text-white/50 hover:text-white hover:border-white/30 hover:bg-white/10 hover:scale-105 transition-all duration-500 ease-out"
+                    className={`w-11 h-11 rounded-full border flex items-center justify-center hover:scale-105 transition-all duration-500 ease-out ${
+                      isDark 
+                        ? 'border-white/10 bg-white/5 text-white/50 hover:text-white hover:border-white/30 hover:bg-white/10'
+                        : 'border-gray-400/40 bg-white/50 text-gray-500 hover:text-gray-900 hover:border-gray-500 hover:bg-white/80'
+                    }`}
                     aria-label={social.label}
                   >
                     <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">{social.icon}</svg>
