@@ -55,6 +55,7 @@ const projects: Project[] = [
 ];
 
 const AnalyticsIllustration: React.FC<{ id: number; color: string }> = ({ id, color }) => {
+  const { isDark } = useTheme();
   // Extract base color for borders/accents
   const isBlue = color.includes('blue');
   const isPurple = color.includes('purple');
@@ -63,25 +64,29 @@ const AnalyticsIllustration: React.FC<{ id: number; color: string }> = ({ id, co
   const glowBgClass = isBlue ? "bg-cyan-500/10" : isPurple ? "bg-purple-500/10" : "bg-emerald-500/10";
 
   return (
-    <div className={`w-full h-full flex items-center justify-center bg-black/40 backdrop-blur-sm border-l border-white/5 relative overflow-hidden`}>
+    <div className={`w-full h-full flex items-center justify-center backdrop-blur-sm border-l relative overflow-hidden ${
+      isDark ? 'bg-black/40 border-white/5' : 'bg-white/30 border-gray-200/50'
+    }`}>
       
       {/* Ambient Background Glow */}
       <div className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-3/4 h-3/4 ${glowBgClass} blur-[80px] rounded-full`} />
 
       {/* ID 1: Line Chart (Error Reduction) */}
       {id === 1 && (
-        <div className="relative w-72 h-48 p-6 rounded-xl border border-white/10 bg-white/5 shadow-2xl flex flex-col justify-between group overflow-hidden backdrop-blur-md">
+        <div className={`relative w-72 h-48 p-6 rounded-xl border shadow-2xl flex flex-col justify-between group overflow-hidden backdrop-blur-md ${
+          isDark ? 'border-white/10 bg-white/5' : 'border-gray-200/60 bg-white/70'
+        }`}>
           <div className="absolute inset-0 bg-grid-white/[0.02]" /> {/* Grid Texture */}
           
           <div className="relative flex justify-between items-start mb-4 z-10">
              <div className="space-y-2">
                <motion.div 
                  initial={{ width: 0 }} whileInView={{ width: 48 }} transition={{ duration: 0.8 }}
-                 className="h-1.5 rounded-full bg-white/20" 
+                 className={`h-1.5 rounded-full ${isDark ? 'bg-white/20' : 'bg-gray-300'}`}
                />
                <motion.div 
                  initial={{ width: 0 }} whileInView={{ width: 32 }} transition={{ duration: 0.8, delay: 0.1 }}
-                 className="h-1.5 rounded-full bg-white/10" 
+                 className={`h-1.5 rounded-full ${isDark ? 'bg-white/10' : 'bg-gray-200'}`}
                />
              </div>
              <motion.div 
@@ -96,9 +101,9 @@ const AnalyticsIllustration: React.FC<{ id: number; color: string }> = ({ id, co
           
           <div className="relative flex-1 flex items-end z-10">
             <div className="absolute inset-0 flex flex-col justify-between py-2 opacity-30">
-              <div className="w-full h-px bg-white/10 dashed-line" />
-              <div className="w-full h-px bg-white/10 dashed-line" />
-              <div className="w-full h-px bg-white/10 dashed-line" />
+              <div className={`w-full h-px dashed-line ${isDark ? 'bg-white/10' : 'bg-gray-300'}`} />
+              <div className={`w-full h-px dashed-line ${isDark ? 'bg-white/10' : 'bg-gray-300'}`} />
+              <div className={`w-full h-px dashed-line ${isDark ? 'bg-white/10' : 'bg-gray-300'}`} />
             </div>
             
             <svg className="w-full h-full overflow-visible" viewBox="0 0 100 50" preserveAspectRatio="none">
@@ -152,7 +157,9 @@ const AnalyticsIllustration: React.FC<{ id: number; color: string }> = ({ id, co
 
       {/* ID 2: Bar Chart (Automation vs Manual) */}
       {id === 2 && (
-        <div className="relative w-72 h-48 p-6 rounded-xl border border-white/10 bg-white/5 shadow-2xl flex flex-col items-center justify-center group overflow-hidden backdrop-blur-md">
+        <div className={`relative w-72 h-48 p-6 rounded-xl border shadow-2xl flex flex-col items-center justify-center group overflow-hidden backdrop-blur-md ${
+          isDark ? 'border-white/10 bg-white/5' : 'border-gray-200/60 bg-white/70'
+        }`}>
            <div className="absolute inset-0 bg-grid-white/[0.02]" />
            
            <div className="flex items-end gap-8 h-28 w-full justify-center px-4 z-10">
@@ -162,15 +169,17 @@ const AnalyticsIllustration: React.FC<{ id: number; color: string }> = ({ id, co
                    initial={{ height: 0, opacity: 0 }}
                    whileInView={{ height: "80%", opacity: 1 }}
                    transition={{ duration: 0.8, delay: 0.2 }}
-                   className="w-10 rounded-t-lg bg-white/5 border border-white/10 relative overflow-hidden"
+                   className={`w-10 rounded-t-lg border relative overflow-hidden ${
+                     isDark ? 'bg-white/5 border-white/10' : 'bg-gray-100 border-gray-200'
+                   }`}
                  >
                    <div className="absolute inset-0 bg-[url('/noise.png')] opacity-20" /> {/* Texture hint */}
                  </motion.div>
-                 <span className="text-[10px] text-white/40 font-mono tracking-widest">MANUAL</span>
+                 <span className={`text-[10px] font-mono tracking-widest ${isDark ? 'text-white/40' : 'text-gray-500'}`}>MANUAL</span>
               </div>
 
               {/* Arrow Icon */}
-              <div className="mb-10 text-white/20">
+              <div className={`mb-10 ${isDark ? 'text-white/20' : 'text-gray-400'}`}>
                  <ArrowUpRight className="rotate-90" size={20} />
               </div>
 
@@ -203,7 +212,9 @@ const AnalyticsIllustration: React.FC<{ id: number; color: string }> = ({ id, co
 
       {/* ID 3: Privacy Shield (Security) */}
       {id === 3 && (
-        <div className="relative w-72 h-48 p-6 rounded-xl border border-white/10 bg-white/5 shadow-2xl flex items-center justify-center group overflow-hidden backdrop-blur-md">
+        <div className={`relative w-72 h-48 p-6 rounded-xl border shadow-2xl flex items-center justify-center group overflow-hidden backdrop-blur-md ${
+          isDark ? 'border-white/10 bg-white/5' : 'border-gray-200/60 bg-white/70'
+        }`}>
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-emerald-500/10 via-transparent to-transparent" />
           <div className="absolute inset-0 bg-grid-white/[0.02]" />
 
