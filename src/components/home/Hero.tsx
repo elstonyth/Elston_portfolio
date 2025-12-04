@@ -67,7 +67,7 @@ export const Hero: React.FC = () => {
               transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
             >
               Full-stack <br className="hidden sm:block" />
-              <span className="text-gradient-hero">AI & data engineer.</span>
+              AI & data engineer.
             </motion.h1>
 
             {/* Subtitle */}
