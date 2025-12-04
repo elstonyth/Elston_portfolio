@@ -66,8 +66,8 @@ export const Hero: React.FC = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
             >
-              Data that <br className="hidden sm:block" />
-              <span className="text-gradient">drives decisions.</span>
+              Full-stack <br className="hidden sm:block" />
+              <span className="text-gradient">AI developer.</span>
             </motion.h1>
 
             {/* Subtitle */}
@@ -77,7 +77,7 @@ export const Hero: React.FC = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
             >
-              Building dashboards, automations, and AI workflows that help teams move faster with fewer errors.
+              Dashboards, automations, and AI tools that reduce errors and busywork.
             </motion.p>
 
             {/* CTA Buttons */}
