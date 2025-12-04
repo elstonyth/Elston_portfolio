@@ -52,17 +52,17 @@ export const ModernParticleBackground: React.FC = () => {
       return;
     }
 
-    // Adaptive particle count - Increased for better visuals
+    // Adaptive particle count - Balanced for performance
     const getParticleCount = (): number => {
       switch (quality) {
         case 'low':
-          return 200;
+          return 120;
         case 'medium':
-          return 450;
+          return 280;
         case 'high':
-          return 700;
-        default:
           return 450;
+        default:
+          return 280;
       }
     };
 
@@ -177,20 +177,20 @@ export const ModernParticleBackground: React.FC = () => {
       const pulse = Math.sin(time * pulseSpeed) * 0.1;
       const currentOpacity = Math.max(0, Math.min(1, particle.baseOpacity + twinkle + pulse));
 
-      // Enhanced glow for stars
+      // Glow for stars - optimized shadowBlur values
       if (layer === 2) {
-        ctx.shadowBlur = size * 6;
-        ctx.shadowColor = hue > 0 
-          ? `hsla(${hue}, ${saturation}%, 70%, 0.7)` 
-          : 'rgba(255, 255, 255, 0.6)';
-      } else if (layer === 1) {
         ctx.shadowBlur = size * 3;
         ctx.shadowColor = hue > 0 
-          ? `hsla(${hue}, ${saturation}%, 70%, 0.4)` 
-          : 'rgba(255, 255, 255, 0.3)';
-      } else {
+          ? `hsla(${hue}, ${saturation}%, 70%, 0.5)` 
+          : 'rgba(255, 255, 255, 0.4)';
+      } else if (layer === 1) {
         ctx.shadowBlur = size * 1.5;
-        ctx.shadowColor = 'rgba(255, 255, 255, 0.2)';
+        ctx.shadowColor = hue > 0 
+          ? `hsla(${hue}, ${saturation}%, 70%, 0.3)` 
+          : 'rgba(255, 255, 255, 0.2)';
+      } else {
+        ctx.shadowBlur = 0; // No shadow for background particles
+        ctx.shadowColor = 'transparent';
       }
 
       // Draw star with color

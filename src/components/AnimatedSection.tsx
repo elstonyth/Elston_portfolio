@@ -1,45 +1,56 @@
 import React from 'react';
-import { motion } from 'framer-motion';
+import { motion, type Variants } from 'framer-motion';
 import { useScrollAnimation } from '@/hooks/useScrollAnimation';
+import { easings, durations, createFadeVariant } from '@/lib/animations';
 
 interface AnimatedSectionProps {
   children: React.ReactNode;
   className?: string;
   delay?: number;
   direction?: 'up' | 'down' | 'left' | 'right' | 'fade';
+  /** Distance in pixels for the initial offset */
+  offset?: number;
+  /** Use blur effect for premium feel */
+  blur?: boolean;
 }
 
 export const AnimatedSection: React.FC<AnimatedSectionProps> = ({
   children,
   className = '',
   delay = 0,
-  direction = 'up'
+  direction = 'up',
+  offset = 30,
+  blur = false,
 }) => {
   const { ref, isVisible } = useScrollAnimation({
     threshold: 0.1,
     triggerOnce: true
   });
 
-  const variants = {
-    up: { y: 40, opacity: 0 },
-    down: { y: -40, opacity: 0 },
-    left: { x: 40, opacity: 0 },
-    right: { x: -40, opacity: 0 },
-    fade: { opacity: 0 }
+  // Build variants using shared config
+  const baseVariant = createFadeVariant(direction === 'fade' ? 'none' : direction, offset);
+  
+  const variants: Variants = {
+    hidden: {
+      ...baseVariant.hidden,
+      ...(blur && { filter: 'blur(8px)' }),
+    },
+    visible: {
+      ...baseVariant.visible,
+      ...(blur && { filter: 'blur(0px)' }),
+    },
   };
-
-  const initial = variants[direction];
-  const animate = isVisible ? { x: 0, y: 0, opacity: 1 } : initial;
 
   return (
     <motion.section
-      ref={ref as any}
-      initial={initial}
-      animate={animate}
+      ref={ref as React.RefObject<HTMLElement>}
+      variants={variants}
+      initial="hidden"
+      animate={isVisible ? 'visible' : 'hidden'}
       transition={{
-        duration: 0.6,
+        duration: durations.slow,
         delay,
-        ease: [0.25, 0.1, 0.25, 1]
+        ease: easings.smooth,
       }}
       className={className}
     >

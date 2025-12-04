@@ -262,27 +262,49 @@ const AnalyticsIllustration: React.FC<{ id: number; color: string }> = ({ id, co
   );
 };
 
+// Premium project card animation variants
+const cardVariants = {
+  hidden: { 
+    opacity: 0, 
+    y: 80, 
+    scale: 0.95,
+    filter: 'blur(10px)',
+  },
+  visible: (index: number) => ({
+    opacity: 1,
+    y: 0,
+    scale: 1,
+    filter: 'blur(0px)',
+    transition: {
+      duration: 0.9,
+      delay: index * 0.15,
+      ease: [0.22, 1, 0.36, 1] as const,
+    }
+  })
+};
+
 const ProjectCard: React.FC<{ project: Project; index: number; reducedMotion: boolean }> = ({ project, index, reducedMotion }) => {
   const [isHovered, setIsHovered] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
-  const isInView = useInView(cardRef, { once: true, margin: "-100px" });
+  const isInView = useInView(cardRef, { once: true, amount: 0.2 });
 
   return (
     <motion.div
       ref={cardRef}
-      initial={{ opacity: 0, y: 50 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-100px" }}
-      transition={{ duration: reducedMotion ? 0.5 : 0.7, delay: reducedMotion ? 0 : index * 0.2 }}
-      className="mb-24 md:mb-32 last:mb-0"
+      className="mb-12 md:mb-32 last:mb-0"
+      variants={cardVariants}
+      initial="hidden"
+      animate={isInView ? "visible" : "hidden"}
+      custom={index}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
+      whileHover={{ y: -8, transition: { duration: 0.3, ease: [0.22, 1, 0.36, 1] } }}
     >
       <HolographicCard intensity="minimal" className={`p-0 overflow-hidden rounded-2xl transition-all duration-500 bg-gradient-to-br ${project.color}`}>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-0 md:h-[420px] lg:h-[480px]">
             
-          {/* Content Side */}
-          <div className="p-8 md:p-12 flex flex-col justify-between order-2 lg:order-1 lg:h-full relative z-10 bg-card/50 backdrop-blur-sm">
+          {/* Content Side - Shows first on mobile */}
+          <div className="p-6 md:p-12 flex flex-col justify-between order-1 lg:order-1 lg:h-full relative z-10 bg-card/50 backdrop-blur-sm">
             <div>
               {/* Project Number Indicator */}
               <motion.div
@@ -311,7 +333,7 @@ const ProjectCard: React.FC<{ project: Project; index: number; reducedMotion: bo
                  </motion.span>
               </div>
               
-              <h3 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 leading-tight tracking-tight text-primary">
+              <h3 className="text-2xl sm:text-3xl md:text-5xl font-bold mb-3 md:mb-4 leading-tight tracking-tight text-primary">
                 {project.title}
               </h3>
               
@@ -363,8 +385,8 @@ const ProjectCard: React.FC<{ project: Project; index: number; reducedMotion: bo
             </div>
           </div>
 
-          {/* Visual Side (Code-based Illustration) */}
-          <div className="relative h-[320px] sm:h-[360px] lg:h-full overflow-hidden order-1 lg:order-2 group rounded-r-2xl">
+          {/* Visual Side - Shows second on mobile */}
+          <div className="relative h-[200px] sm:h-[280px] lg:h-full overflow-hidden order-2 lg:order-2 group lg:rounded-r-2xl">
              <AnalyticsIllustration id={project.id} color={project.color} />
              
              {/* Hover Effect Overlay */}
@@ -405,7 +427,7 @@ export const SelectedWork: React.FC = () => {
   }, []);
 
   return (
-    <section className="py-24 md:py-32 px-6 relative z-10">
+    <section className="py-16 md:py-32 px-4 md:px-6 relative z-10">
       <div className="max-w-7xl mx-auto">
         
         <div ref={headerRef} className="mb-16 md:mb-24 flex flex-col md:flex-row items-end justify-between gap-8">
@@ -413,13 +435,13 @@ export const SelectedWork: React.FC = () => {
               <p className="text-xs uppercase tracking-mega mb-3 text-muted">
                 Selected Work · Analytics
               </p>
-              <h2 className="text-2xl sm:text-3xl md:text-6xl font-bold tracking-tighter mb-4 md:mb-6 flex flex-wrap gap-x-3 text-primary">
-                Analytics 
+              <h2 className="text-2xl sm:text-3xl md:text-6xl font-bold tracking-tighter mb-4 md:mb-6 text-primary">
+                Analytics{' '}
                 <span 
-                  className="relative inline-block bg-gradient-to-r from-purple-400 via-pink-400 to-cyan-400 bg-clip-text text-transparent"
+                  className="bg-gradient-to-r from-purple-400 via-pink-400 to-cyan-400 bg-clip-text text-transparent"
                 >
                   {shouldReduceMotion ? (
-                    <span>Case Studies</span>
+                    <>Case Studies</>
                   ) : (
                     <TextScramble 
                       text="Case Studies" 
@@ -431,18 +453,18 @@ export const SelectedWork: React.FC = () => {
               <p className="text-base md:text-xl leading-relaxed text-secondary">
                 A selection of analytics, automation, and self-hosted projects that improved data quality, efficiency, and reliability.
               </p>
-              <div className="mt-4 grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs text-secondary">
-                <div>
-                  <p className="font-mono text-muted">Error Reduction</p>
-                  <p className="text-primary/80">Up to 30% fewer data issues</p>
+              <div className="mt-6 flex flex-wrap gap-4 md:gap-6 text-sm">
+                <div className="flex items-center gap-2">
+                  <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
+                  <span className="text-white/60">~30% fewer errors</span>
                 </div>
-                <div>
-                  <p className="font-mono text-muted">Time Saved</p>
-                  <p className="text-primary/80">Hours of manual work automated</p>
+                <div className="flex items-center gap-2">
+                  <span className="w-2 h-2 rounded-full bg-cyan-500"></span>
+                  <span className="text-white/60">10-15h/month saved</span>
                 </div>
-                <div>
-                  <p className="font-mono text-muted">Stack</p>
-                  <p className="text-primary/80">SQL · Python · Docker</p>
+                <div className="flex items-center gap-2">
+                  <span className="w-2 h-2 rounded-full bg-purple-500"></span>
+                  <span className="text-white/60">SQL · Python · Docker</span>
                 </div>
               </div>
            </div>

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, useInView } from 'framer-motion';
 import { SpotlightCard } from '@/components/ui/SpotlightCard';
-import { useTheme } from '@/context/ThemeContext';
+// Dark mode only - no theme switching needed
 
 // Animated counter hook
 const useAnimatedCounter = (end: number, duration: number = 1500, isInView: boolean = false) => {
@@ -35,7 +35,6 @@ const useAnimatedCounter = (end: number, duration: number = 1500, isInView: bool
 };
 
 export const HeroDesignShowcase = () => {
-  const { isDark } = useTheme();
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
   
@@ -45,7 +44,7 @@ export const HeroDesignShowcase = () => {
   
   return (
     <div className="w-full" ref={ref}>
-      <SpotlightCard className={isDark ? 'bg-background/80 border-white/10' : 'bg-white/60 border-gray-300/30'}>
+      <SpotlightCard className="bg-background/80 border-white/10">
         <div className="p-8 space-y-6">
           {/* Header */}
           <motion.div 
@@ -55,15 +54,13 @@ export const HeroDesignShowcase = () => {
             transition={{ duration: 0.5, ease: [0.4, 0, 0.2, 1] }}
           >
             <div>
-              <p className={`text-xs uppercase tracking-ultra ${isDark ? 'text-white/40' : 'text-gray-500'}`}>UI Snapshot</p>
-              <h3 className={`text-2xl md:text-3xl font-semibold tracking-tight mt-2 ${isDark ? 'text-white' : 'text-gray-900'}`}>
+              <p className="text-xs uppercase tracking-ultra text-white/40">UI Snapshot</p>
+              <h3 className="text-2xl md:text-3xl font-semibold tracking-tight mt-2 text-white">
                 Realtime Analytics Dashboard
               </h3>
             </div>
             <motion.span 
-              className={`px-4 py-1.5 rounded-full text-xs font-semibold border ${
-                isDark ? 'text-white/70 bg-white/5 border-white/10' : 'text-gray-600 bg-gray-100 border-gray-200'
-              }`}
+              className="px-4 py-1.5 rounded-full text-xs font-semibold border text-white/70 bg-white/5 border-white/10"
               initial={{ opacity: 0, scale: 0.9 }}
               animate={isInView ? { opacity: 1, scale: 1 } : {}}
               transition={{ duration: 0.4, delay: 0.2 }}
@@ -73,24 +70,18 @@ export const HeroDesignShowcase = () => {
           </motion.div>
 
           {/* Dashboard Preview */}
-          <div className={`relative h-[360px] rounded-2xl overflow-hidden ${
-            isDark 
-              ? 'bg-gradient-to-br from-blue-500/30 via-purple-500/10 to-transparent' 
-              : 'bg-gradient-to-br from-cyan-500/20 via-purple-500/10 to-transparent'
-          }`}>
+          <div className="relative h-[360px] rounded-2xl overflow-hidden bg-gradient-to-br from-blue-500/30 via-purple-500/10 to-transparent">
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(255,255,255,0.15),_transparent_60%)]" />
             
             <div className="absolute left-6 right-6 top-8 flex flex-col gap-4">
               {/* Engagement Card */}
               <motion.div 
-                className={`rounded-2xl border p-4 shadow-2xl backdrop-blur-sm ${
-                  isDark ? 'bg-black/40 border-white/10' : 'bg-white/70 border-gray-200/50'
-                }`}
+                className="rounded-2xl border p-4 shadow-2xl backdrop-blur-sm bg-black/40 border-white/10"
                 initial={{ opacity: 0, y: 30 }}
                 animate={isInView ? { opacity: 1, y: 0 } : {}}
                 transition={{ duration: 0.5, delay: 0.1 }}
               >
-                <div className={`flex items-center justify-between text-xs ${isDark ? 'text-white/60' : 'text-gray-600'}`}>
+                <div className="flex items-center justify-between text-xs text-white/60">
                   <span>Engagement Lift</span>
                   <motion.span 
                     className="text-emerald-400 font-semibold"
@@ -101,7 +92,7 @@ export const HeroDesignShowcase = () => {
                     +{engagementCount}%
                   </motion.span>
                 </div>
-                <div className={`mt-3 h-2 rounded-full ${isDark ? 'bg-white/10' : 'bg-gray-200'}`}>
+                <div className="mt-3 h-2 rounded-full bg-white/10">
                   <motion.div 
                     className="h-full rounded-full bg-gradient-to-r from-cyan-400 to-emerald-400"
                     initial={{ width: 0 }}
@@ -120,18 +111,16 @@ export const HeroDesignShowcase = () => {
                 ].map((card, index) => (
                   <motion.div 
                     key={card.label} 
-                    className={`rounded-2xl border p-4 backdrop-blur-sm ${
-                      isDark ? 'bg-black/50 border-white/5' : 'bg-white/60 border-gray-200/40'
-                    }`}
+                    className="rounded-2xl border p-4 backdrop-blur-sm bg-black/50 border-white/5"
                     initial={{ opacity: 0, y: 20, scale: 0.95 }}
                     animate={isInView ? { opacity: 1, y: 0, scale: 1 } : {}}
                     transition={{ duration: 0.4, delay: card.delay }}
                     whileHover={{ scale: 1.02, y: -2 }}
                   >
-                    <p className={`text-[11px] uppercase tracking-super mb-2 ${isDark ? 'text-white/40' : 'text-gray-500'}`}>
+                    <p className="text-[11px] uppercase tracking-super mb-2 text-white/40">
                       {card.label}
                     </p>
-                    <p className={`text-2xl font-semibold ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                    <p className="text-2xl font-semibold text-white">
                       {card.value}
                     </p>
                   </motion.div>
@@ -141,16 +130,14 @@ export const HeroDesignShowcase = () => {
 
             {/* Bottom Status Bar */}
             <motion.div 
-              className={`absolute bottom-6 left-6 right-6 rounded-2xl border p-4 backdrop-blur ${
-                isDark ? 'bg-white/5 border-white/10' : 'bg-white/70 border-gray-200/50'
-              }`}
+              className="absolute bottom-6 left-6 right-6 rounded-2xl border p-4 backdrop-blur bg-white/5 border-white/10"
               initial={{ opacity: 0, y: 20 }}
               animate={isInView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.5, delay: 0.5 }}
             >
-              <div className={`flex items-center justify-between text-sm ${isDark ? 'text-white/70' : 'text-gray-700'}`}>
+              <div className="flex items-center justify-between text-sm text-white/70">
                 <div>
-                  <p className={`text-xs uppercase tracking-ultra ${isDark ? 'text-white/40' : 'text-gray-500'}`}>
+                  <p className="text-xs uppercase tracking-ultra text-white/40">
                     Experience Layer
                   </p>
                   <p className="font-medium">Live collaboration & design systems</p>

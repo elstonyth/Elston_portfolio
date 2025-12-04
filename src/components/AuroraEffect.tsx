@@ -1,5 +1,8 @@
 import React, { useEffect, useRef } from 'react';
 
+const TARGET_FPS = 30;
+const FRAME_INTERVAL = 1000 / TARGET_FPS;
+
 export const AuroraEffect: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -14,6 +17,8 @@ export const AuroraEffect: React.FC = () => {
 
     let animationId: number;
     let time = 0;
+    let lastFrameTime = 0;
+    let isVisible = true;
 
     const resize = () => {
       canvas.width = window.innerWidth;
@@ -77,7 +82,21 @@ export const AuroraEffect: React.FC = () => {
       ctx.globalCompositeOperation = 'source-over';
     };
 
-    const animate = () => {
+    const animate = (timestamp: number) => {
+      // Skip if tab is hidden
+      if (!isVisible) {
+        animationId = requestAnimationFrame(animate);
+        return;
+      }
+
+      // Frame rate limiting
+      const elapsed = timestamp - lastFrameTime;
+      if (elapsed < FRAME_INTERVAL) {
+        animationId = requestAnimationFrame(animate);
+        return;
+      }
+      lastFrameTime = timestamp - (elapsed % FRAME_INTERVAL);
+
       if (!prefersReducedMotion) {
         time += 0.005;
       }
@@ -85,10 +104,17 @@ export const AuroraEffect: React.FC = () => {
       animationId = requestAnimationFrame(animate);
     };
 
-    animate();
+    // Pause when tab is hidden
+    const handleVisibilityChange = () => {
+      isVisible = document.visibilityState === 'visible';
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    animationId = requestAnimationFrame(animate);
 
     return () => {
       window.removeEventListener('resize', resize);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
       cancelAnimationFrame(animationId);
     };
   }, []);

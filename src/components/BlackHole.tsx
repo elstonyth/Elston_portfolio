@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 
 interface BlackHoleProps {
@@ -9,13 +9,21 @@ interface BlackHoleProps {
 export const BlackHole: React.FC<BlackHoleProps> = ({ className = '', size = 280 }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const animationRef = useRef<number | null>(null);
+  const [webglFailed, setWebglFailed] = useState(false);
 
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
+    // Set canvas size for proper rendering
+    canvas.width = size * (window.devicePixelRatio || 1);
+    canvas.height = size * (window.devicePixelRatio || 1);
+
     const gl = canvas.getContext('webgl');
-    if (!gl) return;
+    if (!gl) {
+      setWebglFailed(true);
+      return;
+    }
 
     // Vertex shader
     const vsSource = `
@@ -145,9 +153,9 @@ export const BlackHole: React.FC<BlackHoleProps> = ({ className = '', size = 280
     gl.enable(gl.BLEND);
     gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 
-    // Resize with high quality
+    // Resize with balanced quality/performance
     const resize = () => {
-      const dpr = Math.min(window.devicePixelRatio || 1, 2) * 1.5; // Higher resolution
+      const dpr = Math.min(window.devicePixelRatio || 1, 2); // Cap at 2x for performance
       canvas.width = canvas.clientWidth * dpr;
       canvas.height = canvas.clientHeight * dpr;
       gl.viewport(0, 0, gl.drawingBufferWidth, gl.drawingBufferHeight);
@@ -175,7 +183,31 @@ export const BlackHole: React.FC<BlackHoleProps> = ({ className = '', size = 280
         cancelAnimationFrame(animationRef.current);
       }
     };
-  }, []);
+  }, [size]);
+
+  // CSS fallback for when WebGL is not available
+  if (webglFailed) {
+    return (
+      <motion.div 
+        className={`relative ${className}`}
+        initial={{ opacity: 0, scale: 0.8 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+        style={{ width: size, height: size }}
+      >
+        {/* CSS-only black hole fallback */}
+        <div className="absolute inset-0 rounded-full"
+          style={{
+            background: 'radial-gradient(circle at 30% 30%, rgba(255,200,100,0.3) 0%, rgba(200,100,50,0.2) 20%, rgba(50,20,10,0.8) 40%, #000 60%)',
+            boxShadow: '0 0 60px rgba(255,150,50,0.4), inset 0 0 40px rgba(0,0,0,0.8)',
+          }}
+        />
+        <div className="absolute inset-[15%] rounded-full bg-black"
+          style={{ boxShadow: 'inset 0 0 30px rgba(255,100,50,0.3)' }}
+        />
+      </motion.div>
+    );
+  }
 
   return (
     <motion.div 

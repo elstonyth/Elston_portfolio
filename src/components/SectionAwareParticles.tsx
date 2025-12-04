@@ -22,6 +22,10 @@ export const SectionAwareParticles: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const particlesRef = useRef<Particle[]>([]);
   const [activeSection, setActiveSection] = useState<string>('hero');
+  const isVisibleRef = useRef(true);
+  const lastFrameTimeRef = useRef(0);
+  const TARGET_FPS = 30; // Cap at 30fps for performance
+  const FRAME_INTERVAL = 1000 / TARGET_FPS;
 
   useEffect(() => {
     const sections = [
@@ -105,7 +109,20 @@ export const SectionAwareParticles: React.FC = () => {
 
     initParticles();
 
-    const animate = () => {
+    const animate = (timestamp: number) => {
+      // Skip frames if not visible or if not enough time has passed
+      if (!isVisibleRef.current) {
+        animationId = requestAnimationFrame(animate);
+        return;
+      }
+
+      const elapsed = timestamp - lastFrameTimeRef.current;
+      if (elapsed < FRAME_INTERVAL) {
+        animationId = requestAnimationFrame(animate);
+        return;
+      }
+      lastFrameTimeRef.current = timestamp - (elapsed % FRAME_INTERVAL);
+
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
       // Gradually transition particle colors
@@ -154,10 +171,17 @@ export const SectionAwareParticles: React.FC = () => {
       animationId = requestAnimationFrame(animate);
     };
 
-    animate();
+    // Visibility change handler - pause when tab is hidden
+    const handleVisibilityChange = () => {
+      isVisibleRef.current = document.visibilityState === 'visible';
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    animationId = requestAnimationFrame(animate);
 
     return () => {
       window.removeEventListener('resize', resize);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
       cancelAnimationFrame(animationId);
     };
   }, [activeSection]);

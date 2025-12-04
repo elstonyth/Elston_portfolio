@@ -109,21 +109,30 @@ const CategoryCard: React.FC<{
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
+      viewport={{ once: true, margin: "-50px" }}
       transition={{ duration: 0.5, delay: index * 0.1 }}
-      className="group relative p-6 rounded-2xl border transition-all duration-300 bg-white/[0.02] border-white/[0.06] hover:bg-white/[0.04] hover:border-white/[0.1]"
+      whileHover={{ y: -4 }}
+      className="group relative p-4 md:p-6 rounded-xl md:rounded-2xl border transition-all duration-500 ease-out bg-white/[0.03] border-white/[0.08] hover:bg-white/[0.06] hover:border-white/[0.15] backdrop-blur-sm overflow-hidden"
     >
+      {/* Gradient glow on hover */}
+      <div className={`absolute inset-0 bg-gradient-to-br ${category.color} opacity-0 group-hover:opacity-[0.08] transition-opacity duration-500 rounded-2xl`} />
+      
+      {/* Top edge highlight */}
+      <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+      
       {/* Category header */}
-      <div className="flex items-center gap-3 mb-5">
-        <div className={`w-2 h-2 rounded-full bg-gradient-to-r ${category.color}`} />
-        <h3 className="text-sm font-mono uppercase tracking-wider text-white/50">
+      <div className="relative flex items-center gap-2 md:gap-3 mb-3 md:mb-5">
+        <div className={`w-2 h-2 md:w-2.5 md:h-2.5 rounded-full bg-gradient-to-r ${category.color} shadow-lg group-hover:scale-125 transition-transform duration-300`} 
+          style={{ boxShadow: `0 0 12px rgba(34, 211, 238, 0.3)` }}
+        />
+        <h3 className="text-[10px] md:text-xs font-mono uppercase tracking-[0.1em] md:tracking-[0.15em] text-white/50 group-hover:text-white/70 transition-colors duration-300">
           {category.name}
         </h3>
       </div>
       
       {/* Tech items */}
-      <div className="flex flex-wrap gap-2">
-        {category.items.map((item, i) => {
+      <div className="relative flex flex-wrap gap-2">
+        {category.items.map((item, itemIndex) => {
           const IconComponent = TechIcons[item.icon];
           return (
             <motion.div
@@ -131,48 +140,65 @@ const CategoryCard: React.FC<{
               initial={{ opacity: 0, scale: 0.9 }}
               whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.3, delay: index * 0.1 + i * 0.05 }}
-              whileHover={{ scale: 1.05, y: -2 }}
-              className="flex items-center gap-2 px-3 py-2 rounded-lg border cursor-default transition-all duration-200 bg-white/[0.03] border-white/[0.06] hover:bg-white/[0.06] hover:border-white/[0.12]"
+              transition={{ duration: 0.3, delay: index * 0.1 + itemIndex * 0.05 }}
+              whileHover={{ scale: 1.08, y: -3 }}
+              className="flex items-center gap-2 px-3.5 py-2 rounded-xl border cursor-default transition-all duration-300 ease-out bg-white/[0.04] border-white/[0.08] hover:bg-white/[0.1] hover:border-white/[0.2] hover:shadow-[0_4px_20px_rgba(34,211,238,0.15)]"
             >
               {IconComponent && (
-                <IconComponent className="w-4 h-4 text-white/60" />
+                <IconComponent className="w-4 h-4 text-white/50 group-hover:text-cyan-400/80 transition-colors duration-300" />
               )}
-              <span className="text-sm font-medium text-white/80">
+              <span className="text-xs md:text-sm font-medium text-white/70 group-hover:text-white/90 transition-colors duration-300">
                 {item.name}
               </span>
             </motion.div>
           );
         })}
       </div>
+      
+      {/* Corner accent */}
+      <div className={`absolute -bottom-12 -right-12 w-32 h-32 bg-gradient-to-tl ${category.color} opacity-[0.03] rounded-full blur-2xl group-hover:opacity-[0.08] transition-opacity duration-500`} />
     </motion.div>
   );
 };
 
 export const TrustedBy: React.FC = () => {
   return (
-    <section className="py-24 md:py-32 overflow-hidden relative">
-      <div className="max-w-7xl mx-auto px-6">
+    <section className="py-16 md:py-32 overflow-hidden relative">
+      {/* Ambient background glow */}
+      <div className="absolute inset-0 pointer-events-none">
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-cyan-500/5 rounded-full blur-[120px]" />
+        <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-purple-500/5 rounded-full blur-[100px]" />
+      </div>
+      
+      <div className="relative max-w-7xl mx-auto px-4 md:px-6">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="text-center mb-16"
+          transition={{ duration: 0.6 }}
+          className="text-center mb-10 md:mb-16"
         >
-          <p className="text-xs font-mono uppercase tracking-[0.2em] mb-4 text-cyan-400">
+          <motion.p 
+            initial={{ opacity: 0, y: 10 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-cyan-500/20 bg-cyan-500/5 text-xs font-mono uppercase tracking-[0.2em] mb-6 text-cyan-400"
+          >
+            <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse" />
             Technical Expertise
-          </p>
-          <h2 className="text-3xl md:text-5xl font-bold tracking-tight mb-4 text-white">
+          </motion.p>
+          <h2 className="text-2xl md:text-5xl font-bold tracking-tight mb-4 md:mb-5 text-white">
             Tech Stack & Tools
           </h2>
-          <p className="text-base md:text-lg max-w-2xl mx-auto text-white/50">
+          <p className="text-base md:text-lg max-w-2xl mx-auto text-white/50 leading-relaxed">
             The technologies I use to build data pipelines, automations, and full-stack applications.
           </p>
         </motion.div>
         
         {/* Category Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-6">
           {categories.map((category, index) => (
             <CategoryCard 
               key={category.name} 

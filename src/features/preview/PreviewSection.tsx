@@ -64,7 +64,7 @@ export const PreviewSection = () => {
   }, [scrollProgress, isMobile]);
 
   return (
-    <section ref={previewSectionRef} className="relative px-6 pb-24">
+    <section ref={previewSectionRef} className="relative px-4 md:px-6 pb-12 md:pb-24">
       <motion.div 
         className="absolute inset-0 bg-gradient-to-r from-cyan-500/5 via-transparent to-purple-500/10 blur-3xl" 
         style={{ opacity: isMobile ? 0.35 : previewGlowOpacity }}
@@ -73,8 +73,8 @@ export const PreviewSection = () => {
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
           <div>
             <p className="text-xs uppercase tracking-mega text-white/40">Interactive sandbox</p>
-            <h2 className="text-3xl md:text-4xl font-semibold mt-3 mb-3">Recent build preview</h2>
-            <p className="text-white/70 max-w-2xl">
+            <h2 className="text-2xl md:text-4xl font-semibold mt-2 md:mt-3 mb-2 md:mb-3">Recent build preview</h2>
+            <p className="text-sm md:text-base text-white/70 max-w-2xl">
               Dive into the live playground I use to prototype animations, system design, and engineering handoffs. Switch modes to see how I translate complex briefs into polished experiences.
             </p>
           </div>

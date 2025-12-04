@@ -1,6 +1,6 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { motion, useMotionValue, useSpring, useTransform, useInView } from 'framer-motion';
-import { useTheme } from '@/context/ThemeContext';
+// Dark mode only - no theme switching needed
 
 interface HolographicCardProps {
   children: React.ReactNode;
@@ -13,7 +13,6 @@ export const HolographicCard: React.FC<HolographicCardProps> = ({
   className = '',
   intensity = 'medium',
 }) => {
-  const { isDark } = useTheme();
   const cardRef = useRef<HTMLDivElement>(null);
   const [isHovered, setIsHovered] = useState(false);
   const [isScrolling, setIsScrolling] = useState(false);
@@ -118,10 +117,13 @@ export const HolographicCard: React.FC<HolographicCardProps> = ({
         transformStyle: 'preserve-3d',
       }}
     >
-      {/* Holographic Glass Layer */}
-      <div className={`absolute inset-0 backdrop-blur-xl border rounded-2xl ${
-        isDark ? 'bg-white/5 border-white/10' : 'bg-white/60 border-gray-200/50'
-      }`} />
+      {/* Holographic Glass Layer - dark mode */}
+      <div 
+        className="absolute inset-0 rounded-2xl bg-gradient-to-br from-white/[0.08] via-white/[0.04] to-white/[0.02] border border-white/[0.1] backdrop-blur-xl backdrop-saturate-150"
+        style={{
+          boxShadow: '0 2px 4px rgba(0,0,0,0.2), 0 8px 16px rgba(0,0,0,0.15), 0 16px 32px rgba(0,0,0,0.1), inset 0 1px 0 rgba(255,255,255,0.08)'
+        }}
+      />
 
       {/* Animated Gradient Glow */}
       <motion.div
@@ -138,15 +140,15 @@ export const HolographicCard: React.FC<HolographicCardProps> = ({
           className="absolute inset-0 rounded-2xl pointer-events-none"
           initial={{ opacity: 0 }}
           animate={{
-            opacity: 0.5,
+            opacity: 0.4,
             background: [
-              'linear-gradient(45deg, rgba(0, 255, 255, 0.3), rgba(255, 0, 255, 0.3), rgba(0, 255, 255, 0.3))',
-              'linear-gradient(90deg, rgba(255, 0, 255, 0.3), rgba(0, 255, 255, 0.3), rgba(255, 0, 255, 0.3))',
-              'linear-gradient(135deg, rgba(0, 255, 255, 0.3), rgba(255, 0, 255, 0.3), rgba(0, 255, 255, 0.3))',
+              'linear-gradient(45deg, rgba(34, 211, 238, 0.2), rgba(167, 139, 250, 0.2), rgba(34, 211, 238, 0.2))',
+              'linear-gradient(90deg, rgba(167, 139, 250, 0.2), rgba(34, 211, 238, 0.2), rgba(167, 139, 250, 0.2))',
+              'linear-gradient(135deg, rgba(34, 211, 238, 0.2), rgba(244, 114, 182, 0.15), rgba(34, 211, 238, 0.2))',
             ],
           }}
           transition={{
-            duration: 3,
+            duration: 4,
             repeat: Infinity,
             ease: 'linear',
           }}
@@ -176,9 +178,9 @@ export const HolographicCard: React.FC<HolographicCardProps> = ({
         />
       )}
 
-      {/* Noise Texture */}
+      {/* Noise Texture - reduced for subtlety */}
       <div
-        className="absolute inset-0 opacity-20 pointer-events-none rounded-2xl"
+        className="absolute inset-0 opacity-[0.08] pointer-events-none rounded-2xl"
         style={{
           backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`,
           mixBlendMode: 'overlay',
@@ -198,14 +200,14 @@ export const HolographicCard: React.FC<HolographicCardProps> = ({
           className="absolute inset-0 rounded-2xl"
           style={{
             background:
-              'radial-gradient(circle at 0% 50%, rgba(0, 255, 255, 0.1), transparent 50%)',
+              'radial-gradient(circle at 0% 50%, rgba(34, 211, 238, 0.1), transparent 50%)',
           }}
         />
         <div
           className="absolute inset-0 rounded-2xl"
           style={{
             background:
-              'radial-gradient(circle at 100% 50%, rgba(255, 0, 255, 0.1), transparent 50%)',
+              'radial-gradient(circle at 100% 50%, rgba(167, 139, 250, 0.1), transparent 50%)',
           }}
         />
       </div>
