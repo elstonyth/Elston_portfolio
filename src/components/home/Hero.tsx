@@ -61,13 +61,13 @@ export const Hero: React.FC = () => {
 
             {/* Main Title */}
             <motion.h1 
-              className="text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight mb-5 md:mb-6 leading-[1.05] text-white"
+              className="text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight mb-5 md:mb-6 leading-[1.05] text-white hero-title-premium"
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
             >
               Full-stack <br className="hidden sm:block" />
-              <span className="text-gradient">AI developer.</span>
+              <span className="text-gradient-hero">AI & data engineer.</span>
             </motion.h1>
 
             {/* Subtitle */}
@@ -77,7 +77,7 @@ export const Hero: React.FC = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
             >
-              Dashboards, automations, and AI tools that reduce errors and busywork.
+              Designing analytics, automations, and interfaces that are as polished as they are reliable.
             </motion.p>
 
             {/* CTA Buttons */}

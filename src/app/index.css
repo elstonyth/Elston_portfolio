@@ -503,6 +503,13 @@ body {
   -webkit-text-fill-color: transparent;
 }
 
+.text-gradient-hero {
+  background: linear-gradient(135deg, #fbbf24 0%, #22d3ee 35%, #a855f7 70%, #f472b6 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
 .text-gradient-cyan {
   background: linear-gradient(135deg, #22d3ee 0%, #06b6d4 100%);
   -webkit-background-clip: text;
