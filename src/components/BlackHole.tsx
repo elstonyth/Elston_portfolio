@@ -1,5 +1,6 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { motion } from 'framer-motion';
+import React, { useEffect, useRef, useState, useCallback } from 'react';
+import { motion, useMotionValue, useSpring } from 'framer-motion';
+import { safeBrowserAPI } from '@/lib/utils';
 
 interface BlackHoleProps {
   className?: string;
@@ -8,8 +9,48 @@ interface BlackHoleProps {
 
 export const BlackHole: React.FC<BlackHoleProps> = ({ className = '', size = 280 }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
   const animationRef = useRef<number | null>(null);
   const [webglFailed, setWebglFailed] = useState(false);
+  
+  // Mouse parallax (desktop only)
+  const mouseX = useMotionValue(0);
+  const mouseY = useMotionValue(0);
+  const springConfig = { stiffness: 50, damping: 20 };
+  const parallaxX = useSpring(mouseX, springConfig);
+  const parallaxY = useSpring(mouseY, springConfig);
+
+  // Check for reduced motion preference and mobile
+  const prefersReducedMotion = safeBrowserAPI.prefersReducedMotion();
+  const isMobile = safeBrowserAPI.isTouchDevice();
+
+  // Mouse move handler for parallax
+  const handleMouseMove = useCallback((e: MouseEvent) => {
+    if (isMobile || prefersReducedMotion) return;
+    const container = containerRef.current;
+    if (!container) return;
+    
+    const rect = container.getBoundingClientRect();
+    const centerX = rect.left + rect.width / 2;
+    const centerY = rect.top + rect.height / 2;
+    
+    // Subtle parallax offset (max 8px movement)
+    const offsetX = ((e.clientX - centerX) / window.innerWidth) * 8;
+    const offsetY = ((e.clientY - centerY) / window.innerHeight) * 8;
+    
+    mouseX.set(offsetX);
+    mouseY.set(offsetY);
+  }, [isMobile, prefersReducedMotion, mouseX, mouseY]);
+
+  useEffect(() => {
+    // Add mouse listener for parallax
+    if (!isMobile && !prefersReducedMotion) {
+      window.addEventListener('mousemove', handleMouseMove);
+    }
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+    };
+  }, [handleMouseMove, isMobile, prefersReducedMotion]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -33,13 +74,13 @@ export const BlackHole: React.FC<BlackHoleProps> = ({ className = '', size = 280
       }
     `;
 
-    // Fragment shader - Grok's Black Hole (exact from CodePen by mathemartica)
+    // Fragment shader - Premium Black Hole with cyan/purple palette
     const fsSource = `
       precision highp float;
       uniform float t;
       uniform vec2 r;
       
-      // Custom tanh function for vec2 since built-in tanh is unavailable in WebGL GLSL.
+      // Custom tanh function for vec2
       vec2 myTanh(vec2 x) {
         vec2 ex = exp(x);
         vec2 emx = exp(-x);
@@ -51,7 +92,7 @@ export const BlackHole: React.FC<BlackHoleProps> = ({ className = '', size = 280
         vec4 o_anim = vec4(0.0);
 
         // ---------------------------
-        // Background (Image) Layer
+        // Background (Image) Layer - Event horizon ring
         // ---------------------------
         {
           vec2 p_img = (gl_FragCoord.xy * 2.0 - r) / r.y * mat2(1.0, -1.0, 1.0, 1.0);
@@ -67,7 +108,7 @@ export const BlackHole: React.FC<BlackHoleProps> = ({ className = '', size = 280
         }
 
         // ---------------------------
-        // Foreground (Animation) Layer
+        // Foreground (Animation) Layer - Slower, smoother motion
         // ---------------------------
         {
           vec2 p_anim = (gl_FragCoord.xy * 2.0 - r) / r.y / 0.7;
@@ -75,25 +116,40 @@ export const BlackHole: React.FC<BlackHoleProps> = ({ className = '', size = 280
           float denom = 0.1 + 5.0 / dot(5.0 * p_anim - d, 5.0 * p_anim - d);
           vec2 c = p_anim * mat2(1.0, 1.0, d.x / denom, d.y / denom);
           vec2 v = c;
-          v *= mat2(cos(log(length(v)) + t * 0.2 + vec4(0.0, 33.0, 11.0, 0.0))) * 5.0;
+          
+          // Slower rotation: t * 0.08 instead of t * 0.2
+          v *= mat2(cos(log(length(v)) + t * 0.08 + vec4(0.0, 33.0, 11.0, 0.0))) * 5.0;
+          
           vec4 animAccum = vec4(0.0);
-          for (int i = 1; i <= 9; i++) {
+          // Reduced iterations for smoother look (7 instead of 9)
+          for (int i = 1; i <= 7; i++) {
             float fi = float(i);
             animAccum += sin(vec4(v.x, v.y, v.y, v.x)) + vec4(1.0);
-            v += 0.7 * sin(vec2(v.y, v.x) * fi + t) / fi + 0.5;
+            // Slower inner motion: t * 0.4 instead of just t
+            v += 0.7 * sin(vec2(v.y, v.x) * fi + t * 0.4) / fi + 0.5;
           }
-          vec4 animTerm = 1.0 - exp(-exp(c.x * vec4(0.6, -0.4, -1.0, 0.0))
+          
+          // Cyan/purple color mapping: vec4(cyan, purple-blue, deep-purple, alpha)
+          vec4 colorMap = vec4(0.8, 0.2, -0.6, 0.0);
+          
+          vec4 animTerm = 1.0 - exp(-exp(c.x * colorMap)
                             / animAccum
                             / (0.1 + 0.1 * pow(length(sin(v / 0.3) * 0.2 + c * vec2(1.0, 2.0)) - 1.0, 2.0))
                             / (1.0 + 7.0 * exp(0.3 * c.y - dot(c, c)))
-                            / (0.03 + abs(length(p_anim) - 0.7)) * 0.2);
+                            / (0.03 + abs(length(p_anim) - 0.7)) * 0.15);
           o_anim += animTerm;
         }
 
         // ---------------------------
-        // Blend Layers: animation at 50% opacity over image.
+        // Blend Layers with refined brightness
         // ---------------------------
-        vec4 finalColor = mix(o_bg, o_anim, 0.5) * 1.5;
+        vec4 finalColor = mix(o_bg, o_anim, 0.55) * 1.3;
+        
+        // Add subtle vignette darkening at edges
+        vec2 uv = gl_FragCoord.xy / r;
+        float vignette = 1.0 - smoothstep(0.3, 0.9, length(uv - 0.5) * 1.4);
+        finalColor *= vignette * 0.3 + 0.7;
+        
         finalColor = clamp(finalColor, 0.0, 1.0);
         gl_FragColor = finalColor;
       }
@@ -130,7 +186,10 @@ export const BlackHole: React.FC<BlackHoleProps> = ({ className = '', size = 280
     }
 
     const program = createProgram(gl, vsSource, fsSource);
-    if (!program) return;
+    if (!program) {
+      setWebglFailed(true);
+      return;
+    }
     
     gl.useProgram(program);
 
@@ -155,7 +214,9 @@ export const BlackHole: React.FC<BlackHoleProps> = ({ className = '', size = 280
 
     // Resize with balanced quality/performance
     const resize = () => {
-      const dpr = Math.min(window.devicePixelRatio || 1, 2); // Cap at 2x for performance
+      // Lower DPR cap on mobile for performance
+      const maxDpr = isMobile ? 1.5 : 2;
+      const dpr = Math.min(window.devicePixelRatio || 1, maxDpr);
       canvas.width = canvas.clientWidth * dpr;
       canvas.height = canvas.clientHeight * dpr;
       gl.viewport(0, 0, gl.drawingBufferWidth, gl.drawingBufferHeight);
@@ -163,13 +224,40 @@ export const BlackHole: React.FC<BlackHoleProps> = ({ className = '', size = 280
     resize();
 
     const startTime = performance.now();
+    let isTabVisible = true;
     
-    // Render loop
-    const render = () => {
+    // Tab visibility handling - pause when tab not visible
+    const handleVisibilityChange = () => {
+      isTabVisible = !document.hidden;
+    };
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    // Render loop with performance optimizations
+    let lastFrameTime = 0;
+    const targetFPS = prefersReducedMotion ? 15 : (isMobile ? 30 : 60);
+    const frameInterval = 1000 / targetFPS;
+    
+    const render = (currentTime: number) => {
+      // Skip frames when tab not visible or to limit FPS
+      if (!isTabVisible) {
+        animationRef.current = requestAnimationFrame(render);
+        return;
+      }
+      
+      const elapsed = currentTime - lastFrameTime;
+      if (elapsed < frameInterval) {
+        animationRef.current = requestAnimationFrame(render);
+        return;
+      }
+      lastFrameTime = currentTime - (elapsed % frameInterval);
+      
       gl.clearColor(0, 0, 0, 0);
       gl.clear(gl.COLOR_BUFFER_BIT);
       
-      const delta = (performance.now() - startTime) / 1000;
+      // Slower time progression for reduced motion
+      const timeMultiplier = prefersReducedMotion ? 0.3 : 1;
+      const delta = ((performance.now() - startTime) / 1000) * timeMultiplier;
+      
       gl.uniform1f(timeLocation, delta);
       gl.uniform2f(resolutionLocation, canvas.width, canvas.height);
       gl.drawArrays(gl.TRIANGLES, 0, 6);
@@ -182,10 +270,11 @@ export const BlackHole: React.FC<BlackHoleProps> = ({ className = '', size = 280
       if (animationRef.current) {
         cancelAnimationFrame(animationRef.current);
       }
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
     };
-  }, [size]);
+  }, [size, isMobile, prefersReducedMotion]);
 
-  // CSS fallback for when WebGL is not available
+  // CSS fallback for when WebGL is not available - cyan/purple palette
   if (webglFailed) {
     return (
       <motion.div 
@@ -195,15 +284,35 @@ export const BlackHole: React.FC<BlackHoleProps> = ({ className = '', size = 280
         transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
         style={{ width: size, height: size }}
       >
+        {/* Outer glow - cyan/purple */}
+        <div 
+          className="absolute -inset-4 rounded-full blur-2xl"
+          style={{
+            background: 'radial-gradient(circle, rgba(34,211,238,0.3) 0%, rgba(139,92,246,0.2) 50%, transparent 70%)',
+          }}
+        />
         {/* CSS-only black hole fallback */}
         <div className="absolute inset-0 rounded-full"
           style={{
-            background: 'radial-gradient(circle at 30% 30%, rgba(255,200,100,0.3) 0%, rgba(200,100,50,0.2) 20%, rgba(50,20,10,0.8) 40%, #000 60%)',
-            boxShadow: '0 0 60px rgba(255,150,50,0.4), inset 0 0 40px rgba(0,0,0,0.8)',
+            background: 'radial-gradient(circle at 35% 35%, rgba(34,211,238,0.25) 0%, rgba(139,92,246,0.15) 25%, rgba(30,20,50,0.9) 45%, #000 65%)',
+            boxShadow: '0 0 60px rgba(34,211,238,0.3), 0 0 100px rgba(139,92,246,0.2), inset 0 0 40px rgba(0,0,0,0.9)',
           }}
         />
-        <div className="absolute inset-[15%] rounded-full bg-black"
-          style={{ boxShadow: 'inset 0 0 30px rgba(255,100,50,0.3)' }}
+        {/* Inner dark core */}
+        <div className="absolute inset-[20%] rounded-full bg-black"
+          style={{ boxShadow: 'inset 0 0 30px rgba(139,92,246,0.2), 0 0 20px rgba(0,0,0,0.8)' }}
+        />
+        {/* Subtle animated ring */}
+        <motion.div 
+          className="absolute inset-[10%] rounded-full border border-cyan-500/20"
+          animate={{ 
+            rotate: 360,
+            opacity: [0.3, 0.5, 0.3],
+          }}
+          transition={{ 
+            rotate: { duration: 20, repeat: Infinity, ease: 'linear' },
+            opacity: { duration: 4, repeat: Infinity, ease: 'easeInOut' },
+          }}
         />
       </motion.div>
     );
@@ -211,17 +320,40 @@ export const BlackHole: React.FC<BlackHoleProps> = ({ className = '', size = 280
 
   return (
     <motion.div 
+      ref={containerRef}
       className={`relative ${className}`}
       initial={{ opacity: 0, scale: 0.8 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-      style={{ width: size, height: size }}
+      style={{ 
+        width: size, 
+        height: size,
+        x: parallaxX,
+        y: parallaxY,
+      }}
     >
-      {/* Glow effect behind */}
-      <div 
-        className="absolute -inset-8 blur-3xl opacity-60"
+      {/* Glow effect behind - cyan/purple palette */}
+      <motion.div 
+        className="absolute -inset-8 blur-3xl"
         style={{
-          background: 'radial-gradient(circle, rgba(255,200,100,0.4) 0%, rgba(255,150,50,0.2) 40%, transparent 70%)',
+          background: 'radial-gradient(circle, rgba(34,211,238,0.25) 0%, rgba(139,92,246,0.15) 40%, transparent 70%)',
+        }}
+        animate={{
+          opacity: [0.5, 0.7, 0.5],
+          scale: [1, 1.05, 1],
+        }}
+        transition={{
+          duration: 8,
+          repeat: Infinity,
+          ease: 'easeInOut',
+        }}
+      />
+      
+      {/* Secondary outer glow ring */}
+      <div 
+        className="absolute -inset-4 rounded-full opacity-40"
+        style={{
+          background: 'radial-gradient(circle, transparent 50%, rgba(139,92,246,0.1) 70%, transparent 90%)',
         }}
       />
       
