@@ -80,12 +80,11 @@ export const BlackHole: React.FC<BlackHoleProps> = ({ className = '', size = 280
       }
     `;
 
-    // Fragment shader - Premium Black Hole with accretion disk and cyan/purple palette
+    // Fragment shader - Animated Black Hole with visible motion
     const fsSource = `
       precision highp float;
       uniform float t;
       uniform vec2 r;
-      uniform float pulse;
       
       // Custom tanh function for vec2
       vec2 myTanh(vec2 x) {
@@ -97,50 +96,12 @@ export const BlackHole: React.FC<BlackHoleProps> = ({ className = '', size = 280
       void main() {
         vec4 o_bg = vec4(0.0);
         vec4 o_anim = vec4(0.0);
-        vec4 o_disk = vec4(0.0);
-        
-        vec2 uv = (gl_FragCoord.xy * 2.0 - r) / r.y;
 
         // ---------------------------
-        // Accretion Disk - Glowing ring with rotation
+        // Background (Image) Layer - Event horizon
         // ---------------------------
         {
-          // Tilt the disk for 3D perspective
-          vec2 diskUV = uv;
-          diskUV.y *= 2.5; // Squash vertically for tilt effect
-          
-          float dist = length(diskUV);
-          float angle = atan(diskUV.y, diskUV.x);
-          
-          // Rotating ring at ~70% radius
-          float ringRadius = 0.72;
-          float ringWidth = 0.08;
-          float ring = smoothstep(ringWidth, 0.0, abs(dist - ringRadius));
-          
-          // Add rotation and variation to the ring
-          float rotatedAngle = angle + t * 0.15;
-          float variation = sin(rotatedAngle * 3.0) * 0.3 + sin(rotatedAngle * 7.0 + t * 0.2) * 0.15;
-          ring *= (0.7 + variation);
-          
-          // Asymmetric brightness (brighter on one side - Doppler effect)
-          float asymmetry = 0.6 + 0.4 * sin(angle + 1.57);
-          ring *= asymmetry;
-          
-          // Cyan-purple gradient for the disk
-          vec3 diskColor = mix(
-            vec3(0.13, 0.83, 0.93), // Cyan
-            vec3(0.55, 0.36, 0.98), // Purple
-            0.5 + 0.5 * sin(rotatedAngle * 2.0)
-          );
-          
-          o_disk = vec4(diskColor * ring * 0.6, ring * 0.5);
-        }
-
-        // ---------------------------
-        // Background (Image) Layer - Event horizon ring
-        // ---------------------------
-        {
-          vec2 p_img = uv * mat2(1.0, -1.0, 1.0, 1.0);
+          vec2 p_img = (gl_FragCoord.xy * 2.0 - r) / r.y * mat2(1.0, -1.0, 1.0, 1.0);
           vec2 l_val = myTanh(p_img * 5.0 + 2.0);
           l_val = min(l_val, l_val * 3.0);
           vec2 clamped = clamp(l_val, -2.0, 0.0);
@@ -153,60 +114,40 @@ export const BlackHole: React.FC<BlackHoleProps> = ({ className = '', size = 280
         }
 
         // ---------------------------
-        // Foreground (Animation) Layer - Slower, smoother motion
+        // Foreground (Animation) Layer - Visible swirling motion
         // ---------------------------
         {
-          vec2 p_anim = uv / 0.7;
+          vec2 p_anim = (gl_FragCoord.xy * 2.0 - r) / r.y / 0.7;
           vec2 d = vec2(-1.0, 1.0);
           float denom = 0.1 + 5.0 / dot(5.0 * p_anim - d, 5.0 * p_anim - d);
           vec2 c = p_anim * mat2(1.0, 1.0, d.x / denom, d.y / denom);
           vec2 v = c;
           
-          // Slower rotation: t * 0.08 instead of t * 0.2
-          v *= mat2(cos(log(length(v)) + t * 0.08 + vec4(0.0, 33.0, 11.0, 0.0))) * 5.0;
+          // Animation speed - visible but smooth
+          v *= mat2(cos(log(length(v)) + t * 0.2 + vec4(0.0, 33.0, 11.0, 0.0))) * 5.0;
           
           vec4 animAccum = vec4(0.0);
-          // Reduced iterations for smoother look (7 instead of 9)
-          for (int i = 1; i <= 7; i++) {
+          for (int i = 1; i <= 9; i++) {
             float fi = float(i);
             animAccum += sin(vec4(v.x, v.y, v.y, v.x)) + vec4(1.0);
-            // Slower inner motion: t * 0.4 instead of just t
-            v += 0.7 * sin(vec2(v.y, v.x) * fi + t * 0.4) / fi + 0.5;
+            v += 0.7 * sin(vec2(v.y, v.x) * fi + t) / fi + 0.5;
           }
           
-          // Cyan/purple color mapping
-          vec4 colorMap = vec4(0.8, 0.2, -0.6, 0.0);
+          // Cyan/purple color tint
+          vec4 colorMap = vec4(0.6, -0.4, -1.0, 0.0);
           
           vec4 animTerm = 1.0 - exp(-exp(c.x * colorMap)
                             / animAccum
                             / (0.1 + 0.1 * pow(length(sin(v / 0.3) * 0.2 + c * vec2(1.0, 2.0)) - 1.0, 2.0))
                             / (1.0 + 7.0 * exp(0.3 * c.y - dot(c, c)))
-                            / (0.03 + abs(length(p_anim) - 0.7)) * 0.15);
+                            / (0.03 + abs(length(p_anim) - 0.7)) * 0.2);
           o_anim += animTerm;
         }
 
         // ---------------------------
-        // Gravitational Lensing Edge Glow
+        // Blend Layers
         // ---------------------------
-        float dist = length(uv);
-        float lensingGlow = smoothstep(0.8, 0.6, dist) * smoothstep(0.4, 0.55, dist);
-        vec3 lensColor = mix(vec3(0.9, 0.95, 1.0), vec3(0.13, 0.83, 0.93), 0.3);
-        vec4 o_lens = vec4(lensColor * lensingGlow * 0.25, lensingGlow * 0.2);
-
-        // ---------------------------
-        // Blend all layers with breathing pulse
-        // ---------------------------
-        vec4 coreColor = mix(o_bg, o_anim, 0.55) * 1.3;
-        vec4 finalColor = coreColor + o_disk + o_lens;
-        
-        // Apply breathing pulse (subtle brightness variation)
-        finalColor.rgb *= (1.0 + pulse * 0.08);
-        
-        // Add subtle vignette darkening at edges
-        vec2 vignetteUV = gl_FragCoord.xy / r;
-        float vignette = 1.0 - smoothstep(0.3, 0.9, length(vignetteUV - 0.5) * 1.4);
-        finalColor *= vignette * 0.3 + 0.7;
-        
+        vec4 finalColor = mix(o_bg, o_anim, 0.5) * 1.5;
         finalColor = clamp(finalColor, 0.0, 1.0);
         gl_FragColor = finalColor;
       }
@@ -253,7 +194,6 @@ export const BlackHole: React.FC<BlackHoleProps> = ({ className = '', size = 280
     const positionLocation = gl.getAttribLocation(program, 'a_position');
     const timeLocation = gl.getUniformLocation(program, 't');
     const resolutionLocation = gl.getUniformLocation(program, 'r');
-    const pulseLocation = gl.getUniformLocation(program, 'pulse');
 
     // Full-screen quad
     const vertices = new Float32Array([
@@ -312,16 +252,12 @@ export const BlackHole: React.FC<BlackHoleProps> = ({ className = '', size = 280
       gl.clearColor(0, 0, 0, 0);
       gl.clear(gl.COLOR_BUFFER_BIT);
       
-      // Slower time progression for reduced motion
-      const timeMultiplier = prefersReducedMotion ? 0.3 : 1;
+      // Time progression (slower for reduced motion)
+      const timeMultiplier = prefersReducedMotion ? 0.5 : 1;
       const delta = ((performance.now() - startTime) / 1000) * timeMultiplier;
-      
-      // Breathing pulse: subtle sine wave every ~12 seconds
-      const pulse = Math.sin(delta * 0.52) * 0.5 + 0.5;
       
       gl.uniform1f(timeLocation, delta);
       gl.uniform2f(resolutionLocation, canvas.width, canvas.height);
-      gl.uniform1f(pulseLocation, pulse);
       gl.drawArrays(gl.TRIANGLES, 0, 6);
       animationRef.current = requestAnimationFrame(render);
     };
