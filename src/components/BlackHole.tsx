@@ -398,43 +398,16 @@ export const BlackHole: React.FC<BlackHoleProps> = ({ className = '', size = 280
       onMouseEnter={() => !isMobile && setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      {/* Glow effect behind - cyan/purple palette with hover boost */}
+      {/* Subtle dark ambient glow - very understated */}
       <motion.div 
-        className="absolute -inset-8 blur-3xl transition-all duration-500"
+        className="absolute -inset-6 blur-2xl pointer-events-none"
         style={{
-          background: 'radial-gradient(circle, rgba(34,211,238,0.25) 0%, rgba(139,92,246,0.15) 40%, transparent 70%)',
+          background: 'radial-gradient(circle, rgba(139,92,246,0.08) 0%, transparent 70%)',
         }}
         animate={{
-          opacity: isHovered ? [0.7, 0.9, 0.7] : [0.5, 0.7, 0.5],
-          scale: isHovered ? [1.05, 1.12, 1.05] : [1, 1.05, 1],
+          opacity: isHovered ? 0.6 : 0.35,
         }}
-        transition={{
-          duration: isHovered ? 4 : 8,
-          repeat: Infinity,
-          ease: 'easeInOut',
-        }}
-      />
-      
-      {/* Secondary outer glow ring - enhanced on hover */}
-      <motion.div 
-        className="absolute -inset-4 rounded-full transition-opacity duration-500"
-        style={{
-          background: 'radial-gradient(circle, transparent 50%, rgba(139,92,246,0.1) 70%, transparent 90%)',
-        }}
-        animate={{ opacity: isHovered ? 0.7 : 0.4 }}
-      />
-      
-      {/* Hover glow burst */}
-      <motion.div 
-        className="absolute -inset-12 rounded-full pointer-events-none"
-        style={{
-          background: 'radial-gradient(circle, rgba(34,211,238,0.15) 0%, transparent 60%)',
-        }}
-        animate={{ 
-          opacity: isHovered ? 1 : 0,
-          scale: isHovered ? 1.1 : 0.9,
-        }}
-        transition={{ duration: 0.4, ease: 'easeOut' }}
+        transition={{ duration: 0.5 }}
       />
       
       <canvas 
