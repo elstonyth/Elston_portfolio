@@ -101,14 +101,14 @@ export const Hero: React.FC = () => {
             </motion.div>
           </div>
           
-          {/* Black Hole Visual - Desktop */}
-          <div className="hidden lg:block absolute right-0 top-[120px]">
-            <BlackHole size={420} />
+          {/* Black Hole Visual - Desktop - Positioned behind headline for depth */}
+          <div className="hidden lg:block absolute right-[5%] xl:right-[10%] top-[80px] -z-10 opacity-90">
+            <BlackHole size={360} />
           </div>
           
-          {/* Black Hole Visual - Mobile - Smaller and less spacing */}
-          <div className="lg:hidden mt-6 flex justify-center">
-            <BlackHole size={220} />
+          {/* Black Hole Visual - Mobile - Smaller and centered */}
+          <div className="lg:hidden mt-4 flex justify-center -z-10 opacity-80">
+            <BlackHole size={200} />
           </div>
         </div>
       </div>
