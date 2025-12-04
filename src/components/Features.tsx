@@ -1,50 +1,63 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { Server, Palette, Code, Cpu, Zap } from 'lucide-react';
+import { Server, Database, BarChart3, Cpu, Zap, type LucideIcon } from 'lucide-react';
 import { SpotlightCard } from '@/components/ui/SpotlightCard';
 import { motion, useInView, type Variants } from 'framer-motion';
-// Dark mode only - no theme switching needed
-import { easings, durations, stagger, springs } from '@/lib/animations';
+import { easings, durations, springs } from '@/lib/animations';
 
-const skills = [
+// Accent color mapping for cleaner JSX
+const accentColorClasses: Record<string, string> = {
+  cyan: 'group-hover:text-cyan-400',
+  amber: 'group-hover:text-amber-400',
+  emerald: 'group-hover:text-emerald-400',
+  purple: 'group-hover:text-purple-400',
+};
+
+interface Skill {
+  icon: LucideIcon;
+  title: string;
+  description: string;
+  colSpan: string;
+  gradient: string;
+  iconBg: string;
+  accentColor: string;
+}
+
+const skills: Skill[] = [
   {
-    icon: Code,
+    icon: BarChart3,
     title: 'Analytics & Reporting',
-    description: 'Python (Pandas, NumPy) and SQL for data validation, exploratory analysis, and building dashboards that teams rely on.',
+    description: 'Python, SQL, and dashboards teams rely on daily.',
     colSpan: "md:col-span-2",
     gradient: "from-blue-500 to-cyan-400",
     iconBg: "bg-gradient-to-br from-blue-500/20 to-cyan-400/10",
     accentColor: "cyan",
-    bg: ""
   },
   {
     icon: Zap,
     title: 'Workflow Automation',
-    description: 'Python scripts and Google Sheets integrations that eliminate repetitive tasks and reduce input errors.',
+    description: 'Scripts that eliminate repetitive tasks.',
     colSpan: "md:col-span-1",
     gradient: "from-amber-500 to-orange-400",
     iconBg: "bg-gradient-to-br from-amber-500/20 to-orange-400/10",
     accentColor: "amber",
-    bg: ""
   },
   {
-    icon: Palette,
-    title: 'Cloud & Data Pipelines',
-    description: 'Data pipelines and queries on GCP and SQL databases, built for reliability and easy maintenance.',
+    icon: Database,
+    title: 'Cloud & Pipelines',
+    description: 'GCP and SQL pipelines built for scale.',
     colSpan: "md:col-span-1",
     gradient: "from-emerald-500 to-teal-400",
     iconBg: "bg-gradient-to-br from-emerald-500/20 to-teal-400/10",
     accentColor: "emerald",
-    bg: ""
   },
   {
     icon: Server,
-    title: 'Data Reliability & Privacy',
-    description: 'Backup, recovery, and privacy-first practices—including self-hosted infra—to keep data accurate and secure.',
+    title: 'Data Reliability',
+    description: 'Privacy-first backup and recovery systems.',
     colSpan: "md:col-span-2",
     gradient: "from-purple-500 to-pink-400",
     iconBg: "bg-gradient-to-br from-purple-500/20 to-pink-400/10",
     accentColor: "purple",
-    bg: ""
   }
 ];
 
@@ -73,36 +86,6 @@ const itemVariants: Variants = {
     transition: {
       duration: 0.6,
       ease: [0.22, 1, 0.36, 1],
-    }
-  }
-};
-
-// Icon entrance animation
-const iconVariants: Variants = {
-  hidden: { scale: 0, opacity: 0, rotate: -180 },
-  visible: { 
-    scale: 1, 
-    opacity: 1, 
-    rotate: 0,
-    transition: {
-      type: 'spring',
-      stiffness: 200,
-      damping: 15,
-      delay: 0.2,
-    }
-  }
-};
-
-// Text reveal animation
-const textVariants: Variants = {
-  hidden: { opacity: 0, x: -20 },
-  visible: { 
-    opacity: 1, 
-    x: 0,
-    transition: {
-      duration: 0.5,
-      ease: [0.22, 1, 0.36, 1],
-      delay: 0.3,
     }
   }
 };
@@ -271,22 +254,12 @@ export const Features: React.FC = () => {
                 <div className="relative z-10 flex flex-col h-full">
                   {/* Enhanced icon container */}
                   <motion.div 
-                    className={`w-14 h-14 rounded-xl border flex items-center justify-center mb-6 transition-all duration-500 ${skill.iconBg} border-white/10 text-white group-hover:border-white/20`}
-                    whileHover={{ 
-                      scale: 1.1, 
-                      rotate: [0, -5, 5, 0],
-                    }}
+                    className={`w-12 h-12 rounded-xl border flex items-center justify-center mb-5 transition-all duration-500 ${skill.iconBg} border-white/10 text-white group-hover:border-white/20`}
+                    whileHover={{ scale: 1.1, rotate: [0, -5, 5, 0] }}
                     transition={springs.bouncy}
-                    style={{
-                      boxShadow: '0 0 20px rgba(255,255,255,0.05), inset 0 1px 0 rgba(255,255,255,0.1)'
-                    }}
+                    style={{ boxShadow: '0 0 20px rgba(255,255,255,0.05), inset 0 1px 0 rgba(255,255,255,0.1)' }}
                   >
-                    <skill.icon size={26} strokeWidth={1.5} className={`transition-all duration-300 ${
-                      skill.accentColor === 'cyan' ? 'group-hover:text-cyan-400' :
-                      skill.accentColor === 'amber' ? 'group-hover:text-amber-400' :
-                      skill.accentColor === 'emerald' ? 'group-hover:text-emerald-400' :
-                      'group-hover:text-purple-400'
-                    }`} />
+                    <skill.icon size={22} strokeWidth={1.5} className={`transition-all duration-300 ${accentColorClasses[skill.accentColor]}`} />
                   </motion.div>
                   
                   {/* Title with gradient on hover */}

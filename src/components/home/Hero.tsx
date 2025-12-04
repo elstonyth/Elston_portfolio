@@ -61,22 +61,23 @@ export const Hero: React.FC = () => {
 
             {/* Main Title */}
             <motion.h1 
-              className="text-3xl sm:text-5xl md:text-8xl font-bold tracking-tight mb-6 md:mb-8 leading-[0.95] hero-title-premium text-white drop-shadow-2xl"
+              className="text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight mb-5 md:mb-6 leading-[1.05] text-white"
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
             >
-              Data systems that cut errors and manual work
+              Data that <br className="hidden sm:block" />
+              <span className="text-gradient">drives decisions.</span>
             </motion.h1>
 
             {/* Subtitle */}
             <motion.p 
-              className="text-base md:text-2xl max-w-2xl mb-8 md:mb-10 leading-relaxed font-light text-white/70"
+              className="text-base md:text-lg max-w-xl mb-8 md:mb-10 leading-relaxed text-white/60"
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+              transition={{ duration: 0.6, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
             >
-              I build dashboards, automations, and AI-powered workflows that help teams make better decisions faster. Recent wins include reducing pharma validation errors by ~30% and automating reporting that saves 10–15 hours every month.
+              Building dashboards, automations, and AI workflows that help teams move faster with fewer errors.
             </motion.p>
 
             {/* CTA Buttons */}
